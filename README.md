@@ -99,6 +99,8 @@ As imagens (escudos, banner do campeão, fotos das notícias) ficam no próprio 
 
 ## Deploy na Vercel
 
+A conexão com o banco segue a recomendação da Vercel para o Fluid compute: driver `pg` com pool pequeno, conexões paradas fechando em 5 s e `attachDatabasePool`, que fecha as conexões antes de a função dormir. Consulta travada vira erro em 15 s, em vez de página carregando para sempre.
+
 O `vercel.json` já fixa as funções em São Paulo (`gru1`), perto do banco do Supabase. Sem isso, a Vercel roda nos EUA e cada consulta atravessa o continente.
 
 1. Suba o projeto para um repositório no GitHub (o `.gitignore` já deixa o `.env` de fora).
