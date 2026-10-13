@@ -1,5 +1,6 @@
 // VIEW — clube: nome, escudo, elenco e capitães
-import { adicionarAtleta, alternarCapitao, removerAtleta, salvarClube } from "@/controllers/acoes/clube";
+import { adicionarAtleta, alternarCapitao, editarAtleta, excluirAtleta, excluirClube, removerAtleta, salvarClube } from "@/controllers/acoes/clube";
+import { Popup } from "../Popup";
 import type { ClubeController } from "@/controllers/ClubeController";
 import { CAPITAES_POR_CLUBE, ELENCO_MAXIMO, ELENCO_MINIMO } from "@/controllers/regras/elenco";
 import { FormAcao, Enviar } from "../FormAcao";
@@ -22,6 +23,7 @@ export function ClubeView({ dados, temporada, elencoLivre }: { dados: Dados; tem
             <Escudo url={clube.escudoUrl} nome={clube.nome} />
             <Campo rotulo="Nome"><input type="text" name="nome" defaultValue={clube.nome} required /></Campo>
             <Campo rotulo="Trocar escudo"><input type="file" name="escudo" accept="image/png,image/jpeg,image/webp" /></Campo>
+            {clube.escudoUrl && <label className="marcar"><input type="checkbox" name="removerEscudo" /> Remover escudo</label>}
             <Enviar>Salvar</Enviar>
           </div>
         </FormAcao>
@@ -64,7 +66,39 @@ export function ClubeView({ dados, temporada, elencoLivre }: { dados: Dados; tem
                           </FormAcao>
                         </td>
                         <td className="acoes">
-                          <FormAcao acao={removerAtleta} confirmar={`Liberar ${atleta.nomePersonagem} do elenco?`}>
+                          <Popup rotulo="Editar" titulo={`Editar ${atleta.nomePersonagem}`}>
+                            <FormAcao acao={editarAtleta}>
+                              <input type="hidden" name="atletaId" value={atleta.id} />
+                              <input type="hidden" name="clubeId" value={clube.id} />
+                              <div className="campos">
+                                <Campo rotulo="Nome do personagem"><input type="text" name="nomePersonagem" defaultValue={atleta.nomePersonagem} required maxLength={40} /></Campo>
+                                <Campo rotulo="Plataforma">
+                                  <select name="plataforma" defaultValue={atleta.plataforma}>
+                                    <option value="ps5">PS5</option>
+                                    <option value="xbox">Xbox Series</option>
+                                    <option value="pc">PC</option>
+                                  </select>
+                                </Campo>
+                                <Campo rotulo="PSN ID, Gamertag ou EA ID"><input type="text" name="idPlataforma" defaultValue={atleta.idPlataforma} required maxLength={60} /></Campo>
+                                <Campo rotulo="Twitch (opcional)"><input type="text" name="twitch" defaultValue={atleta.twitch ?? ""} maxLength={40} /></Campo>
+                              </div>
+                              <Enviar>Salvar atleta</Enviar>
+                            </FormAcao>
+                            <div className="zona-perigo" style={{ marginTop: 20 }}>
+                              <div>
+                                <p>
+                                  <strong>Excluir atleta</strong>
+                                  <span>Para cadastro feito por engano. Quem já tem jogo registrado não pode ser excluído: use Liberar.</span>
+                                </p>
+                                <FormAcao acao={excluirAtleta} semMensagem perigo confirmar={`Excluir ${atleta.nomePersonagem} do sistema? Não dá para desfazer.`}>
+                                  <input type="hidden" name="atletaId" value={atleta.id} />
+                                  <input type="hidden" name="clubeId" value={clube.id} />
+                                  <Enviar variante="perigo">Excluir atleta</Enviar>
+                                </FormAcao>
+                              </div>
+                            </div>
+                          </Popup>
+                          <FormAcao acao={removerAtleta} semMensagem perigo rotuloConfirmar="Liberar" confirmar={`Liberar ${atleta.nomePersonagem} do elenco? O atleta continua cadastrado e pode entrar em outro clube.`}>
                             <input type="hidden" name="clubeId" value={clube.id} />
                             <input type="hidden" name="atletaId" value={atleta.id} />
                             <Enviar variante="perigo" mini>Liberar</Enviar>
@@ -76,6 +110,21 @@ export function ClubeView({ dados, temporada, elencoLivre }: { dados: Dados; tem
                 </table>
               </div>
             )}
+          </Secao>
+
+          <Secao titulo="Zona de perigo">
+            <div className="zona-perigo">
+              <div>
+                <p>
+                  <strong>Excluir o clube</strong>
+                  <span>Tira o clube de todas as inscrições e apaga atletas que ficarem sem clube e sem jogo registrado. Clube que já está na tabela de uma competição não pode ser excluído.</span>
+                </p>
+                <FormAcao acao={excluirClube} semMensagem perigo rotuloConfirmar="Excluir clube" confirmar={`Excluir o ${clube.nome} de vez? Não dá para desfazer.`}>
+                  <input type="hidden" name="id" value={clube.id} />
+                  <Enviar variante="perigo">Excluir clube</Enviar>
+                </FormAcao>
+              </div>
+            </div>
           </Secao>
 
           <Secao titulo="Adicionar atleta" dica="O nome do personagem é o que aparece no jogo e não pode mudar na temporada. Se o atleta já existir sem clube, ele é reaproveitado.">

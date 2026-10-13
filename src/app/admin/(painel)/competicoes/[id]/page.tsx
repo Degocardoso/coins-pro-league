@@ -13,10 +13,11 @@ export default async function Pagina({ params }: { params: Promise<{ id: string 
   const ctrl = new CompeticaoController(db);
   const c = Number.isInteger(id) ? await ctrl.buscar(id) : null;
   if (!c) notFound();
-  const [inscricoes, clubes, temPartidas] = await Promise.all([
+  const [inscricoes, clubes, temPartidas, resultados] = await Promise.all([
     ctrl.inscricoes(id),
     new ClubeController(db).listar(null),
     partidasRepo.existemNaCompeticao(db, id),
+    ctrl.resultadosLancados(id),
   ]);
-  return <CompeticaoView c={c} inscricoes={inscricoes} clubes={clubes} temPartidas={temPartidas} />;
+  return <CompeticaoView c={c} inscricoes={inscricoes} clubes={clubes} temPartidas={temPartidas} resultados={resultados} />;
 }

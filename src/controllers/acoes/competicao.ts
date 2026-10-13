@@ -113,3 +113,27 @@ export async function gerarTabela(_: Estado, form: FormData): Promise<Estado> {
   }
   redirect(`/admin/competicoes/${competicaoId}/partidas`);
 }
+
+export async function apagarTabela(_: Estado, form: FormData): Promise<Estado> {
+  await exigirAdmin();
+  const competicaoId = id(form);
+  try {
+    await ctrl().apagarTabela(competicaoId);
+  } catch (e) {
+    return falha(e);
+  }
+  revalidatePath(`/admin/competicoes/${competicaoId}`);
+  revalidatePath("/admin");
+  return sucesso("Tabela apagada. Ajuste as inscrições e gere de novo quando quiser.");
+}
+
+export async function excluirCompeticao(_: Estado, form: FormData): Promise<Estado> {
+  await exigirAdmin();
+  try {
+    await ctrl().excluir(id(form));
+  } catch (e) {
+    return falha(e);
+  }
+  revalidatePath("/admin", "layout");
+  redirect("/admin/competicoes");
+}

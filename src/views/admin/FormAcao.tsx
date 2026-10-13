@@ -1,9 +1,13 @@
 "use client";
 // VIEW — formulário ligado a uma ação do servidor, com mensagem de retorno.
-// Envia por onSubmit (e não por action={...}) para o React não apagar o que foi
-// digitado quando a ação devolve erro. Só limpa os campos se limparAoSalvar.
-import { createContext, startTransition, useActionState, useContext, useEffect, useRef, type ReactNode } from "react";
+// - Envia por onSubmit (e não por action={...}) para o React não apagar o que foi digitado quando dá erro.
+// - "confirmar" abre a janela de confirmação do painel antes de enviar.
+// - "semMensagem" (botões em tabela): sucesso fica silencioso; erro e alerta abrem numa janela.
+// - Dentro de um <Popup>, a janela fecha sozinha quando salva.
+import { createContext, startTransition, useActionState, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import type { Estado } from "@/controllers/acoes/estado";
+import { Aviso, Confirmacao } from "./Dialogo";
+import { PopupContexto } from "./Popup";
 
 type Acao = (estado: Estado, form: FormData) => Promise<Estado>;
 
@@ -14,6 +18,8 @@ export function FormAcao({
   children,
   className,
   confirmar,
+  perigo,
+  rotuloConfirmar,
   semMensagem,
   limparAoSalvar,
 }: {
@@ -21,15 +27,28 @@ export function FormAcao({
   children: ReactNode;
   className?: string;
   confirmar?: string;
+  perigo?: boolean;
+  rotuloConfirmar?: string;
   semMensagem?: boolean;
   limparAoSalvar?: boolean;
 }) {
   const [estado, executar, pendente] = useActionState(acao, null);
   const form = useRef<HTMLFormElement>(null);
+  const [aguardando, setAguardando] = useState<FormData | null>(null);
+  const [aviso, setAviso] = useState(false);
+  const popup = useContext(PopupContexto);
 
   useEffect(() => {
-    if (limparAoSalvar && estado?.ok && !estado.erros?.length) form.current?.reset();
-  }, [estado, limparAoSalvar]);
+    if (!estado) return;
+    const temProblema = !!estado.erros?.length || !!estado.alertas?.length;
+    if (semMensagem && temProblema) setAviso(true);
+    if (estado.ok && !estado.erros?.length) {
+      if (limparAoSalvar) form.current?.reset();
+      if (popup && !estado.alertas?.length) popup.fechar();
+    }
+  }, [estado, semMensagem, limparAoSalvar, popup]);
+
+  const enviar = (dados: FormData) => startTransition(() => executar(dados));
 
   return (
     <form
@@ -37,13 +56,28 @@ export function FormAcao({
       className={className}
       onSubmit={(e) => {
         e.preventDefault();
-        if (pendente || (confirmar && !window.confirm(confirmar))) return;
+        if (pendente) return;
         const dados = new FormData(e.currentTarget, (e.nativeEvent as SubmitEvent).submitter);
-        startTransition(() => executar(dados));
+        if (confirmar) setAguardando(dados);
+        else enviar(dados);
       }}
     >
       <Pendente.Provider value={pendente}>{children}</Pendente.Provider>
       {!semMensagem && <Mensagem estado={estado} />}
+      {aguardando && (
+        <Confirmacao
+          mensagem={confirmar!}
+          perigo={perigo}
+          rotulo={rotuloConfirmar}
+          aoCancelar={() => setAguardando(null)}
+          aoConfirmar={() => {
+            const dados = aguardando;
+            setAguardando(null);
+            enviar(dados);
+          }}
+        />
+      )}
+      {aviso && estado && <Aviso erros={estado.erros ?? []} alertas={estado.alertas ?? []} aoFechar={() => setAviso(false)} />}
     </form>
   );
 }

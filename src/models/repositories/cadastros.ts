@@ -247,3 +247,71 @@ export const adminsRepo = {
     return a;
   },
 };
+
+// ---- Edição e exclusão (painel admin) ----
+export const exclusoesRepo = {
+  competicoesDaTemporada: (db: Db, temporadaId: number) =>
+    db.select({ n: sql<number>`count(*)::int` }).from(competicoes).where(eq(competicoes.temporadaId, temporadaId)),
+  vinculosDaTemporada: (db: Db, temporadaId: number) =>
+    db.select({ n: sql<number>`count(*)::int` }).from(vinculos).where(eq(vinculos.temporadaId, temporadaId)),
+  partidasDoClube: (db: Db, clubeId: number) =>
+    db
+      .select({ n: sql<number>`count(*)::int` })
+      .from(partidas)
+      .where(sql`${partidas.mandanteId} = ${clubeId} or ${partidas.visitanteId} = ${clubeId}`),
+  estatisticasDoAtleta: (db: Db, atletaId: number) =>
+    db.select({ n: sql<number>`count(*)::int` }).from(estatisticas).where(eq(estatisticas.atletaId, atletaId)),
+  resultadosDaCompeticao: (db: Db, competicaoId: number) =>
+    db
+      .select({ n: sql<number>`count(*)::int` })
+      .from(partidas)
+      .where(and(eq(partidas.competicaoId, competicaoId), inArray(partidas.status, ["finalizada", "wo"]))),
+
+  excluirTemporada: (db: Db, id: number) => db.delete(temporadas).where(eq(temporadas.id, id)),
+  excluirCompeticao: (db: Db, id: number) => db.delete(competicoes).where(eq(competicoes.id, id)),
+  // Rodadas levam junto partidas, estatísticas e suspensões (cascata no banco)
+  apagarTabela: (db: Db, competicaoId: number) => db.delete(rodadas).where(eq(rodadas.competicaoId, competicaoId)),
+
+  async excluirClube(db: Db, clubeId: number) {
+    const elenco = await db.select({ atletaId: vinculos.atletaId }).from(vinculos).where(eq(vinculos.clubeId, clubeId));
+    await db.update(competicoes).set({ campeaoClubeId: null }).where(eq(competicoes.campeaoClubeId, clubeId));
+    await db.delete(vinculos).where(eq(vinculos.clubeId, clubeId));
+    await db.delete(inscricoes).where(eq(inscricoes.clubeId, clubeId));
+    await db.delete(clubes).where(eq(clubes.id, clubeId));
+    return elenco.map((e) => e.atletaId);
+  },
+  /** Apaga atletas que ficaram sem clube nenhum e sem jogo registrado. */
+  async apagarAtletasSoltos(db: Db, atletaIds: number[]) {
+    if (!atletaIds.length) return 0;
+    const r = await db
+      .delete(atletas)
+      .where(
+        and(
+          inArray(atletas.id, atletaIds),
+          sql`not exists (select 1 from ${vinculos} where ${vinculos.atletaId} = ${atletas.id})`,
+          sql`not exists (select 1 from ${estatisticas} where ${estatisticas.atletaId} = ${atletas.id})`,
+        ),
+      )
+      .returning({ id: atletas.id });
+    return r.length;
+  },
+  async excluirAtleta(db: Db, atletaId: number) {
+    await db.delete(vinculos).where(eq(vinculos.atletaId, atletaId));
+    await db.delete(atletas).where(eq(atletas.id, atletaId));
+  },
+  async buscarAtleta(db: Db, id: number) {
+    const [a] = await db.select().from(atletas).where(eq(atletas.id, id));
+    return a ?? null;
+  },
+  async atletaPorPlataforma(db: Db, plataforma: "ps5" | "xbox" | "pc", idPlataforma: string) {
+    const [a] = await db
+      .select()
+      .from(atletas)
+      .where(and(eq(atletas.plataforma, plataforma), sql`lower(${atletas.idPlataforma}) = lower(${idPlataforma})`));
+    return a ?? null;
+  },
+  async temporadaPorNumero(db: Db, numero: number) {
+    const [t] = await db.select().from(temporadas).where(eq(temporadas.numero, numero));
+    return t ?? null;
+  },
+};

@@ -156,6 +156,35 @@ export class PartidaController {
     });
   }
 
+  /** Volta a partida para "sem resultado": apaga placar, estatísticas e suspensões geradas por ela. */
+  async desfazerResultado(partidaId: number): Promise<RespostaResultado> {
+    return this.db.transaction(async (tx) => {
+      const p = await partidasRepo.buscar(tx, partidaId);
+      if (!p) return { ok: false, erros: ["Partida não encontrada"] };
+      if (p.status !== "finalizada" && p.status !== "wo") return { ok: false, erros: ["Essa partida não tem resultado."] };
+      const comp = await competicoesRepo.buscar(tx, p.competicaoId);
+      if (!comp) return { ok: false, erros: ["Competição não encontrada"] };
+      if (comp.tipo === "copa") {
+        const seguintes = await partidasRepo.dependentes(tx, p.id);
+        if (seguintes.some((d) => d.status === "finalizada" || d.status === "wo"))
+          return { ok: false, erros: ["A partida seguinte da copa já foi jogada. Desfaça o resultado dela antes."] };
+        await this.avancarVencedor(tx, p.id, null);
+      }
+      await partidasRepo.atualizar(tx, p.id, {
+        status: p.dataHora ? "agendada" : "a_agendar",
+        golsMandante: null,
+        golsVisitante: null,
+        prorrogacao: false,
+        penaltisMandante: null,
+        penaltisVisitante: null,
+        wo: null,
+      });
+      await estatisticasRepo.substituirDaPartida(tx, p.id, []);
+      await suspensoesRepo.substituirDaOrigem(tx, p.id, comp.id, []);
+      return { ok: true, alertas: [] };
+    });
+  }
+
   definirPrazo = (rodadaId: number, prazo: Date | null) => rodadasRepo.definirPrazo(this.db, rodadaId, prazo);
 
   /** Rodadas da competição e as partidas da rodada escolhida (ou da primeira com jogo pendente). */

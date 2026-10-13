@@ -27,7 +27,13 @@ export function NoticiasView({ lista }: { lista: Noticia[] }) {
                 <td><a href={`/admin/noticias/${n.id}`}>{n.titulo}</a></td>
                 <td>{formatarData(n.publicadaEm)}</td>
                 <td>{n.publicada ? <span className="selo selo-verde">Publicada</span> : <span className="selo selo-cinza">Rascunho</span>}</td>
-                <td className="acoes"><a className="btn btn-mini" href={`/admin/noticias/${n.id}`}>Editar</a></td>
+                <td className="acoes">
+                  <a className="btn btn-mini" href={`/admin/noticias/${n.id}`}>Editar</a>
+                  <FormAcao acao={excluirNoticia} semMensagem perigo confirmar={`Excluir a notícia “${n.titulo}”? Não dá para desfazer.`}>
+                    <input type="hidden" name="id" value={n.id} />
+                    <Enviar variante="perigo" mini>Excluir</Enviar>
+                  </FormAcao>
+                </td>
               </tr>
             ))}
           </tbody>
@@ -60,7 +66,7 @@ export function NoticiaView({ noticia }: { noticia: Noticia | null }) {
       </FormAcao>
       {noticia && (
         <Secao titulo="Excluir">
-          <FormAcao acao={excluirNoticia} confirmar="Excluir esta notícia de vez?">
+          <FormAcao acao={excluirNoticia} perigo confirmar="Excluir esta notícia de vez? Não dá para desfazer.">
             <input type="hidden" name="id" value={noticia.id} />
             <Enviar variante="perigo">Excluir notícia</Enviar>
           </FormAcao>

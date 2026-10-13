@@ -1,5 +1,5 @@
 // VIEW — ficha da competição, inscrições e geração da tabela
-import { acaoInscricao, gerarTabela, inscreverClube, salvarFicha } from "@/controllers/acoes/competicao";
+import { acaoInscricao, apagarTabela, excluirCompeticao, gerarTabela, inscreverClube, salvarFicha } from "@/controllers/acoes/competicao";
 import type { CompeticaoController } from "@/controllers/CompeticaoController";
 import type { clubes } from "@/models/schema";
 import { paraInputLocal } from "@/lib/datas";
@@ -16,11 +16,13 @@ export function CompeticaoView({
   inscricoes,
   clubes,
   temPartidas,
+  resultados,
 }: {
   c: Competicao;
   inscricoes: Inscricoes;
   clubes: ClubeLinha[];
   temPartidas: boolean;
+  resultados: number;
 }) {
   const confirmadas = inscricoes.filter((i) => i.inscricao.status === "confirmada").length;
   const inscritos = new Set(inscricoes.map((i) => i.clube.id));
@@ -102,7 +104,13 @@ export function CompeticaoView({
               <tbody>
                 {inscricoes.map(({ inscricao: i, clube }) => {
                   const botao = (acao: string, rotulo: string, variante: "ouro" | "normal" | "perigo" = "normal", extra?: { valor: string }) => (
-                    <FormAcao acao={acaoInscricao} semMensagem confirmar={acao === "remover" ? `Remover a inscrição do ${clube.nome}?` : undefined}>
+                    <FormAcao
+                      acao={acaoInscricao}
+                      semMensagem
+                      perigo={acao === "remover"}
+                      rotuloConfirmar="Remover"
+                      confirmar={acao === "remover" ? `Remover a inscrição do ${clube.nome}? O clube continua cadastrado.` : undefined}
+                    >
                       <input type="hidden" name="id" value={c.id} />
                       <input type="hidden" name="inscricaoId" value={i.id} />
                       <input type="hidden" name="acao" value={acao} />
@@ -165,7 +173,7 @@ export function CompeticaoView({
               : `Monta o mata-mata com os ${confirmadas} clubes confirmados. Se não fechar 4, 8 ou 16, os primeiros da ordem ganham folga.`
           }
         >
-          <FormAcao acao={gerarTabela} confirmar="Gerar agora? Depois disso, os clubes da competição ficam fixos.">
+          <FormAcao acao={gerarTabela} rotuloConfirmar="Gerar" confirmar="Gerar agora? Depois disso, os clubes da competição ficam fixos (dá para apagar a tabela e gerar de novo).">
             <input type="hidden" name="id" value={c.id} />
             <div className="linha-form">
               {c.tipo === "copa" && (
@@ -176,6 +184,48 @@ export function CompeticaoView({
           </FormAcao>
         </Secao>
       )}
+
+      <Secao titulo="Zona de perigo">
+        <div className="zona-perigo">
+          {temPartidas && (
+            <div>
+              <p>
+                <strong>Apagar a tabela</strong>
+                <span>
+                  Apaga todas as rodadas e partidas{resultados ? `, incluindo ${resultados} resultado(s) já lançado(s)` : ""}. As
+                  inscrições continuam, e a tabela pode ser gerada de novo.
+                </span>
+              </p>
+              <FormAcao
+                acao={apagarTabela}
+                semMensagem
+                perigo
+                rotuloConfirmar="Apagar a tabela"
+                confirmar={`Apagar a tabela da ${c.nome}?${resultados ? ` Os ${resultados} resultado(s) lançado(s) e as estatísticas deles serão perdidos.` : ""}`}
+              >
+                <input type="hidden" name="id" value={c.id} />
+                <Enviar variante="perigo">Apagar a tabela</Enviar>
+              </FormAcao>
+            </div>
+          )}
+          <div>
+            <p>
+              <strong>Excluir a competição</strong>
+              <span>Apaga a competição, as inscrições e todas as partidas dela. Os clubes e atletas continuam cadastrados.</span>
+            </p>
+            <FormAcao
+              acao={excluirCompeticao}
+              semMensagem
+              perigo
+              rotuloConfirmar="Excluir competição"
+              confirmar={`Excluir a ${c.nome} de vez?${resultados ? ` Ela tem ${resultados} resultado(s) lançado(s).` : ""} Não dá para desfazer.`}
+            >
+              <input type="hidden" name="id" value={c.id} />
+              <Enviar variante="perigo">Excluir competição</Enviar>
+            </FormAcao>
+          </div>
+        </div>
+      </Secao>
     </>
   );
 }

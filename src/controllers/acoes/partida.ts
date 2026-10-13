@@ -1,5 +1,6 @@
 "use server";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { getDb } from "@/models/db";
 import { PartidaController } from "../PartidaController";
 import { exigirAdmin } from "../sessao";
@@ -66,4 +67,18 @@ export async function aplicarWO(_: Estado, form: FormData): Promise<Estado> {
   } catch (e) {
     return falha(e);
   }
+}
+
+export async function desfazerResultado(_: Estado, form: FormData): Promise<Estado> {
+  await exigirAdmin();
+  const partidaId = inteiro(form.get("partidaId")) ?? 0;
+  try {
+    const r = await ctrl().desfazerResultado(partidaId);
+    if (!r.ok) return { erros: r.erros };
+  } catch (e) {
+    return falha(e);
+  }
+  revalidatePath(`/admin/competicoes/${inteiro(form.get("competicaoId"))}/partidas`);
+  // A seção do botão some (a partida não tem mais resultado), então o aviso vai no topo da página
+  redirect(`/admin/partidas/${partidaId}?desfeito=1`);
 }

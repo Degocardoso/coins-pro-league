@@ -13,7 +13,7 @@
   background: linear-gradient(90deg, var(--fundo-fundo) 0 235px, var(--linha) 235px 236px, var(--fundo) 236px);
   background-color: var(--fundo);
 }
-.adm *:focus-visible { outline: 2px solid var(--acento); outline-offset: 2px; }
+.adm *:focus-visible, .dialogo *:focus-visible { outline: 2px solid var(--acento); outline-offset: 2px; }
 :where(.adm a) { color: inherit; } /* especificidade zero: não briga com a cor dos botões */
 
 /* Menu lateral */
@@ -54,13 +54,15 @@
 .campo > span { font-size: 13px; color: var(--apagado); font-weight: 500; }
 .campo-largo { grid-column: 1 / -1; }
 .adm input[type="text"], .adm input[type="email"], .adm input[type="password"], .adm input[type="number"],
-.adm input[type="datetime-local"], .adm select, .adm textarea {
+.adm input[type="datetime-local"], .adm select, .adm textarea,
+.dialogo input[type="text"], .dialogo input[type="number"], .dialogo select, .dialogo textarea {
   background: var(--painel); color: var(--texto); border: 1px solid var(--linha-forte);
   border-radius: var(--raio); padding: 8px 10px; font: inherit; min-width: 0;
 }
-.adm textarea { min-height: 120px; resize: vertical; line-height: 1.55; }
-.adm input:hover, .adm select:hover, .adm textarea:hover { border-color: var(--linha-forte-hover); }
-.adm ::placeholder { color: var(--apagado); opacity: 1; }
+.adm textarea, .dialogo textarea { min-height: 120px; resize: vertical; line-height: 1.55; }
+.adm input:hover, .adm select:hover, .adm textarea:hover,
+.dialogo input:hover, .dialogo select:hover, .dialogo textarea:hover { border-color: var(--linha-forte-hover); }
+.adm ::placeholder, .dialogo ::placeholder { color: var(--apagado); opacity: 1; }
 .adm input[type="file"] { color: var(--apagado); font-size: 13px; }
 .marcar { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
 .marcar input { accent-color: var(--acento); width: 16px; height: 16px; }
@@ -98,7 +100,6 @@
 .tabela .num { text-align: right; font-variant-numeric: tabular-nums; }
 .tabela td.acoes { text-align: right; white-space: nowrap; }
 .tabela td.acoes form { display: inline-block; margin-left: 6px; }
-.tabela td.acoes .msg { display: none; }
 
 /* Selos de status */
 .selo { display: inline-block; font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 999px; border: 1px solid; white-space: nowrap; }
@@ -197,3 +198,33 @@
 .tema button[aria-pressed="true"] { background: var(--painel-2); color: var(--texto); font-weight: 600; }
 .adm-conta .tema { margin-top: 10px; }
 .login-tema { margin-top: 22px; }
+
+/* Janelas do painel: confirmação, aviso e edição */
+.dialogo {
+  width: min(460px, calc(100% - 24px)); max-height: calc(100% - 48px); padding: 0; overflow: auto;
+  color: var(--texto); background: var(--painel); border: 1px solid var(--linha-forte); border-radius: 12px;
+  font-family: var(--fonte-texto); font-size: 15px; line-height: 1.5; text-align: left; white-space: normal;
+}
+.dialogo-largo { width: min(620px, calc(100% - 24px)); }
+.dialogo::backdrop { background: rgb(4 6 10 / 0.72); }
+html:has(.dialogo[open]) { overflow: hidden; }
+.dialogo-conteudo { padding: 18px 20px 20px; }
+.dialogo-conteudo > header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.dialogo-conteudo h2 { font-family: var(--fonte-titulo); font-weight: 800; font-size: 26px; line-height: 1.1; margin: 0; }
+.dialogo-fechar { flex: none; width: 34px; height: 34px; font-size: 24px; line-height: 1; cursor: pointer; color: var(--apagado); background: transparent; border: 1px solid var(--linha-forte); border-radius: var(--raio); }
+.dialogo-fechar:hover { color: var(--texto); background: var(--hover); }
+.dialogo-texto { margin: 0 0 4px; }
+.dialogo-acoes { display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
+.dialogo .campos { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+.btn-perigo-cheio { background: var(--vermelho-texto); border-color: var(--vermelho-texto); color: var(--fundo); }
+.btn-perigo-cheio:hover { filter: brightness(1.08); }
+.zona-perigo { border: 1px solid var(--erro-borda); border-radius: 10px; padding: 16px 18px; display: grid; gap: 16px; }
+.zona-perigo > div { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 20px; }
+.zona-perigo p { margin: 0; max-width: 62ch; }
+.zona-perigo strong { display: block; }
+.zona-perigo span { color: var(--apagado); font-size: 14px; }
+.zona-perigo > div + div { border-top: 1px solid var(--linha); padding-top: 16px; }
+@media (prefers-reduced-motion: no-preference) {
+  .dialogo[open] { animation: dialogo-entra 0.14s ease-out; }
+  @keyframes dialogo-entra { from { opacity: 0; transform: translateY(6px); } }
+}

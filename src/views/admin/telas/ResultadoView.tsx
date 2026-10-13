@@ -1,5 +1,5 @@
 // VIEW — lançamento de resultado: placar, desempate da copa, estatísticas e W.O.
-import { aplicarWO, lancarResultado } from "@/controllers/acoes/partida";
+import { aplicarWO, desfazerResultado, lancarResultado } from "@/controllers/acoes/partida";
 import type { PartidaController } from "@/controllers/PartidaController";
 import { formatarDataHora } from "@/lib/datas";
 import { FormAcao, Enviar } from "../FormAcao";
@@ -67,7 +67,7 @@ function TabelaAtletas({ lado, estatisticas }: { lado: Lado; estatisticas: Map<n
   );
 }
 
-export function ResultadoView({ dados }: { dados: Dados }) {
+export function ResultadoView({ dados, desfeito }: { dados: Dados; desfeito?: boolean }) {
   const { partida: p, competicao, rodada, lados } = dados;
   const voltar = { href: `/admin/competicoes/${competicao.id}/partidas?rodada=${rodada.numero}`, rotulo: `${competicao.nome}, ${rodada.nome}` };
   if (!lados)
@@ -95,6 +95,7 @@ export function ResultadoView({ dados }: { dados: Dados }) {
           </>
         }
       />
+      {desfeito && !encerrada && <div className="msg msg-ok" style={{ margin: "-10px 0 18px" }}>Resultado desfeito: a partida voltou a ficar sem resultado.</div>}
       <FormAcao acao={lancarResultado}>
         <input type="hidden" name="partidaId" value={p.id} />
         <input type="hidden" name="competicaoId" value={competicao.id} />
@@ -135,7 +136,7 @@ export function ResultadoView({ dados }: { dados: Dados }) {
       </FormAcao>
 
       <Secao titulo="W.O." dica="Vale 3x0 e apaga as estatísticas desta partida. No W.O. duplo, os dois clubes perdem.">
-        <FormAcao acao={aplicarWO} confirmar="Aplicar o W.O.? As estatísticas lançadas nesta partida serão apagadas.">
+        <FormAcao acao={aplicarWO} perigo rotuloConfirmar="Aplicar W.O." confirmar="Aplicar o W.O.? As estatísticas lançadas nesta partida serão apagadas.">
           <input type="hidden" name="partidaId" value={p.id} />
           <input type="hidden" name="competicaoId" value={competicao.id} />
           <div className="linha-form">
@@ -151,6 +152,21 @@ export function ResultadoView({ dados }: { dados: Dados }) {
           </div>
         </FormAcao>
       </Secao>
+
+      {encerrada && (
+        <Secao titulo="Desfazer resultado" dica="Volta a partida para “sem resultado”: apaga o placar, as estatísticas e as suspensões geradas por ela.">
+          <FormAcao
+            acao={desfazerResultado}
+            perigo
+            rotuloConfirmar="Desfazer"
+            confirmar={`Desfazer o resultado de ${nomeM} × ${nomeV}? O placar e as estatísticas desta partida serão apagados.`}
+          >
+            <input type="hidden" name="partidaId" value={p.id} />
+            <input type="hidden" name="competicaoId" value={competicao.id} />
+            <Enviar variante="perigo">Desfazer resultado</Enviar>
+          </FormAcao>
+        </Secao>
+      )}
     </>
   );
 }

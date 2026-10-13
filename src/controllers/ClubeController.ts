@@ -1,6 +1,7 @@
 // CONTROLLER — clubes, atletas e capitães
 import type { Db } from "@/models/db";
-import { atletasRepo, clubesRepo, temporadasRepo, vinculosRepo } from "@/models/repositories/cadastros";
+import { atletasRepo, clubesRepo, exclusoesRepo, temporadasRepo, vinculosRepo } from "@/models/repositories/cadastros";
+import { qtd } from "./regras/contagem";
 import { slugificar } from "@/lib/texto";
 import { CAPITAES_POR_CLUBE } from "./regras/elenco";
 import { ElencoController, type RespostaElenco } from "./ElencoController";
@@ -72,6 +73,51 @@ export class ClubeController {
   async removerAtleta(temporadaId: number, clubeId: number, atletaId: number): Promise<RespostaElenco> {
     const antesDoInicio = !(await temporadasRepo.jaComecou(this.db, temporadaId));
     return new ElencoController(this.db).remover(temporadaId, clubeId, atletaId, { antesDoInicio });
+  }
+
+  /** Exclui o clube. Bloqueia se ele já estiver na tabela de alguma competição. */
+  async excluir(id: number) {
+    const clube = await clubesRepo.buscar(this.db, id);
+    if (!clube) throw new Error("Clube não encontrado");
+    if (await qtd(exclusoesRepo.partidasDoClube(this.db, id)))
+      throw new Error(
+        `O ${clube.nome} já está na tabela de uma competição. Apague a tabela dessa competição antes de excluir o clube.`,
+      );
+    await this.db.transaction(async (tx) => {
+      const elenco = await exclusoesRepo.excluirClube(tx, id);
+      await exclusoesRepo.apagarAtletasSoltos(tx, elenco);
+    });
+    return clube.nome;
+  }
+
+  /** Corrige os dados de um atleta (erro de digitação na inscrição, por exemplo). */
+  async editarAtleta(atletaId: number, dados: NovoAtleta) {
+    const nome = dados.nomePersonagem.trim();
+    const idPlataforma = dados.idPlataforma.trim();
+    if (nome.length < 2 || nome.length > 40) throw new Error("O nome do personagem precisa ter entre 2 e 40 caracteres.");
+    if (!idPlataforma) throw new Error("Informe o ID da plataforma.");
+    const atual = await exclusoesRepo.buscarAtleta(this.db, atletaId);
+    if (!atual) throw new Error("Atleta não encontrado");
+    const mesmoNome = await atletasRepo.porNome(this.db, nome);
+    if (mesmoNome && mesmoNome.id !== atletaId) throw new Error(`Já existe outro atleta com o personagem "${nome}".`);
+    const mesmoId = await exclusoesRepo.atletaPorPlataforma(this.db, dados.plataforma, idPlataforma);
+    if (mesmoId && mesmoId.id !== atletaId) throw new Error(`Esse ID já é de outro atleta (${mesmoId.nomePersonagem}).`);
+    await atletasRepo.atualizar(this.db, atletaId, {
+      nomePersonagem: nome,
+      plataforma: dados.plataforma,
+      idPlataforma,
+      twitch: dados.twitch?.trim() || null,
+    });
+  }
+
+  /** Exclui o atleta do sistema. Quem já tem jogo registrado não pode sumir das estatísticas: use Liberar. */
+  async excluirAtleta(atletaId: number) {
+    const atleta = await exclusoesRepo.buscarAtleta(this.db, atletaId);
+    if (!atleta) throw new Error("Atleta não encontrado");
+    if (await qtd(exclusoesRepo.estatisticasDoAtleta(this.db, atletaId)))
+      throw new Error(`${atleta.nomePersonagem} já tem jogos registrados. Para tirar do clube, use Liberar.`);
+    await this.db.transaction((tx) => exclusoesRepo.excluirAtleta(tx, atletaId));
+    return atleta.nomePersonagem;
   }
 
   async definirCapitao(vinculoId: number, capitao: boolean) {

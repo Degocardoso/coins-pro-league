@@ -1,7 +1,8 @@
 // CONTROLLER — competições: gerar tabela da liga, chave da copa e confirmar inscrições
 import type { Db } from "@/models/db";
 import { competicoesRepo, partidasRepo } from "@/models/repositories";
-import { clubesRepo, competicoesAdminRepo } from "@/models/repositories/cadastros";
+import { clubesRepo, competicoesAdminRepo, exclusoesRepo } from "@/models/repositories/cadastros";
+import { qtd } from "./regras/contagem";
 import { gerarTurnoEReturno } from "./regras/tabela";
 import { gerarChave } from "./regras/copa";
 import { statusAoConfirmar } from "./regras/elenco";
@@ -77,6 +78,19 @@ export class CompeticaoController {
     if (await partidasRepo.existemNaCompeticao(this.db, competicaoId))
       throw new Error("A tabela já foi gerada: não dá para remover clubes");
     await competicoesAdminRepo.removerInscricao(this.db, inscricaoId);
+  }
+
+  /** Quantos resultados seriam perdidos ao apagar a tabela ou a competição. */
+  resultadosLancados = (id: number) => qtd(exclusoesRepo.resultadosDaCompeticao(this.db, id));
+
+  /** Apaga rodadas, partidas, resultados e suspensões, para gerar a tabela de novo. */
+  async apagarTabela(id: number) {
+    await exclusoesRepo.apagarTabela(this.db, id);
+  }
+
+  /** Exclui a competição com tudo dela: inscrições, rodadas, partidas e resultados. Os clubes continuam cadastrados. */
+  async excluir(id: number) {
+    await exclusoesRepo.excluirCompeticao(this.db, id);
   }
 
   /** Liga: gera as rodadas. Copa: gera a chave, na ordem das inscrições ou sorteada. */

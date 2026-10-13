@@ -1,5 +1,6 @@
 // VIEW — temporadas e janela de transferências
-import { ativarTemporada, criarTemporada, salvarJanela } from "@/controllers/acoes/temporada";
+import { ativarTemporada, criarTemporada, editarTemporada, excluirTemporada, salvarJanela } from "@/controllers/acoes/temporada";
+import { Popup } from "../Popup";
 import type { temporadas } from "@/models/schema";
 import { paraInputLocal, formatarDataHora } from "@/lib/datas";
 import { FormAcao, Enviar } from "../FormAcao";
@@ -50,12 +51,26 @@ export function TemporadaView({ lista }: { lista: Temporada[] }) {
                     {t.janelaInicio ? `${formatarDataHora(t.janelaInicio)} até ${formatarDataHora(t.janelaFim)}` : "Sem janela definida"}
                   </td>
                   <td className="acoes">
+                    <Popup rotulo="Editar" titulo={`Editar ${t.nome}`}>
+                      <FormAcao acao={editarTemporada}>
+                        <input type="hidden" name="id" value={t.id} />
+                        <div className="campos">
+                          <Campo rotulo="Número"><input type="number" name="numero" min={1} defaultValue={t.numero} required /></Campo>
+                          <Campo rotulo="Nome"><input type="text" name="nome" defaultValue={t.nome} required /></Campo>
+                        </div>
+                        <Enviar>Salvar</Enviar>
+                      </FormAcao>
+                    </Popup>
                     {!t.ativa && (
-                      <FormAcao acao={ativarTemporada} confirmar={`Ativar a ${t.nome}? O painel passa a mostrar os dados dela.`}>
+                      <FormAcao acao={ativarTemporada} semMensagem rotuloConfirmar="Ativar" confirmar={`Ativar a ${t.nome}? O painel passa a mostrar os dados dela.`}>
                         <input type="hidden" name="id" value={t.id} />
                         <Enviar variante="normal" mini>Ativar</Enviar>
                       </FormAcao>
                     )}
+                    <FormAcao acao={excluirTemporada} semMensagem perigo confirmar={`Excluir a ${t.nome}? Só funciona se ela estiver vazia, sem competições e sem elencos.`}>
+                      <input type="hidden" name="id" value={t.id} />
+                      <Enviar variante="perigo" mini>Excluir</Enviar>
+                    </FormAcao>
                   </td>
                 </tr>
               ))}

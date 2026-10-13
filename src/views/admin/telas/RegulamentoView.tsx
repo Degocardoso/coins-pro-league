@@ -25,7 +25,7 @@ export function RegulamentoView({ regulamento, proibidos }: { regulamento: Pagin
       <Cabeca titulo="Regulamento" descricao="Texto em Markdown: ## para títulos de seção, 1. para itens numerados. É o que aparece na aba Regulamento do site." />
       <Secao titulo="Regulamento oficial" dica="Datas, taxa e prêmio não ficam aqui: eles vêm da ficha de cada competição.">
         <Editor pagina={regulamento} linhas={24} />
-        <FormAcao acao={carregarRegulamentoOficial} confirmar="Substituir o texto atual pelo regulamento aprovado?">
+        <FormAcao acao={carregarRegulamentoOficial} rotuloConfirmar="Substituir" confirmar="Substituir o texto atual pelo regulamento aprovado? O que estiver no editor será trocado.">
           <p style={{ marginTop: 14 }}><Enviar variante="normal">Carregar o regulamento aprovado</Enviar></p>
         </FormAcao>
       </Secao>

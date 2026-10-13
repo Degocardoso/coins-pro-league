@@ -39,3 +39,25 @@ export async function ativarTemporada(_: Estado, form: FormData): Promise<Estado
   revalidatePath("/admin", "layout");
   return sucesso("Temporada ativada.");
 }
+
+export async function editarTemporada(_: Estado, form: FormData): Promise<Estado> {
+  await exigirAdmin();
+  try {
+    await new TemporadaController(getDb()).editar(inteiro(form.get("id")) ?? 0, inteiro(form.get("numero")) ?? 0, texto(form.get("nome")));
+  } catch (e) {
+    return falha(e);
+  }
+  revalidatePath("/admin", "layout");
+  return sucesso("Temporada salva.");
+}
+
+export async function excluirTemporada(_: Estado, form: FormData): Promise<Estado> {
+  await exigirAdmin();
+  try {
+    await new TemporadaController(getDb()).excluir(inteiro(form.get("id")) ?? 0);
+  } catch (e) {
+    return falha(e);
+  }
+  revalidatePath("/admin", "layout");
+  return sucesso("Temporada excluída.");
+}
