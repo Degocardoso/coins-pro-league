@@ -1,6 +1,7 @@
 // Dados de teste: temporada 1, 16 clubes com 8 atletas cada e a Liga com inscrições confirmadas.
 import type { Db } from "../src/models/db";
 import { atletas, clubes, competicoes, inscricoes, paginas, temporadas, vinculos } from "../src/models/schema";
+import { REGULAMENTO_OFICIAL } from "../src/models/conteudo/regulamento";
 
 const NOMES_CLUBES = [
   "Moeda FC", "Trevo United", "Cifrão EC", "Jackpot SC", "Esmeralda AC", "Coroa City",
@@ -53,7 +54,7 @@ export async function semear(db: Db, opcoes: { atletasPorClube?: number } = {}) 
   await db
     .insert(paginas)
     .values([
-      { slug: "regulamento", titulo: "Regulamento Oficial", conteudo: "Cole aqui o regulamento em Markdown." },
+      { slug: "regulamento", titulo: "Regulamento Oficial", conteudo: REGULAMENTO_OFICIAL },
       { slug: "proibidos", titulo: "Práticas proibidas", conteudo: "- Bugs, glitches e exploits conhecidos do jogo" },
     ])
     .onConflictDoNothing();

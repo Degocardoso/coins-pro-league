@@ -1,12 +1,94 @@
 // CONTROLLER — competições: gerar tabela da liga, chave da copa e confirmar inscrições
 import type { Db } from "@/models/db";
 import { competicoesRepo, partidasRepo } from "@/models/repositories";
+import { clubesRepo, competicoesAdminRepo } from "@/models/repositories/cadastros";
 import { gerarTurnoEReturno } from "./regras/tabela";
 import { gerarChave } from "./regras/copa";
 import { statusAoConfirmar } from "./regras/elenco";
 
+export type FichaCompeticao = {
+  nome: string;
+  status: "rascunho" | "inscricoes" | "em_andamento" | "encerrada";
+  ativa: boolean;
+  maxClubes: number;
+  dataInicio: Date | null;
+  dataFim: Date | null;
+  inscricaoSubInicio: Date | null;
+  inscricaoInicio: Date | null;
+  inscricaoFim: Date | null;
+  taxaCentavos: number | null;
+  premio: string | null;
+  bannerUrl?: string | null;
+};
+
+function validarFicha(f: FichaCompeticao) {
+  if (f.nome.length < 3) throw new Error("Dê um nome para a competição");
+  if (!Number.isInteger(f.maxClubes) || f.maxClubes < 2 || f.maxClubes > 64)
+    throw new Error("Número de clubes precisa ficar entre 2 e 64");
+  if (f.dataInicio && f.dataFim && f.dataFim < f.dataInicio) throw new Error("O fim é antes do início");
+  if (f.inscricaoInicio && f.inscricaoFim && f.inscricaoFim < f.inscricaoInicio)
+    throw new Error("O fim das inscrições é antes do início");
+  if (f.inscricaoSubInicio && f.inscricaoInicio && f.inscricaoSubInicio > f.inscricaoInicio)
+    throw new Error("A abertura para subs precisa ser antes da abertura geral");
+}
+
 export class CompeticaoController {
   constructor(private db: Db) {}
+
+  listar = (temporadaId: number) => competicoesAdminRepo.listar(this.db, temporadaId);
+  buscar = (id: number) => competicoesRepo.buscar(this.db, id);
+
+  async criar(temporadaId: number, tipo: "liga" | "copa", nome: string) {
+    if (nome.length < 3) throw new Error("Dê um nome para a competição");
+    return competicoesAdminRepo.criar(this.db, { temporadaId, tipo, nome, maxClubes: tipo === "liga" ? 16 : 8 });
+  }
+
+  async atualizarFicha(id: number, ficha: FichaCompeticao) {
+    validarFicha(ficha);
+    const { bannerUrl, ...resto } = ficha;
+    await competicoesAdminRepo.atualizar(this.db, id, bannerUrl !== undefined ? { ...resto, bannerUrl } : resto);
+  }
+
+  async inscricoes(competicaoId: number) {
+    return competicoesAdminRepo.inscricoesComClubes(this.db, competicaoId);
+  }
+
+  async inscreverClube(competicaoId: number, clubeId: number) {
+    if (!(await clubesRepo.buscar(this.db, clubeId))) throw new Error("Clube não encontrado");
+    if (await partidasRepo.existemNaCompeticao(this.db, competicaoId))
+      throw new Error("A tabela já foi gerada: não dá para inscrever mais clubes");
+    await competicoesAdminRepo.inscrever(this.db, competicaoId, clubeId);
+  }
+
+  async alterarInscricao(inscricaoId: number, dados: { pago?: boolean; capitaoSub?: boolean }) {
+    await competicoesRepo.atualizarInscricao(this.db, inscricaoId, dados);
+  }
+
+  async recusarInscricao(inscricaoId: number, motivo: string) {
+    if (!motivo) throw new Error("Informe o motivo da recusa");
+    await competicoesRepo.atualizarInscricao(this.db, inscricaoId, { status: "recusada", motivoRecusa: motivo });
+  }
+
+  async voltarParaPendente(inscricaoId: number) {
+    await competicoesRepo.atualizarInscricao(this.db, inscricaoId, { status: "pendente", motivoRecusa: null });
+  }
+
+  async removerInscricao(competicaoId: number, inscricaoId: number) {
+    if (await partidasRepo.existemNaCompeticao(this.db, competicaoId))
+      throw new Error("A tabela já foi gerada: não dá para remover clubes");
+    await competicoesAdminRepo.removerInscricao(this.db, inscricaoId);
+  }
+
+  /** Liga: gera as rodadas. Copa: gera a chave, na ordem das inscrições ou sorteada. */
+  async gerar(competicaoId: number, sortear: boolean) {
+    const comp = await competicoesRepo.buscar(this.db, competicaoId);
+    if (!comp) throw new Error("Competição não encontrada");
+    const confirmados = await competicoesRepo.clubesConfirmados(this.db, competicaoId);
+    if (confirmados.length < 2) throw new Error("Confirme pelo menos 2 inscrições antes de gerar");
+    if (comp.tipo === "liga") return this.gerarTabelaLiga(competicaoId);
+    const ordem = sortear ? embaralhar(confirmados) : confirmados;
+    return this.gerarChaveCopa(competicaoId, ordem);
+  }
 
   /** Cria as 30 rodadas (16 clubes) a partir das inscrições confirmadas. */
   async gerarTabelaLiga(competicaoId: number) {
@@ -102,4 +184,13 @@ export class CompeticaoController {
       return status;
     });
   }
+}
+
+function embaralhar<T>(lista: T[]): T[] {
+  const a = [...lista];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
 }

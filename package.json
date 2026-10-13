@@ -11,14 +11,22 @@
     "test": "vitest run",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:seed": "tsx --env-file=.env scripts/seed.ts"
+    "db:seed": "tsx --env-file=.env scripts/seed.ts",
+    "db:limpar": "tsx --env-file=.env scripts/limpar.ts",
+    "admin:criar": "tsx --env-file=.env scripts/admin.ts criar",
+    "admin:senha": "tsx --env-file=.env scripts/admin.ts senha",
+    "db:simular": "tsx --env-file=.env scripts/simular.ts"
   },
   "dependencies": {
+    "@fontsource-variable/big-shoulders": "5.3.0",
+    "@fontsource-variable/instrument-sans": "5.3.0",
+    "@fontsource-variable/newsreader": "5.3.0",
     "drizzle-orm": "0.45.3",
-    "next": "16.3.6",
+    "next": "16.3.8",
     "postgres": "3.4.9",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "server-only": "0.0.1"
   },
   "devDependencies": {
     "@electric-sql/pglite": "0.5.8",

@@ -12,6 +12,7 @@ import {
 import { gerarSuspensoes, validarResultado, type EstatisticaLancada } from "./regras/resultado";
 import { vencedorDaPartida } from "./regras/copa";
 import type { TipoWo } from "./regras/classificacao";
+import { atletasRepo, clubesRepo, estatisticasAdminRepo, rodadasRepo } from "@/models/repositories/cadastros";
 
 export type DadosResultado = {
   golsMandante: number;
@@ -153,6 +154,69 @@ export class PartidaController {
           : [];
       return { ok: true, alertas };
     });
+  }
+
+  definirPrazo = (rodadaId: number, prazo: Date | null) => rodadasRepo.definirPrazo(this.db, rodadaId, prazo);
+
+  /** Rodadas da competição e as partidas da rodada escolhida (ou da primeira com jogo pendente). */
+  async rodada(competicaoId: number, numero?: number) {
+    const [rodadas, todas] = await Promise.all([
+      rodadasRepo.daCompeticao(this.db, competicaoId),
+      partidasRepo.daCompeticao(this.db, competicaoId),
+    ]);
+    if (!rodadas.length) return null;
+    const pendente = (p: Partida) => p.status !== "finalizada" && p.status !== "wo";
+    const resumo = rodadas.map((r) => {
+      const daRodada = todas.filter((t) => t.partida.rodadaId === r.id).map((t) => t.partida);
+      return { ...r, total: daRodada.length, pendentes: daRodada.filter(pendente).length };
+    });
+    const atual =
+      resumo.find((r) => r.numero === numero) ?? resumo.find((r) => r.pendentes > 0) ?? resumo[resumo.length - 1];
+    const partidas = todas.filter((t) => t.partida.rodadaId === atual.id).map((t) => t.partida);
+    const ids = partidas.flatMap((p) => [p.mandanteId, p.visitanteId]).filter((x): x is number => x !== null);
+    const nomes = await nomesRepo.clubes(this.db, ids);
+    return {
+      rodadas: resumo,
+      atual,
+      partidas: partidas.map((p) => ({
+        ...p,
+        mandante: p.mandanteId ? nomes.get(p.mandanteId) ?? null : null,
+        visitante: p.visitanteId ? nomes.get(p.visitanteId) ?? null : null,
+      })),
+    };
+  }
+
+  /** Tudo que a tela de lançar resultado precisa. */
+  async paraResultado(partidaId: number) {
+    const p = await partidasRepo.buscar(this.db, partidaId);
+    if (!p) return null;
+    const [comp, rodada] = await Promise.all([
+      competicoesRepo.buscar(this.db, p.competicaoId),
+      rodadasRepo.buscar(this.db, p.rodadaId),
+    ]);
+    if (!comp || !rodada) return null;
+    if (!p.mandanteId || !p.visitanteId) return { partida: p, competicao: comp, rodada, lados: null, estatisticas: [] };
+
+    const data = p.dataHora ?? new Date();
+    const [estatisticas, suspensos] = await Promise.all([
+      estatisticasAdminRepo.daPartida(this.db, p.id),
+      suspensoesRepo.suspensosNaPartida(this.db, p.id),
+    ]);
+    const lado = async (clubeId: number) => {
+      const [clube, elenco] = await Promise.all([
+        clubesRepo.buscar(this.db, clubeId),
+        elencoRepo.naData(this.db, comp.temporadaId, clubeId, data),
+      ]);
+      // Inclui quem já tem estatística lançada, mesmo fora do elenco (atleta irregular)
+      const ids = new Set([...elenco, ...estatisticas.filter((e) => e.clubeId === clubeId).map((e) => e.atletaId)]);
+      const atletas = await atletasRepo.porIds(this.db, [...ids]);
+      return {
+        clube: clube!,
+        atletas: atletas.map((a) => ({ ...a, inscrito: elenco.has(a.id), suspenso: suspensos.has(a.id) })),
+      };
+    };
+    const [mandante, visitante] = await Promise.all([lado(p.mandanteId), lado(p.visitanteId)]);
+    return { partida: p, competicao: comp, rodada, lados: { mandante, visitante }, estatisticas };
   }
 
   // Se mudar o vencedor de uma partida cuja seguinte já foi jogada, a chave quebraria

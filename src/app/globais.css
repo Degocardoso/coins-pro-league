@@ -1,0 +1,6 @@
+@import "../views/estilos/tokens.css";
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: var(--fundo); color: var(--texto); }
+/* Reserva o espaço da barra de rolagem: ao abrir um painel, a página não pula para o lado */
+html { scrollbar-gutter: stable; }

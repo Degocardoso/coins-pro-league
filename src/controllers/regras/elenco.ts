@@ -64,3 +64,27 @@ export function inscricaoAberta(agora: Date, j: JanelaInscricao, capitaoSub: boo
   if (j.inicio && agora >= j.inicio) return true;
   return capitaoSub && !!j.subInicio && agora >= j.subInicio;
 }
+
+export type SituacaoInscricao =
+  | { aberta: true; soSubs: boolean; fechaEm: Date | null }
+  | { aberta: false; abreEm: Date | null; abreParaSubsEm: Date | null };
+
+/**
+ * Situação da inscrição de uma competição (regulamento, seção 4).
+ * Só abre com a competição em "inscricoes". Sem datas, fica aberta enquanto estiver nessa situação.
+ * Entre a abertura para subs e a abertura geral, só clubes com capitão sub.
+ */
+export function situacaoInscricao(
+  agora: Date,
+  c: { status: string; inscricaoSubInicio: Date | null; inscricaoInicio: Date | null; inscricaoFim: Date | null },
+): SituacaoInscricao {
+  const fechada = { aberta: false as const, abreEm: c.inscricaoInicio, abreParaSubsEm: c.inscricaoSubInicio };
+  if (c.status !== "inscricoes") return { ...fechada, abreEm: null, abreParaSubsEm: null };
+  if (c.inscricaoFim && agora > c.inscricaoFim) return { ...fechada, abreEm: null, abreParaSubsEm: null };
+  if (c.inscricaoInicio && agora < c.inscricaoInicio) {
+    if (c.inscricaoSubInicio && agora >= c.inscricaoSubInicio)
+      return { aberta: true, soSubs: true, fechaEm: c.inscricaoFim };
+    return fechada;
+  }
+  return { aberta: true, soSubs: false, fechaEm: c.inscricaoFim };
+}

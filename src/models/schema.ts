@@ -10,9 +10,15 @@ import {
   timestamp,
   uniqueIndex,
   index,
+  uuid,
+  customType,
   type AnyPgColumn,
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
+
+const bytea = customType<{ data: Buffer; driverData: Buffer }>({
+  dataType: () => "bytea",
+});
 
 const agora = () => timestamp({ withTimezone: true }).notNull().defaultNow();
 const data = () => timestamp({ withTimezone: true });
@@ -236,5 +242,16 @@ export const admins = pgTable("admins", {
   email: varchar({ length: 120 }).notNull().unique(),
   senhaHash: text().notNull(),
   papel: papelAdminEnum().notNull().default("admin"),
+  criadoEm: agora(),
+});
+
+// Imagens enviadas no admin (escudos, banner do campeão, fotos das notícias).
+// Ficam no próprio banco e são servidas em /arquivos/<id>.
+export const arquivos = pgTable("arquivos", {
+  id: uuid().primaryKey().defaultRandom(),
+  nome: varchar({ length: 200 }).notNull(),
+  mime: varchar({ length: 40 }).notNull(),
+  tamanho: integer().notNull(),
+  bytes: bytea().notNull(),
   criadoEm: agora(),
 });

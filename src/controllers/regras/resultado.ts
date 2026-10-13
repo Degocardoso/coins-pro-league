@@ -95,7 +95,9 @@ export function validarResultado(r: ResultadoLancado, ctx: ContextoValidacao) {
     if (somaAssist > golsClube) erros.push(`Os atletas do ${lado} somam mais assistências que gols.`);
     if (lista.filter((e) => e.goleiro).length > 1) erros.push(`O ${lado} tem mais de um goleiro marcado.`);
     if (lista.length < MINIMO_HUMANOS)
-      alertas.push(`O ${lado} tem ${lista.length} atletas lançados; o mínimo para jogar é ${MINIMO_HUMANOS}.`);
+      alertas.push(
+        `O ${lado} tem ${lista.length} ${lista.length === 1 ? "atleta lançado" : "atletas lançados"}; o mínimo para jogar é ${MINIMO_HUMANOS}.`,
+      );
   }
 
   if (r.estatisticas.filter((e) => e.mvp).length > 1) erros.push("Só pode haver um MVP por partida.");

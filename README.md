@@ -39,7 +39,7 @@ tests/                    testes das regras e de integração (Postgres em memó
 
 ```bash
 npm install          # o .npmrc já liga legacy-peer-deps
-npm test             # 35 testes, sem precisar de banco
+npm test             # 56 testes, sem precisar de banco
 npm run typecheck
 ```
 
@@ -59,16 +59,62 @@ npm run db:seed      # opcional: 16 clubes fictícios + tabela gerada
 
 Observação: projeto grátis do Supabase pausa depois de uma semana sem acesso. Com a liga rodando isso não acontece; se pausar, é só reativar no painel.
 
+## Site público (fase 3)
+
+Quatro abas: **A Liga** (`/`), **Regulamento** (`/regulamento`), **Tabela** (`/tabela`) e **Notícias** (`/noticias`, o Jornal da Liga), mais o formulário de inscrição (`/inscricao`).
+
+- Cada notícia tem página própria (`/noticias/<id>`), com título, resumo e imagem no preview quando o link é compartilhado. Com domínio próprio, defina `SITE_URL` (ex.: `https://coinsproleague.com.br`) na Vercel; sem ele, a Vercel usa o endereço `.vercel.app` sozinha.
+- No texto da notícia, uma linha em branco separa parágrafos.
+- Privacidade: o site público mostra só o nome do personagem e a plataforma. PSN ID, Gamertag, EA ID e Twitch ficam só no painel admin.
+
+- A inscrição só aparece com a competição na situação "Inscrições abertas" (ficha no admin). Com as datas preenchidas, ela abre primeiro para clubes com capitão sub e depois para todos.
+- O formulário cria o clube novo, o elenco e a inscrição pendente de uma vez. Se qualquer atleta der problema, nada é gravado.
+- Clube que já existe (por exemplo, um clube da liga entrando numa copa) é inscrito pelo admin, na ficha da competição.
+- Para ver o site com cara de liga rodando antes da hora:
+
+```bash
+npm run db:simular -- 6     # resultados aleatórios nas 6 primeiras rodadas
+npm run db:limpar -- --sim  # apaga tudo depois
+```
+
+## Painel admin (fase 2)
+
+Endereço: `/admin` (no PC, http://localhost:3000/admin).
+
+```bash
+npm run admin:criar -- seu@email.com "Seu nome"   # cria o login e mostra a senha gerada
+npm run admin:senha -- seu@email.com              # gera uma senha nova
+npm run db:limpar -- --sim                        # apaga os dados de teste (mantém admins e regulamento)
+```
+
+O login precisa da variável `SESSION_SECRET` no `.env` e na Vercel. Gere uma com:
+
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
+
+Tema claro e escuro: botões no rodapé do menu (e na tela de login). Sem escolha salva, segue o tema do sistema. As cores ficam todas em `src/views/estilos/tokens.css`, com um valor por tema; as telas nunca usam cor fixa.
+
+As imagens (escudos, banner do campeão, fotos das notícias) ficam no próprio banco e são servidas em `/arquivos/<id>`. Aceita PNG, JPG e WEBP de até 3 MB.
+
 ## Deploy na Vercel
 
-1. Suba o projeto para um repositório no GitHub.
-2. Na Vercel, **Add New > Project**, escolha o repositório.
-3. Em **Environment Variables**, adicione `DATABASE_URL` (a do Transaction pooler).
-4. Deploy. O endereço sai como `<nome>.vercel.app`; o domínio `.com.br` entra depois em **Settings > Domains**.
+O `vercel.json` já fixa as funções em São Paulo (`gru1`), perto do banco do Supabase. Sem isso, a Vercel roda nos EUA e cada consulta atravessa o continente.
+
+1. Suba o projeto para um repositório no GitHub (o `.gitignore` já deixa o `.env` de fora).
+2. Na Vercel, **Add New > Project** e escolha o repositório. Se a pasta do projeto não for a raiz do repositório, aponte o **Root Directory** para ela.
+3. Em **Environment Variables**, adicione:
+   - `DATABASE_URL`: a do Transaction pooler (porta 6543)
+   - `SESSION_SECRET`: a mesma do seu `.env` (ou uma nova)
+   - `SITE_URL`: só quando tiver domínio próprio
+4. Deploy. O endereço sai como `<nome>.vercel.app`. O login do admin é o mesmo do seu PC, porque o banco é o mesmo.
+5. Antes de divulgar, apague os dados de teste no PC com `npm run db:limpar -- --sim` (mantém admins e regulamento) e cadastre a temporada e a competição de verdade no admin.
+
+Depois disso, todo `git push` na branch `main` publica sozinho. O domínio `.com.br` entra em **Settings > Domains**.
 
 ## Fases
 
 - [x] **Fase 1** — banco, regras do regulamento e testes
-- [ ] **Fase 2** — painel admin com login: competições, inscrições, elencos, partidas e resultados, notícias, regulamento, upload de escudos
-- [ ] **Fase 3** — site público (A Liga, Regulamento, Tabela) e formulário de inscrição
+- [x] **Fase 2** — painel admin com login: competições, inscrições, elencos, partidas e resultados, notícias, regulamento, upload de escudos
+- [x] **Fase 3** — site público (A Liga, Regulamento, Tabela) e formulário de inscrição
 - [ ] **Fase 4** — telas do OBS: rodapé de resultados, card periódico no gameplay, banner do campeão
