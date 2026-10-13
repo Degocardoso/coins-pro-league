@@ -65,3 +65,21 @@ describe("grade de estatísticas da tela de resultado", () => {
     expect(linhas[2]).toMatchObject({ clubeId: 20, cartaoVermelho: true });
   });
 });
+
+import { falha } from "@/controllers/acoes/estado";
+
+describe("mensagens de erro das ações", () => {
+  const erroDoBanco = (code: string, message: string) =>
+    Object.assign(new Error("Failed query: insert into arquivos ... params: <imagem inteira>"), { cause: { code, message } });
+  it("tabela faltando manda rodar a migração; dados da consulta nunca aparecem", () => {
+    const silencio = console.error; console.error = () => {};
+    expect(falha(erroDoBanco("42P01", 'relation "arquivos" does not exist'))?.erros?.[0]).toContain("npm run db:migrate");
+    const outro = falha(erroDoBanco("23505", "duplicate key"))?.erros?.[0] ?? "";
+    expect(outro).toContain("duplicate key");
+    expect(outro).not.toContain("params");
+    console.error = silencio;
+  });
+  it("erro de regra aparece como está", () => {
+    expect(falha(new Error("Já existe um clube com esse nome"))).toEqual({ erros: ["Já existe um clube com esse nome"] });
+  });
+});
