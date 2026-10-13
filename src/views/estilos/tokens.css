@@ -1,0 +1,74 @@
+/* Tokens da Coin's Pro League. Cada cor tem um nome de função e um valor por tema.
+   As telas só usam estes nomes: nunca cor fixa. Contraste conferido (WCAG AA) nos dois temas. */
+
+/* Tema escuro: padrão, e também usado em .tema-escuro-fixo (placar) */
+:root,
+.tema-escuro-fixo {
+  color-scheme: dark;
+  --fundo: #0b1019;
+  --fundo-fundo: #070a10;
+  --painel: #111926;
+  --painel-2: #172133;
+  --linha: #243149;
+  --linha-suave: #1a2436;
+  --linha-forte: #56688a;
+  --linha-forte-hover: #7286aa;
+  --hover: #0e1520;
+  --texto: #e9edf4;
+  --apagado: #9ea7b6;
+  --ouro: #f5b53c;
+  --ouro-forte: #ffc95e;
+  --sobre-ouro: #1b1203;
+  --acento: #f5b53c;
+  --ouro-texto: #f5b53c;
+  --verde-texto: #9bdb5c;
+  --verde-barra: #9bdb5c;
+  --vermelho-texto: #f47b6f;
+  --ok-fundo: #142012;
+  --ok-borda: #3d5a2a;
+  --ok-texto: #9bdb5c;
+  --erro-fundo: #221214;
+  --erro-borda: #5a2a29;
+  --erro-texto: #ffb4ab;
+  --alerta-fundo: #211a0c;
+  --alerta-borda: #5c4719;
+  --alerta-texto: #ffc95e;
+}
+
+:root[data-tema="claro"] {
+  color-scheme: light;
+  --fundo: #f3f5f8;
+  --fundo-fundo: #ffffff;
+  --painel: #ffffff;
+  --painel-2: #e8ecf2;
+  --linha: #d5dbe4;
+  --linha-suave: #e3e8ef;
+  --linha-forte: #7f8ca0;
+  --linha-forte-hover: #5f6c80;
+  --hover: #eaeef4;
+  --texto: #0b1019;
+  --apagado: #525d6e;
+  --ouro: #f5b53c;
+  --ouro-forte: #e6a42a;
+  --sobre-ouro: #1b1203;
+  --acento: #b07a10;
+  --ouro-texto: #8a5a00;
+  --verde-texto: #2f6a12;
+  --verde-barra: #4f9a25;
+  --vermelho-texto: #b42318;
+  --ok-fundo: #e8f5dd;
+  --ok-borda: #a9d48a;
+  --ok-texto: #2f5e10;
+  --erro-fundo: #fdeceb;
+  --erro-borda: #f0a8a0;
+  --erro-texto: #a3261b;
+  --alerta-fundo: #fff3d6;
+  --alerta-borda: #e8c26a;
+  --alerta-texto: #6e4600;
+}
+
+:root {
+  --fonte-texto: "Instrument Sans Variable", system-ui, sans-serif;
+  --fonte-titulo: "Big Shoulders Variable", "Arial Narrow", sans-serif;
+  --raio: 6px;
+}
