@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>thecoinsquash — just chatting</title>
+<!-- ==========================================================
+     POSICOES DAS FONTES NO OBS
+
+       Webcam ..........  X 44    Y 144   1382 x 792
+       Chat Box ........  X 1482  Y 222    380 x 698
+       Widget de META ..  X 1164  Y 38
+
+     A fonte da META fica em 800 x 600 nas Propriedades, do
+     jeito que o LivePix recomenda, e com escala 1,000.
+     NAO encolha a fonte: o cartao ja tem o tamanho certo
+     desenhado dentro dela, ancorado no canto superior
+     esquerdo. Basta posicionar.
+     ========================================================== -->
+<style>
+  :root{
+    --green:#9bdb5c;
+    --gold:#f5b53c;
+    --text:#f7f8fb;
+    --muted:#9ea7b6;
+  }
+  *{box-sizing:border-box}
+  html,body{
+    width:1920px; height:1080px; margin:0; overflow:hidden;
+    background:transparent;
+    color:var(--text);
+    font-family:Inter,"Segoe UI",Arial,sans-serif;
+  }
+
+  .fx{position:absolute; inset:0; pointer-events:none; overflow:hidden}
+  .grid{
+    position:absolute; inset:0;
+    background-image:
+      linear-gradient(rgba(155,219,92,.035) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(245,181,60,.025) 1px,transparent 1px);
+    background-size:72px 72px;
+    mask-image:linear-gradient(to bottom,rgba(0,0,0,.75),rgba(0,0,0,.08));
+    -webkit-mask-image:linear-gradient(to bottom,rgba(0,0,0,.75),rgba(0,0,0,.08));
+  }
+  .particle{
+    position:absolute; border-radius:50%; opacity:.55;
+    animation:float linear infinite;
+    box-shadow:0 0 14px currentColor;
+  }
+  @keyframes float{
+    from{transform:translateY(1190px) translateX(0) scale(.6)}
+    to{transform:translateY(-160px) translateX(40px) scale(1.2)}
+  }
+
+  .hud{
+    border:2px solid rgba(245,181,60,.76);
+    box-shadow:0 0 0 2px rgba(155,219,92,.22) inset, 0 0 28px rgba(0,0,0,.45);
+    background:linear-gradient(180deg,rgba(10,15,24,.78),rgba(6,9,15,.64));
+  }
+
+  .brand{
+    display:flex; align-items:center; gap:18px;
+    color:var(--text);
+    font-size:38px; font-weight:900; letter-spacing:-1.5px; text-transform:lowercase;
+  }
+  .brand .coinword{color:var(--gold)}
+  .brand .squashword{color:var(--green)}
+
+  /* ---- moeda TheCoinSquash ---- */
+  .coin{
+    position:relative;
+    width:76px; height:76px;
+    transform-style:preserve-3d;
+    border-radius:50%;
+    animation:coinspin 4s linear infinite;
+  }
+  .coin .face{position:absolute; inset:0; backface-visibility:hidden}
+  .coin .face svg{width:100%; height:100%; display:block}
+  .coin .back{transform:rotateY(180deg)}
+  @keyframes coinspin{
+    from{transform:rotateY(0deg) rotateX(6deg)}
+    to{transform:rotateY(360deg) rotateX(6deg)}
+  }
+
+  .top{position:absolute; left:34px; right:34px; top:24px; height:88px; border-radius:18px; padding:0 22px; display:flex; align-items:center; justify-content:space-between}
+  /* espaco reservado para o widget de meta no cabecalho */
+  .vaga-meta{width:700px; height:60px}
+
+  /* A webcam entra ATRÁS desta moldura */
+  .facebox{position:absolute; left:40px; top:140px; width:1390px; height:800px; border-radius:34px; border:4px solid rgba(245,181,60,.86); box-shadow:0 0 0 4px rgba(155,219,92,.18) inset, 0 0 42px rgba(0,0,0,.3)}
+  .facebox:before{content:""; position:absolute; inset:24px; border:1px solid rgba(155,219,92,.15); border-radius:24px}
+  .arc{position:absolute; width:300px; height:300px; border-radius:50%; border:3px dashed rgba(155,219,92,.32); animation:rot 12s linear infinite}
+  .arc.a{left:-90px; bottom:-80px}
+  .arc.b{right:-90px; top:-90px; animation-direction:reverse}
+  @keyframes rot{to{transform:rotate(360deg)}}
+
+  .heroCoin{position:absolute; left:50%; bottom:-46px; transform:translateX(-50%); width:96px; height:96px; z-index:3}
+
+  /* O chat da Twitch entra DENTRO desta caixa */
+  .chat{position:absolute; right:38px; top:140px; width:420px; height:800px; border-radius:28px; padding:26px}
+  .chat h2{margin:0 0 16px; text-align:center; color:var(--gold); letter-spacing:.16em; font-size:28px}
+  .chatbody{position:absolute; left:20px; right:20px; top:82px; bottom:20px; border:1px solid rgba(155,219,92,.18); border-radius:16px; background:rgba(3,7,12,.38)}
+
+  .footer{position:absolute; left:38px; right:38px; bottom:18px; height:72px; border-radius:18px}
+  /* Áreas reservadas para os textos automáticos (todas com 520 de largura,
+     altura 34, Y 1019, texto centralizado):
+        esquerda X 78   |   centro X 700   |   direita X 1322            */
+  .fslot{position:absolute; top:9px; height:54px; width:520px; text-align:center}
+  .fslot .flabel{display:block; height:20px; font-size:15px; letter-spacing:.18em; font-weight:800; color:var(--green)}
+  .fslot .fvalue{display:block; height:34px; line-height:34px; font-size:27px; font-weight:800; color:#fff}
+  .fs1{left:40px}
+  .fs2{left:50%; margin-left:-260px}
+  .fs3{right:40px}
+
+  /* ---- LOGO DO CANAL ----
+     Substitui a moeda antiga. O arquivo logo.png precisa
+     ficar NA MESMA PASTA deste html. */
+  .coin{
+    transform-style:flat !important;
+    animation:cs-flutua 3.6s ease-in-out infinite !important;
+    border-radius:0 !important;
+    box-shadow:none !important;
+    background:none !important;
+  }
+  .coin img{
+    width:100%; height:100%;
+    object-fit:contain;
+    display:block;
+    filter:drop-shadow(0 6px 14px rgba(0,0,0,.55));
+  }
+  @keyframes cs-flutua{
+    0%,100%{transform:translateY(0) rotate(-1.5deg)}
+    50%{transform:translateY(-7px) rotate(1.5deg)}
+  }
+</style>
+</head>
+<body>
+
+
+<div class="fx"><div class="grid"></div></div>
+
+<div class="top hud">
+  <div class="brand">
+    <div class="coin" aria-hidden="true"><img src="/obs/assets/logo.png" alt="thecoinsquash"></div>
+    <div>the<span class="coinword">coin</span><span class="squashword">squash</span></div>
+  </div>
+  <!-- o widget de META entra aqui, por cima deste espaco vazio -->
+  <div class="vaga-meta"></div>
+</div>
+
+<div class="facebox">
+  <div class="arc a"></div>
+  <div class="arc b"></div>
+  <div class="coin heroCoin" aria-hidden="true"><img src="/obs/assets/logo.png" alt="thecoinsquash"></div>
+</div>
+
+<div class="chat hud">
+  <h2>CHAT DA LIVE</h2>
+  <div class="chatbody"></div>
+</div>
+
+<!-- TEXTO EDITÁVEL -->
+<div class="footer hud">
+  <div class="fslot fs1"><span class="flabel">SEGUIDOR MAIS RECENTE</span><span class="fvalue">&nbsp;</span></div>
+  <div class="fslot fs2"><span class="flabel">MAIOR DOAÇÃO</span><span class="fvalue">&nbsp;</span></div>
+  <div class="fslot fs3"><span class="flabel">SUB MAIS RECENTE</span><span class="fvalue">&nbsp;</span></div>
+</div>
+
+<script>
+  var colors=["#9bdb5c","#f5b53c","#ffffff"];
+  for(var i=0;i<36;i++){
+    var p=document.createElement("i");
+    p.className="particle";
+    var s=2+Math.random()*4;
+    p.style.width=s+"px"; p.style.height=s+"px";
+    p.style.left=(Math.random()*1920)+"px";
+    p.style.top=(300+Math.random()*1080)+"px";
+    p.style.color=colors[Math.floor(Math.random()*colors.length)];
+    p.style.background="currentColor";
+    p.style.animationDuration=(8+Math.random()*11)+"s";
+    p.style.animationDelay=(-Math.random()*15)+"s";
+    document.querySelector(".fx").appendChild(p);
+  }
+</script>
+</body>
+</html>

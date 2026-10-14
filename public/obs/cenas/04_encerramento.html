@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>thecoinsquash — encerramento</title>
+<style>
+  :root{
+    --green:#9bdb5c;
+    --gold:#f5b53c;
+    --text:#f7f8fb;
+    --muted:#9ea7b6;
+  }
+  *{box-sizing:border-box}
+  html,body{
+    width:1920px; height:1080px; margin:0; overflow:hidden;
+    font-family:Inter,"Segoe UI",Arial,sans-serif;
+    background:radial-gradient(circle at 50% 38%,#172010 0,#070b11 34%,#030508 100%);
+    color:var(--text);
+  }
+
+  .fx{position:absolute; inset:0; pointer-events:none; overflow:hidden}
+  .grid{
+    position:absolute; inset:0;
+    background-image:
+      linear-gradient(rgba(155,219,92,.035) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(245,181,60,.025) 1px,transparent 1px);
+    background-size:72px 72px;
+    mask-image:linear-gradient(to bottom,rgba(0,0,0,.75),rgba(0,0,0,.08));
+    -webkit-mask-image:linear-gradient(to bottom,rgba(0,0,0,.75),rgba(0,0,0,.08));
+  }
+  .particle{
+    position:absolute; border-radius:50%; opacity:.55;
+    animation:float linear infinite;
+    box-shadow:0 0 14px currentColor;
+  }
+  @keyframes float{
+    from{transform:translateY(1190px) translateX(0) scale(.6)}
+    to{transform:translateY(-160px) translateX(40px) scale(1.2)}
+  }
+
+  .hud{
+    border:2px solid rgba(245,181,60,.76);
+    box-shadow:0 0 0 2px rgba(155,219,92,.22) inset, 0 0 28px rgba(0,0,0,.45);
+    background:linear-gradient(180deg,rgba(10,15,24,.78),rgba(6,9,15,.64));
+  }
+
+  .brand{
+    display:flex; align-items:center; gap:16px;
+    font-size:38px; font-weight:900; letter-spacing:-1.5px; text-transform:lowercase;
+  }
+  .brand .coinword{color:var(--gold)}
+  .brand .squashword{color:var(--green)}
+
+  /* ---- moeda TheCoinSquash ---- */
+  .coin{
+    position:relative;
+    width:190px; height:190px;
+    transform-style:preserve-3d;
+    border-radius:50%;
+    animation:coinspin 4s linear infinite;
+    z-index:2;
+  }
+  .coin .face{position:absolute; inset:0; backface-visibility:hidden}
+  .coin .face svg{width:100%; height:100%; display:block}
+  .coin .back{transform:rotateY(180deg)}
+  @keyframes coinspin{
+    from{transform:rotateY(0deg) rotateX(6deg)}
+    to{transform:rotateY(360deg) rotateX(6deg)}
+  }
+
+  .wrap{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center}
+  .orbit{position:absolute; width:620px; height:620px; border-radius:50%;
+    top:35px; left:50%; margin-left:-310px;   /* concentrico com a logo */ border:2px solid rgba(245,181,60,.18); animation:rot 20s linear infinite}
+  .orbit:before{content:""; position:absolute; inset:48px; border-radius:50%; border:2px dashed rgba(155,219,92,.23)}
+  @keyframes rot{to{transform:rotate(360deg)}}
+
+  .kicker{z-index:2; color:var(--green); letter-spacing:.28em; font-weight:900; margin-top:28px; font-size:24px}
+  h1{z-index:2; margin:16px 0 0; font-size:80px; line-height:.95; color:var(--gold); font-weight:900; text-shadow:0 0 32px rgba(245,181,60,.22)}
+  h1 span{color:var(--green)}
+  .sub{z-index:2; margin-top:22px; color:var(--muted); font-size:32px}
+  .cta{z-index:2; margin-top:30px; padding:18px 34px; border-radius:14px; font-size:27px; font-weight:700}
+  .brandtop{position:absolute; top:28px; left:50%; transform:translateX(-50%)}
+  .social{position:absolute; left:48px; right:48px; bottom:32px; height:90px; border-radius:18px; display:flex; align-items:center; justify-content:space-around; font-size:30px; font-weight:700}
+  .social b{color:var(--green)}
+
+  /* ---- LOGO DO CANAL ----
+     Substitui a moeda antiga. O arquivo logo.png precisa
+     ficar NA MESMA PASTA deste html. */
+  .coin{
+    transform-style:flat !important;
+    animation:cs-flutua 3.6s ease-in-out infinite !important;
+    border-radius:0 !important;
+    box-shadow:none !important;
+    background:none !important;
+  }
+  .coin img{
+    width:100%; height:100%;
+    object-fit:contain;
+    display:block;
+    filter:drop-shadow(0 6px 14px rgba(0,0,0,.55));
+  }
+  @keyframes cs-flutua{
+    0%,100%{transform:translateY(0) rotate(-1.5deg)}
+    50%{transform:translateY(-7px) rotate(1.5deg)}
+  }
+</style>
+</head>
+<body>
+
+
+<div class="fx"><div class="grid"></div></div>
+
+<div class="brand brandtop">the<span class="coinword">coin</span><span class="squashword">squash</span></div>
+
+<div class="wrap">
+  <div class="orbit"></div>
+
+  <div class="coin" aria-hidden="true"><img src="/obs/assets/logo.png" alt="thecoinsquash"></div>
+
+  <!-- TEXTO EDITÁVEL -->
+  <div class="kicker">ENCERRAMENTO</div>
+  <h1>OBRIGADO<br><span>POR ASSISTIR!</span></h1>
+  <div class="sub">Foi muito bom ter você aqui.</div>
+  <div class="cta hud">Siga o canal para não perder as próximas lives</div>
+</div>
+
+<!-- TEXTO EDITÁVEL -->
+<div class="social hud">
+  <span>Twitch <b>/thecoinsquash</b></span>
+  <span>X <b>@thecoinsquash</b></span>
+  <span>Instagram <b>@thecoinsquash</b></span>
+</div>
+
+<script>
+  var colors=["#9bdb5c","#f5b53c","#ffffff"];
+  for(var i=0;i<36;i++){
+    var p=document.createElement("i");
+    p.className="particle";
+    var s=2+Math.random()*4;
+    p.style.width=s+"px"; p.style.height=s+"px";
+    p.style.left=(Math.random()*1920)+"px";
+    p.style.top=(300+Math.random()*1080)+"px";
+    p.style.color=colors[Math.floor(Math.random()*colors.length)];
+    p.style.background="currentColor";
+    p.style.animationDuration=(8+Math.random()*11)+"s";
+    p.style.animationDelay=(-Math.random()*15)+"s";
+    document.querySelector(".fx").appendChild(p);
+  }
+</script>
+</body>
+</html>

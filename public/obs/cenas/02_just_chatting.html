@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>thecoinsquash — just chatting (câmera cheia)</title>
+<!-- ==========================================================
+     JUST CHATTING COM A CÂMERA EM TELA CHEIA
+     Fontes no OBS, DE CIMA PARA BAIXO:
+       1. Navegador -> este arquivo (1920 x 1080, X 0, Y 0)
+       2. Navegador -> Chat Box do Streamlabs
+            Propriedades: 380 x 623   |   Ctrl+E: X 1482, Y 222
+            Tema com FUNDO TRANSPARENTE, fonte 22 ou mais
+       3. Navegador -> meta do LivePix (como hoje: X 1164, Y 38)
+       4. Dispositivo de captura de vídeo -> sua webcam
+            Ctrl+E: X 0, Y 0, 1920 x 1080, "Escalonar para os limites externos"
+     Textos automáticos do Streamlabs: NAS MESMAS POSIÇÕES DE ANTES
+       (largura 520, altura 34, Y 1019, centralizados)
+          Most Recent Follower ....  X 78
+          Top Donator .............  X 700
+          Most Recent Subscriber ..  X 1322
+     A liga aparece num card no canto de baixo à esquerda, acima do rodapé.
+     ========================================================== -->
+<link rel="stylesheet" href="/obs/cpl.css">
+<style>
+  :root{
+    --green:#9bdb5c;
+    --gold:#f5b53c;
+    --text:#f7f8fb;
+    --muted:#9ea7b6;
+  }
+  *{box-sizing:border-box}
+  html,body{
+    width:1920px; height:1080px; margin:0; overflow:hidden;
+    background:transparent !important;
+    font-family:"Segoe UI",Arial,sans-serif; color:var(--text);
+  }
+  .hud{
+    border:2px solid rgba(245,181,60,.76);
+    box-shadow:0 0 0 2px rgba(155,219,92,.22) inset, 0 0 28px rgba(0,0,0,.45);
+    background:linear-gradient(180deg,rgba(10,15,24,.78),rgba(6,9,15,.64));
+  }
+
+  /* Escurecidos suaves: só onde tem texto em cima da câmera */
+  .sombra{position:absolute; pointer-events:none}
+  .sombra.topo{left:0; right:0; top:0; height:170px; background:linear-gradient(180deg,rgba(4,7,12,.5),rgba(4,7,12,0))}
+  .sombra.chat{right:0; top:0; bottom:0; width:540px; background:linear-gradient(270deg,rgba(4,7,12,.66) 0%,rgba(4,7,12,.5) 60%,rgba(4,7,12,0) 100%)}
+  .sombra.base{left:0; right:0; bottom:0; height:230px; background:linear-gradient(0deg,rgba(4,7,12,.62),rgba(4,7,12,0))}
+
+  /* Selo do canal no alto à esquerda (a meta do LivePix fica no alto à direita) */
+  .selo{position:absolute; left:34px; top:24px; height:88px; border-radius:18px; padding:0 26px 0 14px; display:flex; align-items:center; gap:16px}
+  .selo .marca{font-size:38px; font-weight:900; letter-spacing:-.5px; text-transform:lowercase}
+  .coinword{color:var(--gold)} .squashword{color:var(--green)}
+  .aovivo{display:flex; align-items:center; gap:10px; padding-left:18px; border-left:2px solid rgba(245,181,60,.4); font-size:17px; font-weight:900; letter-spacing:.2em; color:var(--text)}
+  .aovivo i{width:12px; height:12px; border-radius:50%; background:#f06a5d; box-shadow:0 0 12px rgba(240,106,93,.9); animation:pisca 1.6s ease-in-out infinite}
+  @keyframes pisca{0%,100%{opacity:1} 50%{opacity:.35}}
+
+  /* Chat transparente: só o título e uma linha fina, o resto é o Chat Box por cima da câmera */
+  .chat-titulo{position:absolute; left:1482px; top:168px; width:380px; text-align:center; color:var(--gold); font-weight:900; letter-spacing:.2em; font-size:24px}
+  .chat-titulo:after{content:""; display:block; height:2px; margin:12px auto 0; width:220px; background:linear-gradient(90deg,transparent,var(--gold),var(--green),transparent)}
+
+  /* Rodapé de vidro: mesmas posições de antes para os textos do Streamlabs */
+  .footer{position:absolute; left:38px; right:38px; bottom:18px; height:72px; border-radius:18px;
+    background:linear-gradient(180deg,rgba(10,15,24,.6),rgba(6,9,15,.5))}
+  .fslot{position:absolute; top:9px; height:54px; width:520px; text-align:center}
+  .fslot .flabel{display:block; height:20px; font-size:15px; letter-spacing:.18em; font-weight:800; color:var(--green)}
+  .fslot .fvalue{display:block; height:34px}
+  .fs1{left:40px}
+  .fs2{left:50%; margin-left:-260px}
+  .fs3{right:40px}
+
+  /* Logo do canal (o rosto) */
+  .coin{width:72px; height:72px; animation:cs-flutua 3.6s ease-in-out infinite}
+  .coin img{width:100%; height:100%; object-fit:contain; display:block; filter:drop-shadow(0 6px 14px rgba(0,0,0,.55))}
+  @keyframes cs-flutua{
+    0%,100%{transform:translateY(0) rotate(-1.5deg)}
+    50%{transform:translateY(-5px) rotate(1.5deg)}
+  }
+</style>
+</head>
+<body>
+
+<div class="sombra topo"></div>
+<div class="sombra chat"></div>
+<div class="sombra base"></div>
+
+<div class="selo hud">
+  <div class="coin" aria-hidden="true"><img src="/obs/assets/logo.png" alt="thecoinsquash"></div>
+  <div class="marca">the<span class="coinword">coin</span><span class="squashword">squash</span></div>
+  <!-- TEXTO EDITÁVEL -->
+  <div class="aovivo"><i></i>AO VIVO</div>
+</div>
+
+<!-- TEXTO EDITÁVEL -->
+<div class="chat-titulo">CHAT DA LIVE</div>
+
+<!-- TEXTO EDITÁVEL -->
+<div class="footer hud">
+  <div class="fslot fs1"><span class="flabel">SEGUIDOR MAIS RECENTE</span><span class="fvalue">&nbsp;</span></div>
+  <div class="fslot fs2"><span class="flabel">MAIOR DOAÇÃO</span><span class="fvalue">&nbsp;</span></div>
+  <div class="fslot fs3"><span class="flabel">SUB MAIS RECENTE</span><span class="fvalue">&nbsp;</span></div>
+</div>
+
+<!-- Coin's Pro League (card no canto de baixo à esquerda, acima do rodapé) -->
+<script src="/obs/cpl.js"></script>
+<script>CPL.card({ lado: "esquerda", base: 106 });</script>
+</body>
+</html>

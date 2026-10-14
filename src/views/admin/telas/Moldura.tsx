@@ -9,8 +9,9 @@ export function Moldura({ nome, temporada, pendentes, children }: { nome: string
     <div className="adm">
       <aside className="adm-menu">
         <a className="marca" href="/admin">
-          <b>Coin&apos;s</b> Pro League
-          <span>{temporada ?? "Nenhuma temporada ativa"}</span>
+          <span className="wordmark">the<b className="c">coin</b><b className="s">squash</b></span>
+          <span className="sub">Pro League</span>
+          <span className="temporada">{temporada ?? "Nenhuma temporada ativa"}</span>
         </a>
         <Menu pendentes={pendentes} />
         <div className="adm-conta">

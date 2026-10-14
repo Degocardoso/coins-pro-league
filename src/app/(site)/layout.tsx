@@ -1,5 +1,4 @@
-import "@fontsource-variable/instrument-sans";
-import "@fontsource-variable/big-shoulders";
+import "@fontsource-variable/inter";
 import "@fontsource-variable/newsreader/opsz.css";
 import "@/views/site/site.css";
 import type { ReactNode } from "react";

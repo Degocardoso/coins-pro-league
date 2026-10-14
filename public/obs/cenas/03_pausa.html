@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>thecoinsquash — pausa</title>
+<!-- ==========================================================
+     POSICOES DAS FONTES NO OBS
+
+       Widget de QR CODE .....  X 120   Y 330   340 x 420
+
+     E a tela ideal para o QR: a pessoa esta parada, sem nada
+     para fazer, e pode pegar o celular com calma.
+     ========================================================== -->
+<style>
+  :root{
+    --green:#9bdb5c;
+    --gold:#f5b53c;
+    --text:#f7f8fb;
+    --muted:#9ea7b6;
+  }
+  *{box-sizing:border-box}
+  html,body{
+    width:1920px; height:1080px; margin:0; overflow:hidden;
+    font-family:Inter,"Segoe UI",Arial,sans-serif;
+    background:radial-gradient(circle at 50% 42%,#102016 0,#070b11 35%,#030508 100%);
+    color:var(--text);
+  }
+
+  .fx{position:absolute; inset:0; pointer-events:none; overflow:hidden}
+  .grid{
+    position:absolute; inset:0;
+    background-image:
+      linear-gradient(rgba(155,219,92,.035) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(245,181,60,.025) 1px,transparent 1px);
+    background-size:72px 72px;
+    mask-image:linear-gradient(to bottom,rgba(0,0,0,.75),rgba(0,0,0,.08));
+    -webkit-mask-image:linear-gradient(to bottom,rgba(0,0,0,.75),rgba(0,0,0,.08));
+  }
+  .particle{
+    position:absolute; border-radius:50%; opacity:.55;
+    animation:float linear infinite;
+    box-shadow:0 0 14px currentColor;
+  }
+  @keyframes float{
+    from{transform:translateY(1190px) translateX(0) scale(.6)}
+    to{transform:translateY(-160px) translateX(40px) scale(1.2)}
+  }
+
+  .hud{
+    border:2px solid rgba(245,181,60,.76);
+    box-shadow:0 0 0 2px rgba(155,219,92,.22) inset, 0 0 28px rgba(0,0,0,.45);
+    background:linear-gradient(180deg,rgba(10,15,24,.78),rgba(6,9,15,.64));
+  }
+  .label{color:var(--green); font-weight:900; letter-spacing:.20em; text-transform:uppercase; font-size:19px}
+
+  /* ---- moeda TheCoinSquash ---- */
+  .coin{
+    position:relative;
+    width:190px; height:190px;
+    transform-style:preserve-3d;
+    border-radius:50%;
+    animation:coinspin 4s linear infinite;
+  }
+  .coin .face{position:absolute; inset:0; backface-visibility:hidden}
+  .coin .face svg{width:100%; height:100%; display:block}
+  .coin .back{transform:rotateY(180deg)}
+  @keyframes coinspin{
+    from{transform:rotateY(0deg) rotateX(6deg)}
+    to{transform:rotateY(360deg) rotateX(6deg)}
+  }
+
+  .center{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; flex-direction:column; text-align:center}
+  .rings{
+    position:absolute; width:600px; height:600px; border-radius:50%;
+    top:93px; left:50%; margin-left:-300px;   /* concentrico com a logo */
+    border:2px solid rgba(155,219,92,.18);
+    box-shadow:0 0 0 45px rgba(245,181,60,.035), 0 0 0 100px rgba(155,219,92,.025);
+    animation:rot 18s linear infinite;
+  }
+  .rings:before,.rings:after{content:""; position:absolute; border-radius:50%; inset:50px; border:2px dashed rgba(245,181,60,.22)}
+  .rings:after{inset:118px; border-color:rgba(155,219,92,.22)}
+  @keyframes rot{to{transform:rotate(360deg)}}
+
+  .center .coin{z-index:2; margin-bottom:34px}
+  h1{z-index:2; margin:0; font-size:120px; line-height:.9; color:var(--gold); font-weight:900; letter-spacing:.02em; text-shadow:0 0 35px rgba(245,181,60,.25)}
+  h2{z-index:2; margin:24px 0 0; font-size:54px; color:var(--green); letter-spacing:.12em; font-weight:800}
+  .brandline{z-index:2; margin-top:28px; font-size:26px; font-weight:900; text-transform:lowercase}
+  .brandline .g{color:var(--green)}
+  .brandline .o{color:var(--gold)}
+
+  .info{position:absolute; left:50px; right:50px; bottom:38px; height:94px; border-radius:18px; display:flex; align-items:center; justify-content:space-around; color:var(--muted); font-size:27px}
+  .timer{position:absolute; right:70px; top:110px; width:300px; height:132px; border-radius:16px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px}
+  .timer strong{font-size:54px; color:var(--gold); letter-spacing:.12em; font-variant-numeric:tabular-nums}
+
+  /* ---- LOGO DO CANAL ----
+     Substitui a moeda antiga. O arquivo logo.png precisa
+     ficar NA MESMA PASTA deste html. */
+  .coin{
+    transform-style:flat !important;
+    animation:cs-flutua 3.6s ease-in-out infinite !important;
+    border-radius:0 !important;
+    box-shadow:none !important;
+    background:none !important;
+  }
+  .coin img{
+    width:100%; height:100%;
+    object-fit:contain;
+    display:block;
+    filter:drop-shadow(0 6px 14px rgba(0,0,0,.55));
+  }
+  @keyframes cs-flutua{
+    0%,100%{transform:translateY(0) rotate(-1.5deg)}
+    50%{transform:translateY(-7px) rotate(1.5deg)}
+  }
+</style>
+<link rel="stylesheet" href="/obs/cpl.css">
+</head>
+<body>
+
+
+<div class="fx"><div class="grid"></div></div>
+
+<div class="timer hud">
+  <span class="label">VOLTO EM</span>
+  <strong id="clock">05:00</strong>
+</div>
+
+<div class="center">
+  <div class="rings"></div>
+
+  <div class="coin" aria-hidden="true"><img src="/obs/assets/logo.png" alt="thecoinsquash"></div>
+
+  <!-- TEXTO EDITÁVEL -->
+  <h1>PAUSA</h1>
+  <h2>JÁ VOLTO!</h2>
+  <div class="brandline">the<span class="o">coin</span><span class="g">squash</span></div>
+</div>
+
+<!-- TEXTO EDITÁVEL -->
+<div class="info hud">
+  <span>pausa rápida</span>
+  <span><b style="color:var(--green)">@thecoinsquash</b></span>
+  <span>não sai daí</span>
+</div>
+
+<script>
+  /* ================================================
+     CONTAGEM REGRESSIVA
+     Troque o número abaixo pelos minutos da pausa.
+     O contador reinicia toda vez que a cena é ativada.
+     ================================================ */
+  var MINUTOS_DE_PAUSA = Number(new URLSearchParams(location.search).get("minutos")) || 5; // no link: ?minutos=10
+
+  var restante = MINUTOS_DE_PAUSA * 60;
+  var clock = document.getElementById("clock");
+
+  function doisDigitos(n){ return (n < 10 ? "0" : "") + n; }
+
+  function tick(){
+    var m = Math.floor(restante / 60);
+    var s = restante % 60;
+    clock.textContent = doisDigitos(m) + ":" + doisDigitos(s);
+    if(restante > 0){ restante--; }
+  }
+  tick();
+  setInterval(tick, 1000);
+
+  var colors=["#9bdb5c","#f5b53c","#ffffff"];
+  for(var i=0;i<36;i++){
+    var p=document.createElement("i");
+    p.className="particle";
+    var sz=2+Math.random()*4;
+    p.style.width=sz+"px"; p.style.height=sz+"px";
+    p.style.left=(Math.random()*1920)+"px";
+    p.style.top=(300+Math.random()*1080)+"px";
+    p.style.color=colors[Math.floor(Math.random()*colors.length)];
+    p.style.background="currentColor";
+    p.style.animationDuration=(8+Math.random()*11)+"s";
+    p.style.animationDelay=(-Math.random()*15)+"s";
+    document.querySelector(".fx").appendChild(p);
+  }
+</script>
+
+<!-- Coin's Pro League (revezamento na faixa de baixo e QR das inscrições) -->
+<script src="/obs/cpl.js"></script>
+<script>CPL.revezar(document.querySelector(".info"));
+CPL.painelQr({ x: 1460, y: 330 });</script>
+</body>
+</html>

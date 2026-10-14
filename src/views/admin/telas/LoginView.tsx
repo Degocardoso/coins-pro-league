@@ -9,8 +9,9 @@ export function LoginView() {
     <main className="adm login">
       <div className="login-caixa">
         <div className="marca">
-          <b>Coin&apos;s</b> Pro League
-          <span>Painel da organização</span>
+          <span className="wordmark">the<b className="c">coin</b><b className="s">squash</b></span>
+          <span className="sub">Pro League</span>
+          <span className="temporada">Painel da organização</span>
         </div>
         <FormAcao acao={entrar}>
           <Campo rotulo="E-mail">

@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<title>thecoinsquash — abertura (TESTE com efeitos)</title>
+<style>
+  :root{
+    --bg1:#080b12;
+    --bg2:#101726;
+    --green:#9bdb5c;
+    --gold:#f5b53c;
+    --text:#f6f7fb;
+    --muted:#a9b0bf;
+  }
+
+  *{box-sizing:border-box}
+  html,body{
+    width:1920px; height:1080px;
+    margin:0; overflow:hidden;
+    background:#080b12;
+    font-family:Inter,"Segoe UI",Arial,sans-serif;
+  }
+
+  body{
+    display:grid;
+    place-items:center;
+    color:var(--text);
+    background:
+      radial-gradient(circle at 50% 40%, rgba(155,219,92,.10), transparent 28%),
+      radial-gradient(circle at 72% 60%, rgba(245,181,60,.08), transparent 26%),
+      linear-gradient(135deg,var(--bg1),var(--bg2));
+  }
+
+  .grid{
+    position:absolute; inset:-10%;
+    background-image:
+      linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+    background-size:70px 70px;
+    transform:perspective(700px) rotateX(66deg) translateY(35%);
+    transform-origin:center bottom;
+    opacity:.55;
+    animation:gridMove 8s linear infinite;
+  }
+  @keyframes gridMove{ from{background-position:0 0} to{background-position:0 70px} }
+
+  .orb{
+    position:absolute;
+    width:520px; height:520px;
+    border-radius:50%;
+    filter:blur(70px);
+    opacity:.12;
+    background:linear-gradient(135deg,var(--green),var(--gold));
+    animation:orb 5s ease-in-out infinite alternate;
+  }
+  @keyframes orb{ from{transform:scale(.9) translateY(20px)} to{transform:scale(1.12) translateY(-18px)} }
+
+  /* EFEITO: moedinhas subindo ao fundo */
+  .bgcoin{
+    position:absolute;
+    opacity:.14;
+    animation:subir linear infinite;
+    pointer-events:none;
+  }
+  .bgcoin img{width:100%; height:100%; object-fit:contain; display:block}
+  @keyframes subir{
+    from{transform:translateY(1200px) rotate(0deg)}
+    to{transform:translateY(-260px) rotate(320deg)}
+  }
+
+  .wrap{
+    position:relative;
+    z-index:3;
+    width:1150px;
+    text-align:center;
+    padding:70px 80px;
+    border:1px solid rgba(255,255,255,.08);
+    background:rgba(8,11,18,.50);
+    border-radius:34px;
+    overflow:hidden;
+    animation:respira 5s ease-in-out infinite alternate;
+  }
+  /* EFEITO: borda que respira */
+  @keyframes respira{
+    from{box-shadow:0 35px 90px rgba(0,0,0,.38), 0 0 0 1px rgba(245,181,60,.10), 0 0 40px rgba(245,181,60,.05)}
+    to{box-shadow:0 35px 90px rgba(0,0,0,.38), 0 0 0 1px rgba(155,219,92,.28), 0 0 70px rgba(155,219,92,.12)}
+  }
+
+  /* EFEITO: faixa de luz varrendo o card */
+  .wrap::after{
+    content:"";
+    position:absolute;
+    top:-60%; left:-30%;
+    width:26%; height:220%;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.055),transparent);
+    transform:rotate(14deg);
+    animation:varre 6.5s ease-in-out infinite;
+    pointer-events:none;
+  }
+  @keyframes varre{
+    0%{left:-30%}
+    55%,100%{left:120%}
+  }
+
+  .brand{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:34px;
+    margin-bottom:24px;
+  }
+
+  .coin{
+    position:relative;
+    transform-style:preserve-3d;
+    border-radius:50%;
+    animation:coinspin 4s linear infinite;
+  }
+  .coin .face{position:absolute; inset:0; backface-visibility:hidden}
+  .coin .face svg{width:100%; height:100%; display:block}
+  .coin .back{transform:rotateY(180deg)}
+  @keyframes coinspin{
+    from{transform:rotateY(0deg) rotateX(8deg)}
+    to{transform:rotateY(360deg) rotateX(8deg)}
+  }
+
+  h1{
+    margin:0;
+    font-size:112px;
+    letter-spacing:-5px;
+    line-height:.9;
+    font-weight:900;
+    text-transform:lowercase;
+  }
+
+  /* EFEITO: brilho passando por dentro das letras */
+  .shine{
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    background-size:280% 100%;
+    animation:shine 5s linear infinite;
+  }
+  .coinword{
+    background-image:linear-gradient(100deg,
+      var(--gold) 0%, var(--gold) 42%, #fff6d8 50%, var(--gold) 58%, var(--gold) 100%);
+  }
+  .squashword{
+    background-image:linear-gradient(100deg,
+      var(--green) 0%, var(--green) 42%, #eaffd0 50%, var(--green) 58%, var(--green) 100%);
+    animation-delay:.35s;
+  }
+  @keyframes shine{
+    from{background-position:140% 0}
+    to{background-position:-140% 0}
+  }
+
+  /* EFEITO: letras do olho aparecendo em sequência */
+  .eyebrow{
+    font-weight:800;
+    letter-spacing:.32em;
+    font-size:24px;
+    color:var(--muted);
+    text-transform:uppercase;
+    margin-bottom:24px;
+    height:30px;
+  }
+  .eyebrow span{
+    display:inline-block;
+    animation:acende 3.4s ease-in-out infinite;
+  }
+  @keyframes acende{
+    0%,70%,100%{opacity:.45; color:var(--muted)}
+    35%{opacity:1; color:#e7ebf2}
+  }
+
+  .status{
+    margin-top:36px;
+    display:inline-flex;
+    align-items:center;
+    gap:14px;
+    font-weight:700;
+    font-size:36px;
+    color:#e7ebf2;
+  }
+  /* EFEITO: onda percorrendo as letras */
+  .status span.l{
+    display:inline-block;
+    animation:onda 2.4s ease-in-out infinite;
+  }
+  @keyframes onda{
+    0%,55%,100%{transform:translateY(0); color:#e7ebf2}
+    25%{transform:translateY(-12px); color:#fff}
+  }
+
+  .dot{
+    width:12px; height:12px; border-radius:50%;
+    background:var(--green);
+    box-shadow:0 0 18px var(--green);
+    animation:pulse 1.25s ease-in-out infinite;
+  }
+  @keyframes pulse{
+    0%,100%{transform:scale(.75); opacity:.5}
+    50%{transform:scale(1.3); opacity:1}
+  }
+
+  .count{
+    margin-top:30px;
+    font-size:92px;
+    font-weight:900;
+    letter-spacing:.06em;
+    color:var(--gold);
+    font-variant-numeric:tabular-nums;
+    text-shadow:0 0 40px rgba(245,181,60,.25);
+  }
+  .count.done{color:var(--green); font-size:64px}
+  /* EFEITO: pulso a cada segundo */
+  .count.tick{animation:tique .4s ease-out}
+  @keyframes tique{
+    0%{transform:scale(1.05); text-shadow:0 0 70px rgba(245,181,60,.6)}
+    100%{transform:scale(1); text-shadow:0 0 40px rgba(245,181,60,.25)}
+  }
+
+  .bar{
+    width:580px;
+    height:6px;
+    margin:28px auto 0;
+    background:rgba(255,255,255,.07);
+    overflow:hidden;
+    border-radius:999px;
+  }
+  .bar::after{
+    content:"";
+    display:block;
+    width:38%;
+    height:100%;
+    border-radius:999px;
+    background:linear-gradient(90deg,var(--green),var(--gold));
+    animation:loading 2.1s ease-in-out infinite;
+  }
+  @keyframes loading{ 0%{transform:translateX(-120%)} 100%{transform:translateX(360%)} }
+
+  .particle{
+    position:absolute;
+    width:5px; height:5px;
+    border-radius:50%;
+    background:rgba(255,255,255,.8);
+    opacity:.2;
+    animation:floatUp linear infinite;
+  }
+  @keyframes floatUp{
+    from{transform:translateY(1190px) scale(.6)}
+    to{transform:translateY(-160px) scale(1.4)}
+  }
+
+  /* EFEITO: letreiro deslizando no rodapé */
+  .letreiro{
+    position:absolute;
+    left:0; right:0; bottom:44px;
+    height:52px;
+    z-index:4;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    border-top:1px solid rgba(255,255,255,.06);
+    border-bottom:1px solid rgba(255,255,255,.06);
+    background:rgba(8,11,18,.35);
+  }
+  .letreiro .fita{
+    display:flex;
+    white-space:nowrap;
+    animation:desliza 26s linear infinite;
+  }
+  .letreiro b{
+    font-size:22px;
+    font-weight:800;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--muted);
+    padding:0 44px;
+  }
+  .letreiro b i{color:var(--green); font-style:normal; padding:0 6px}
+  @keyframes desliza{
+    from{transform:translateX(0)}
+    to{transform:translateX(-50%)}
+  }
+
+  .corner{
+    position:absolute;
+    z-index:4;
+    color:rgba(255,255,255,.32);
+    letter-spacing:.18em;
+    font-size:18px;
+    text-transform:uppercase;
+  }
+  .tl{top:26px;left:32px}
+  .br{bottom:26px;right:32px}
+
+  /* ---- LOGO DO CANAL ----
+     Substitui a moeda antiga. O arquivo logo.png precisa
+     ficar NA MESMA PASTA deste html. */
+  .coin{
+    transform-style:flat !important;
+    animation:cs-flutua 3.6s ease-in-out infinite !important;
+    border-radius:0 !important;
+    box-shadow:none !important;
+    background:none !important;
+  }
+  .coin img{
+    width:100%; height:100%;
+    object-fit:contain;
+    display:block;
+    filter:drop-shadow(0 6px 14px rgba(0,0,0,.55));
+  }
+  @keyframes cs-flutua{
+    0%,100%{transform:translateY(0) rotate(-1.5deg)}
+    50%{transform:translateY(-7px) rotate(1.5deg)}
+  }
+</style>
+<link rel="stylesheet" href="/obs/cpl.css">
+</head>
+<body>
+
+
+  <div class="grid"></div>
+  <div class="orb"></div>
+
+  <!-- TEXTO EDITÁVEL -->
+  <div class="corner tl">STREAM // ONLINE EM BREVE</div>
+  <div class="corner br">THECOINSQUASH</div>
+
+  <main class="wrap">
+    <!-- TEXTO EDITÁVEL -->
+    <div class="eyebrow" id="eyebrow">PREPARANDO A LIVE</div>
+
+    <div class="brand">
+      <div class="coin" style="width:130px;height:130px" aria-hidden="true"><img src="/obs/assets/logo.png" alt="thecoinsquash"></div>
+
+      <h1>the<span class="coinword shine">coin</span><span class="squashword shine">squash</span></h1>
+    </div>
+
+    <!-- TEXTO EDITÁVEL -->
+    <div class="status">
+      <span class="dot"></span>
+      <span id="statusText">A LIVE VAI COMEÇAR</span>
+    </div>
+
+    <div class="count" id="count">10:00</div>
+    <div class="bar"></div>
+  </main>
+
+  <!-- TEXTO EDITÁVEL: frases do letreiro -->
+  <div class="letreiro">
+    <div class="fita" id="fita"></div>
+  </div>
+
+<script>
+  /* ================================================
+     CONTAGEM REGRESSIVA DA ABERTURA
+     ================================================ */
+  var MINUTOS_ATE_COMECAR = Number(new URLSearchParams(location.search).get("minutos")) || 3; // no link: ?minutos=10
+
+  /* ================================================
+     FRASES DO LETREIRO DE BAIXO
+     ================================================ */
+  var FRASES = [
+    "siga o canal",
+    "@thecoinsquash",
+    "manda um oi no chat",
+    "seg a sex 21h30",
+    "sabado 16h"
+  ];
+
+  var restante = MINUTOS_ATE_COMECAR * 60;
+  var elCount = document.getElementById("count");
+  var elStatus = document.getElementById("statusText");
+
+  function dd(n){ return (n < 10 ? "0" : "") + n; }
+
+  /* quebra um texto em letras animadas */
+  function espalhar(el, classe, passo){
+    var txt = el.textContent;
+    el.textContent = "";
+    for(var i = 0; i < txt.length; i++){
+      var s = document.createElement("span");
+      s.className = classe;
+      s.textContent = txt[i] === " " ? "\u00A0" : txt[i];
+      s.style.animationDelay = (i * passo) + "s";
+      el.appendChild(s);
+    }
+  }
+  espalhar(elStatus, "l", 0.05);
+  espalhar(document.getElementById("eyebrow"), "", 0.055);
+
+  function tick(){
+    if(restante <= 0){
+      elCount.textContent = "COMEÇANDO";
+      elCount.className = "count done";
+      elStatus.textContent = "ESTAMOS AO VIVO";
+      espalhar(elStatus, "l", 0.05);
+      return;
+    }
+    elCount.textContent = dd(Math.floor(restante/60)) + ":" + dd(restante%60);
+    elCount.className = "count";
+    void elCount.offsetWidth;
+    elCount.className = "count tick";
+    restante--;
+  }
+  tick();
+  setInterval(tick, 1000);
+
+  /* letreiro: duplica a lista para o loop ficar sem emenda */
+  var fita = document.getElementById("fita");
+  var html = FRASES.map(function(f){
+    return "<b>" + f + "<i>&#9670;</i></b>";
+  }).join("");
+  fita.innerHTML = html + html;
+
+  /* moedinhas ao fundo */
+  for(var c = 0; c < 7; c++){
+    var m = document.createElement("div");
+    m.className = "bgcoin";
+    var tam = 40 + Math.random() * 60;
+    m.style.width = tam + "px";
+    m.style.height = tam + "px";
+    m.style.left = (Math.random() * 1850) + "px";
+    m.style.animationDuration = (16 + Math.random() * 14) + "s";
+    m.style.animationDelay = (-Math.random() * 26) + "s";
+    m.innerHTML = '<img src="/obs/assets/moeda.png" alt="">';
+    document.body.appendChild(m);
+  }
+
+  /* poeirinha */
+  var colors = ["rgba(155,219,92,.65)","rgba(245,181,60,.65)","rgba(255,255,255,.55)"];
+  for(var i=0;i<42;i++){
+    var p=document.createElement("div");
+    p.className="particle";
+    var s=2+Math.random()*5;
+    p.style.width=s+"px";
+    p.style.height=s+"px";
+    p.style.left=(Math.random()*1920)+"px";
+    p.style.animationDuration=(7+Math.random()*10)+"s";
+    p.style.animationDelay=(-Math.random()*14)+"s";
+    p.style.background=colors[Math.floor(Math.random()*colors.length)];
+    p.style.opacity=(.08+Math.random()*.28).toFixed(2);
+    document.body.appendChild(p);
+  }
+</script>
+
+<!-- Coin's Pro League (frases da liga no letreiro e QR das inscrições) -->
+<script src="/obs/cpl.js"></script>
+<script>CPL.painelQr({ x: 1556, y: 330 });
+CPL.aoChegar(function (d) {
+  var lista = FRASES.concat(CPL.frases(d));
+  var fita = document.getElementById("fita");
+  fita.textContent = "";
+  for (var vez = 0; vez < 2; vez++) lista.forEach(function (f) {
+    var b = document.createElement("b"); b.appendChild(document.createTextNode(f));
+    var i = document.createElement("i"); i.textContent = "\u25C6"; b.appendChild(i); fita.appendChild(b);
+  });
+});</script>
+</body>
+</html>

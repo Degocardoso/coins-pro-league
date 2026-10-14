@@ -2,19 +2,22 @@
 // versões antigas do navegador embutido do OBS. Fundo transparente e cores fixas da marca (escuro).
 
 export const CSS_BASE = `
-@font-face { font-family: "Big Shoulders"; src: url("/fonts/big-shoulders.woff2") format("woff2"); font-weight: 100 900; font-display: block; }
-@font-face { font-family: "Instrument Sans"; src: url("/fonts/instrument-sans.woff2") format("woff2"); font-weight: 400 700; font-display: block; }
+/* Identidade do canal thecoinsquash (mesmas cores e fonte das cenas do OBS) */
 :root {
-  --fundo-fundo: #070a10; --painel: #111926; --painel-2: #172133; --linha: #243149;
-  --texto: #e9edf4; --apagado: #9ea7b6; --ouro: #f5b53c; --sobre-ouro: #1b1203; --verde: #9bdb5c;
-  --titulo: "Big Shoulders", "Arial Narrow", sans-serif; --corpo: "Instrument Sans", system-ui, sans-serif;
+  --fundo-fundo: #070a10; --painel: #0b1019; --painel-2: #142030; --linha: #243149;
+  --texto: #f7f8fb; --apagado: #9ea7b6; --ouro: #f5b53c; --sobre-ouro: #1b1203; --verde: #9bdb5c;
+  --titulo: "Segoe UI", Inter, Arial, sans-serif; --corpo: "Segoe UI", Inter, Arial, sans-serif;
 }
+.hud { border: 2px solid rgba(245,181,60,.76); border-radius: 18px;
+  box-shadow: 0 0 0 2px rgba(155,219,92,.22) inset, 0 0 28px rgba(0,0,0,.45), 0 0 22px rgba(155,219,92,.12);
+  background: linear-gradient(180deg, rgba(10,15,24,.9), rgba(6,9,15,.82)); }
+.rotulo { color: var(--verde); font-weight: 900; letter-spacing: .2em; text-transform: uppercase; }
 html, body { margin: 0; padding: 0; width: 1920px; height: 1080px; overflow: hidden; background: transparent; }
 body { font-family: var(--corpo); color: var(--texto); -webkit-font-smoothing: antialiased; }
 .moeda { display: inline-flex; align-items: center; justify-content: center; flex: none; width: 36px; height: 36px; border-radius: 50%;
   border: 2px solid var(--ouro); background: var(--painel); overflow: hidden; box-sizing: border-box; padding: 4px; }
 .moeda img { width: 100%; height: 100%; object-fit: contain; display: block; }
-.moeda b { font-family: var(--titulo); font-weight: 800; color: var(--apagado); font-size: 17px; line-height: 1; }
+.moeda b { font-weight: 900; color: var(--apagado); font-size: 17px; line-height: 1; }
 `;
 
 /** Funções do navegador: montar elementos (sempre com textContent) e buscar os dados a cada 30 s. */
@@ -72,7 +75,6 @@ export function pagina(titulo: string, css: string, corpo: string, script: strin
 <meta charset="utf-8">
 <meta name="robots" content="noindex">
 <title>${titulo}</title>
-<link rel="preload" href="/fonts/big-shoulders.woff2" as="font" type="font/woff2" crossorigin>
 <style>${CSS_BASE}${css}</style>
 </head>
 <body>

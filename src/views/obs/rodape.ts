@@ -4,17 +4,13 @@
 import { pagina } from "./base";
 
 const CSS = `
-.rodape { position: absolute; left: 44px; right: 44px; bottom: 20px; height: 64px; display: flex;
-  background: var(--fundo-fundo); border: 1px solid var(--linha); box-sizing: border-box;
-  opacity: 0; transition: opacity .6s; }
+.rodape { position: absolute; left: 44px; right: 44px; bottom: 20px; height: 64px; display: flex; overflow: hidden;
+  box-sizing: border-box; opacity: 0; transition: opacity .6s; }
 .rodape.visivel { opacity: 1; }
-.rodape::before, .rodape::after { content: ""; position: absolute; width: 14px; height: 14px; border: 3px solid var(--ouro); }
-.rodape::before { top: -3px; right: -3px; border-left: 0; border-bottom: 0; }
-.rodape::after { bottom: -3px; right: -3px; border-left: 0; border-top: 0; }
-.tag { flex: none; width: 300px; background: var(--ouro); color: var(--sobre-ouro); display: flex; flex-direction: column;
-  justify-content: center; padding: 0 20px; box-sizing: border-box; overflow: hidden; }
-.tag small { font-size: 13px; font-weight: 600; line-height: 1.1; }
-.tag strong { font-family: var(--titulo); font-weight: 800; font-size: 25px; line-height: 1.05; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tag { flex: none; width: 300px; display: flex; flex-direction: column; justify-content: center; padding: 0 22px; box-sizing: border-box;
+  overflow: hidden; border-right: 2px solid rgba(245,181,60,.45); }
+.tag small { font-size: 12px; font-weight: 900; letter-spacing: .2em; text-transform: uppercase; color: var(--verde); line-height: 1.2; }
+.tag strong { font-weight: 800; font-size: 22px; line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .trilho { position: relative; flex: 1; overflow: hidden; }
 .pagina { position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; }
 .pagina.entra { animation: entra .55s ease-out both; }
@@ -23,31 +19,28 @@ const CSS = `
 @keyframes sai { from { transform: translateY(0); } to { transform: translateY(-100%); } }
 .item { flex: 0 0 33.333%; min-width: 0; box-sizing: border-box; display: flex; align-items: center; gap: 12px;
   padding: 0 20px; border-left: 1px solid var(--linha); transition: background .3s, box-shadow .3s; }
-.item.ativo { background: var(--painel-2); box-shadow: inset 0 -4px 0 var(--ouro); }
+.item.ativo { background: rgba(155,219,92,.08); box-shadow: inset 0 -3px 0 var(--ouro); }
 .novo { flex: none; font-size: 12px; font-weight: 700; color: var(--sobre-ouro); background: var(--verde); border-radius: 4px; padding: 2px 6px; margin-right: -4px; }
 .item.largo { flex-basis: 100%; }
 .nome { font-weight: 600; font-size: 19px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
 .nome.m { flex: 1; text-align: right; }
 .nome.v { flex: 1; }
-.placar { flex: none; font-family: var(--titulo); font-weight: 800; font-size: 30px; font-variant-numeric: tabular-nums; color: var(--ouro); }
+.placar { flex: none; font-weight: 900; font-size: 28px; font-variant-numeric: tabular-nums; color: var(--ouro); }
 .quando { flex: none; font-size: 15px; color: var(--apagado); text-align: center; line-height: 1.15; max-width: 92px; }
-.pos { flex: none; font-family: var(--titulo); font-weight: 800; font-size: 28px; color: var(--ouro); width: 26px; text-align: right; }
+.pos { flex: none; font-weight: 900; font-size: 26px; color: var(--ouro); width: 26px; text-align: right; }
 .info { min-width: 0; flex: 1; }
 .info .nome { display: block; }
 .info small { display: block; font-size: 14px; color: var(--apagado); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.valor { flex: none; font-family: var(--titulo); font-weight: 800; font-size: 28px; font-variant-numeric: tabular-nums; }
+.valor { flex: none; font-weight: 900; font-size: 26px; font-variant-numeric: tabular-nums; }
 .valor small { font-family: var(--corpo); font-size: 14px; font-weight: 500; color: var(--apagado); margin-left: 4px; }
 .convite { font-size: 21px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .convite b { color: var(--ouro); font-weight: 700; }
 .painel-qr { position: absolute; left: 44px; bottom: 92px; width: 520px; height: 232px; box-sizing: border-box; display: flex; align-items: center; gap: 22px;
-  padding: 16px 22px 16px 16px; background: var(--fundo-fundo); border: 1px solid var(--linha); transform: translateY(40px); opacity: 0;
+  padding: 16px 22px 16px 16px; transform: translateY(40px); opacity: 0;
   transition: transform .5s cubic-bezier(.2,.8,.2,1), opacity .4s; }
 .painel-qr.visivel { transform: translateY(0); opacity: 1; }
-.painel-qr::before, .painel-qr::after { content: ""; position: absolute; width: 16px; height: 16px; border: 3px solid var(--ouro); }
-.painel-qr::before { top: -3px; left: -3px; border-right: 0; border-bottom: 0; }
-.painel-qr::after { top: -3px; right: -3px; border-left: 0; border-bottom: 0; }
-.painel-qr img { width: 200px; height: 200px; flex: none; display: block; background: #fff; border-radius: 6px; }
-.painel-qr strong { display: block; font-family: var(--titulo); font-weight: 800; font-size: 34px; line-height: 1; color: var(--ouro); }
+.painel-qr img { width: 196px; height: 196px; flex: none; display: block; background: #fff; border-radius: 12px; }
+.painel-qr strong { display: block; font-weight: 900; font-size: 30px; line-height: 1.05; color: var(--ouro); }
 .painel-qr p { margin: 10px 0 0; font-size: 18px; line-height: 1.3; }
 .painel-qr small { display: block; margin-top: 10px; font-size: 15px; color: var(--apagado); line-height: 1.3; }
 `;
@@ -105,7 +98,7 @@ function itemInscricao(i) {
   return it;
 }
 // Painel com o QR code, que sobe do rodapé enquanto a página das inscrições está na tela
-var painel = CPL.el("div", "painel-qr");
+var painel = CPL.el("div", "painel-qr hud");
 document.body.appendChild(painel);
 function mostrarQr(i) {
   painel.textContent = "";
@@ -170,6 +163,6 @@ export const telaRodape = () =>
   pagina(
     "Rodapé da Coin's Pro League",
     CSS,
-    `<div class="rodape" id="rodape"><div class="tag"><small>Coin's Pro League</small><strong id="grupo"></strong></div><div class="trilho" id="trilho"></div></div>`,
+    `<div class="rodape hud" id="rodape"><div class="tag"><small>Coin's Pro League</small><strong id="grupo"></strong></div><div class="trilho" id="trilho"></div></div>`,
     SCRIPT,
   );

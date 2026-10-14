@@ -114,22 +114,34 @@ O `vercel.json` já fixa as funções em São Paulo (`gru1`), perto do banco do 
 
 Depois disso, todo `git push` na branch `main` publica sozinho. O domínio `.com.br` entra em **Settings > Domains**.
 
-## Telas do OBS (fase 4)
+## Cenas do OBS (hospedadas no site)
 
-No admin, a página **OBS** tem todos os links prontos para copiar. Em todas: fonte de Navegador, 1920 × 1080, posição 0/0, escala 1.
+No admin, a página **OBS** lista tudo por categoria, com o link pronto para copiar e a posição da webcam de cada cena. Em todas: fonte de Navegador, "Arquivo local" desmarcado, 1920 × 1080, posição 0/0, escala 1.
 
-| Tela | Link | Onde usar |
-| --- | --- | --- |
-| Rodapé estilo ESPN | `/obs/rodape` | Just Chatting, pausa e abertura (faixa de Y 996 a 1060) |
-| Card do gameplay | `/obs/card?cena=01a` (01a a 01d) | Cada cena de gameplay; entra no canto inferior oposto ao da câmera |
-| Campeão | `/obs/campeao` | Cena inteira, quando a competição estiver Encerrada |
+```
+public/obs/
+  cenas/        as cenas do canal (mesmos nomes de arquivo do pacote do OBS)
+    00_abertura.html            ?minutos=3 (padrão)
+    01_gameplay_clean.html      versão anterior (câmera X 1440, Y 58)
+    01a..01d_gameplay_*.html    câmera nos 4 cantos
+    01e_gameplay_cam_meio_esq   câmera no meio à esquerda (X 12, Y 423)
+    01f_gameplay_cam_meio_dir   câmera no meio à direita (X 1486, Y 423)
+    02_just_chatting.html       câmera em tela cheia, chat transparente
+    02_just_chatting_moldura    versão antiga, com moldura
+    03_pausa.html               ?minutos=5 (padrão)
+    04_encerramento.html
+    05_alerta_teste.html        só para teste visual
+  assets/       logo.png (rosto), moeda.png, thecoinsquash-coin.svg
+  cpl.js, cpl.css   peças da liga nas cenas (card, revezamento, QR), na identidade do canal
+```
 
-- Opções do card: `a_cada` (minutos, padrão 10) e `duracao` (segundos, padrão 12). Ex.: `/obs/card?cena=01b&a_cada=15`.
-- Todas aceitam `teste=1` (dados de exemplo) para posicionar antes da liga começar, e `c=ID` para mostrar outra competição.
-- São HTML puro com JavaScript simples (roda até em OBS antigo) e buscam `/obs/dados` a cada 20 s, sem cache. Os nomes entram como texto, nunca como HTML.
-- "Últimos resultados" são os lançados mais recentemente, de qualquer rodada. Resultado novo: o rodapé recomeça por ele (com o selo "novo" por 15 minutos) e o card do gameplay aparece na hora com "Acabou de sair".
-- Inscrições abertas: o rodapé mostra um painel com QR code (520 × 232 px, à esquerda, colado no rodapé) e o card do gameplay cresce para mostrar o QR por 20 s. O QR leva ao link curto `/i/ID`, que abre a inscrição daquela competição. Na ficha da competição, o admin tem o QR para baixar em PNG ou SVG.
-- Se algo não atualizar, abra `/obs/dados` no navegador: se o resultado está lá, confira se a fonte do OBS não está com `teste=1` no link.
+- Gameplay e Just Chatting: o card da liga aparece no canto de baixo oposto à câmera (1 min depois de a cena abrir, depois a cada 10 min, por 12 s; resultado novo aparece na hora). Opções no link: `a_cada`, `duracao`.
+- Pausa: a faixa de baixo reveza os recados com a liga; QR das inscrições à direita (espelhando o do LivePix).
+- Abertura: frases da liga no letreiro; QR das inscrições à direita.
+- `?teste=1` em qualquer cena usa dados de exemplo. `&c=ID` mostra outra competição.
+- Peças avulsas: `/obs/campeao` (cena do campeão), `/obs/card?cena=01a`, `/obs/rodape` (não usar em cena que já tem faixa embaixo).
+- Tudo em JavaScript de 2017 (roda em qualquer OBS) e com os nomes entrando como texto, nunca como HTML.
+- Ficam fora do site: a transição (`07_transicao.webm`, o stinger do OBS precisa de arquivo local) e o banner offline (vai direto na Twitch).
 
 ## Fases
 

@@ -33,6 +33,11 @@
   --alerta-fundo: #211a0c;
   --alerta-borda: #5c4719;
   --alerta-texto: #ffc95e;
+  --brilho-verde: rgba(155, 219, 92, .10);
+  --brilho-ouro: rgba(245, 181, 60, .08);
+  --hud-borda: rgba(245, 181, 60, .42);
+  --hud-linha: rgba(155, 219, 92, .14);
+  --verde: #9bdb5c;
 }
 
 :root[data-tema="claro"] {
@@ -65,10 +70,16 @@
   --alerta-fundo: #fff3d6;
   --alerta-borda: #e8c26a;
   --alerta-texto: #6e4600;
+  --brilho-verde: transparent;
+  --brilho-ouro: transparent;
+  --hud-borda: rgba(176, 122, 16, .45);
+  --hud-linha: rgba(47, 106, 18, .10);
+  --verde: #4f9a25;
 }
 
 :root {
-  --fonte-texto: "Instrument Sans Variable", system-ui, sans-serif;
-  --fonte-titulo: "Big Shoulders Variable", "Arial Narrow", sans-serif;
+  /* Mesma família das cenas do OBS (Segoe UI no Windows); a Inter vem do próprio site para ficar igual no celular */
+  --fonte-texto: "Inter Variable", "Segoe UI", system-ui, sans-serif;
+  --fonte-titulo: "Inter Variable", "Segoe UI", system-ui, sans-serif;
   --raio: 6px;
 }

@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>thecoinsquash — gameplay (câmera em cima à esquerda)</title>
+<!-- ==========================================================
+     CAMERA CÂMERA EM CIMA À ESQUERDA
+     No OBS, posicione a webcam com Ctrl+E usando:
+         Posicao X: 12      Posicao Y: 12
+         Tamanho limitado: Esticar para os limites
+         Largura: 422           Altura: 234
+     Texto automatico do ultimo sub, na plaquinha:
+         Fonte: Most Recent Subscriber
+         Ctrl+E > Alinhamento: CENTRO
+         Posicao X: 190   Posicao Y: 297
+         Tamanho limitado: Sem limite / fonte tamanho 21
+     ========================================================== -->
+<style>
+  :root{
+    --green:#9bdb5c;
+    --gold:#f5b53c;
+  }
+  *{box-sizing:border-box}
+  html,body{
+    width:1920px; height:1080px; margin:0; overflow:hidden;
+    background:transparent !important;
+    font-family:"Segoe UI",Arial,sans-serif;
+  }
+
+  .camera-wrap{
+    position:absolute;
+    left:8px;
+    top:8px;
+    width:430px;
+    height:242px;
+  }
+
+  .shadow{
+    position:absolute; inset:-9px;
+    border-radius:24px;
+    box-shadow:
+      0 0 22px rgba(155,219,92,.22),
+      0 0 42px rgba(245,181,60,.13);
+  }
+
+  .frame{
+    position:absolute; inset:0;
+    border-radius:19px;
+    border:4px solid var(--gold);
+    box-shadow:
+      0 0 0 3px rgba(155,219,92,.72) inset,
+      0 0 0 2px rgba(5,9,6,.9),
+      0 0 20px rgba(155,219,92,.34);
+    background:transparent;
+  }
+
+  .frame::before,
+  .frame::after{
+    content:"";
+    position:absolute;
+    height:5px;
+    width:112px;
+    top:-7px;
+    background:linear-gradient(90deg,var(--gold),var(--green));
+    box-shadow:0 0 13px rgba(155,219,92,.7);
+  }
+  .frame::before{left:30px;clip-path:polygon(0 0,100% 0,90% 100%,10% 100%)}
+  .frame::after{right:30px;clip-path:polygon(0 0,100% 0,90% 100%,10% 100%)}
+
+  .corner{position:absolute;width:42px;height:42px}
+  .tl{left:-9px;top:-9px;border-left:6px solid var(--green);border-top:6px solid var(--green);border-radius:16px 0 0 0}
+  .tr{right:-9px;top:-9px;border-right:6px solid var(--green);border-top:6px solid var(--green);border-radius:0 16px 0 0}
+  .bl{left:-9px;bottom:-9px;border-left:6px solid var(--gold);border-bottom:6px solid var(--gold);border-radius:0 0 0 16px}
+  .br{right:-9px;bottom:-9px;border-right:6px solid var(--gold);border-bottom:6px solid var(--gold);border-radius:0 0 16px 0}
+
+  /* a plaquinha tem a largura da camera e a logo mora dentro dela */
+  .tag{
+    position:absolute;
+    left:0; right:0;
+    bottom:-70px;
+    height:62px;
+    display:flex; align-items:center;
+    background:linear-gradient(180deg,#0d1510,#050806);
+    border:2px solid var(--gold);
+    border-radius:12px;
+    color:#fff;
+    white-space:nowrap;
+    box-shadow:0 0 18px rgba(0,0,0,.55);
+  }
+  .tag .coin{
+    position:absolute;
+    right:-12px; top:50%;
+    width:76px; height:76px;
+    margin-top:-38px;
+    z-index:5;
+  }
+  .tag .txt{
+    margin-right:78px;
+    flex:1;
+    padding-left:12px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+  }
+  .tag .rotulo{
+    height:16px; line-height:16px;
+    font-size:12px; font-weight:800; letter-spacing:.20em;
+    color:var(--green);
+  }
+  .tag .valor{height:26px; margin-top:2px}
+
+  .pulse{
+    position:absolute;
+    inset:-3px;
+    border-radius:21px;
+    border:1px solid rgba(155,219,92,.55);
+    animation:pulse 2.4s ease-in-out infinite;
+    pointer-events:none;
+  }
+  @keyframes pulse{
+    0%,100%{opacity:.25;box-shadow:0 0 5px rgba(155,219,92,.1)}
+    50%{opacity:1;box-shadow:0 0 20px rgba(155,219,92,.45)}
+  }
+
+
+  /* ---- LOGO DO CANAL ----
+     O arquivo logo.png precisa ficar NA MESMA PASTA deste html. */
+  .coin{transform-style:flat !important; animation:cs-flutua 3.6s ease-in-out infinite !important;
+        border-radius:0 !important; box-shadow:none !important; background:none !important}
+  .coin img{width:100%; height:100%; object-fit:contain; display:block;
+        filter:drop-shadow(0 6px 14px rgba(0,0,0,.55))}
+  @keyframes cs-flutua{
+    0%,100%{transform:translateY(0) rotate(-1.5deg)}
+    50%{transform:translateY(-7px) rotate(1.5deg)}
+  }
+</style>
+<link rel="stylesheet" href="/obs/cpl.css">
+</head>
+<body>
+
+
+  <div class="camera-wrap">
+    <div class="shadow"></div>
+    <div class="frame">
+      <div class="pulse"></div>
+      <i class="corner tl"></i>
+      <i class="corner tr"></i>
+      <i class="corner bl"></i>
+      <i class="corner br"></i>
+    </div>
+
+    <div class="tag">
+      <div class="coin" aria-hidden="true"><img src="/obs/assets/logo.png" alt="thecoinsquash"></div>
+      <div class="txt">
+        <span class="rotulo">ÚLTIMO SUB</span>
+        <span class="valor">&nbsp;</span>
+      </div>
+    </div>
+  </div>
+
+
+<!-- Coin's Pro League (card que aparece de tempos em tempos) -->
+<script src="/obs/cpl.js"></script>
+<script>CPL.card({ lado: "direita" });</script>
+</body>
+</html>

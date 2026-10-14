@@ -8,7 +8,10 @@ export function MolduraSite({ children }: { children: ReactNode }) {
     <div className="site">
       <header className="topo">
         <div className="miolo">
-          <a className="marca-site" href="/"><b>Coin&apos;s</b> Pro League</a>
+          <a className="marca-site" href="/" aria-label="thecoinsquash Pro League, página inicial">
+            <span className="wordmark">the<b className="c">coin</b><b className="s">squash</b></span>
+            <span className="sub">Pro League</span>
+          </a>
           <Abas />
           <SeletorTema />
         </div>

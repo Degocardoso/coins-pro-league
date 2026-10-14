@@ -1,0 +1,63 @@
+/* Peças da Coin's Pro League para as cenas do OBS, na identidade do thecoinsquash:
+   painel .hud (borda dourada, linha verde por dentro, vidro escuro), rótulos verdes em caixa alta espaçada. */
+.cpl, .cpl * { box-sizing: border-box; }
+.cpl {
+  --cpl-verde: #9bdb5c; --cpl-ouro: #f5b53c; --cpl-texto: #f7f8fb; --cpl-apagado: #9ea7b6;
+  font-family: "Segoe UI", Inter, Arial, sans-serif; color: var(--cpl-texto);
+}
+.cpl-hud {
+  border: 2px solid rgba(245, 181, 60, .76);
+  box-shadow: 0 0 0 2px rgba(155, 219, 92, .22) inset, 0 0 28px rgba(0, 0, 0, .45), 0 0 22px rgba(155, 219, 92, .14);
+  background: linear-gradient(180deg, rgba(10, 15, 24, .9), rgba(6, 9, 15, .82));
+  border-radius: 18px;
+}
+.cpl-rotulo { color: var(--cpl-verde); font-weight: 900; letter-spacing: .2em; text-transform: uppercase; font-size: 15px; line-height: 1; }
+.cpl-moeda { display: inline-flex; align-items: center; justify-content: center; flex: none; width: 46px; height: 46px; border-radius: 50%;
+  border: 2px solid var(--cpl-ouro); background: #0b1019; overflow: hidden; padding: 5px; }
+.cpl-moeda img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.cpl-moeda b { font-weight: 900; color: var(--cpl-apagado); font-size: 20px; line-height: 1; }
+
+/* Card que aparece de tempos em tempos (gameplay e just chatting) */
+.cpl-card { position: absolute; width: 560px; padding: 16px 22px 18px; opacity: 0; z-index: 20;
+  transition: transform .6s cubic-bezier(.2, .8, .2, 1), opacity .45s; }
+.cpl-card.esquerda { left: 24px; transform: translateX(-620px); }
+.cpl-card.direita { right: 24px; transform: translateX(620px); }
+.cpl-card.visivel { transform: translateX(0); opacity: 1; }
+.cpl-topo { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 12px; }
+.cpl-topo small { font-size: 16px; color: var(--cpl-apagado); font-weight: 600; white-space: nowrap; }
+.cpl-topo small.destaque { color: var(--cpl-texto); font-weight: 700; font-size: 18px; }
+.cpl-corpo { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.cpl-nome { font-weight: 800; font-size: 25px; line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; letter-spacing: -.01em; }
+.cpl-nome.m { flex: 1; text-align: right; }
+.cpl-nome.v { flex: 1; }
+.cpl-meio { flex: none; font-weight: 900; font-size: 38px; color: var(--cpl-ouro); font-variant-numeric: tabular-nums; letter-spacing: .02em;
+  text-shadow: 0 0 22px rgba(245, 181, 60, .25); }
+.cpl-meio.x { font-size: 24px; color: var(--cpl-apagado); text-shadow: none; }
+.cpl-info { flex: 1; min-width: 0; }
+.cpl-info small { display: block; font-size: 16px; color: var(--cpl-apagado); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cpl-grande { flex: none; font-weight: 900; font-size: 46px; color: var(--cpl-ouro); line-height: 1; font-variant-numeric: tabular-nums; }
+.cpl-grande small { font-size: 15px; font-weight: 800; color: var(--cpl-apagado); margin-left: 4px; letter-spacing: .12em; text-transform: uppercase; }
+
+/* QR code da inscrição */
+.cpl-qr { display: flex; align-items: center; gap: 20px; }
+.cpl-qr img { width: 192px; height: 192px; flex: none; display: block; background: #fff; border-radius: 12px; }
+.cpl-qr strong { display: block; font-weight: 900; font-size: 30px; line-height: 1.05; color: var(--cpl-ouro); }
+.cpl-qr p { margin: 10px 0 0; font-size: 18px; line-height: 1.3; }
+.cpl-qr small { display: block; margin-top: 10px; font-size: 15px; color: var(--cpl-apagado); line-height: 1.3; }
+
+/* Painel fixo de QR (pausa e abertura): aparece só com inscrição aberta */
+.cpl-painel-qr { position: absolute; width: 340px; padding: 20px; text-align: center; opacity: 0; transition: opacity .6s; z-index: 20; }
+.cpl-painel-qr.visivel { opacity: 1; }
+.cpl-painel-qr img { width: 260px; height: 260px; display: block; margin: 14px auto 12px; background: #fff; border-radius: 14px; }
+.cpl-painel-qr strong { display: block; font-weight: 900; font-size: 30px; color: var(--cpl-ouro); line-height: 1.05; }
+.cpl-painel-qr p { margin: 0; font-size: 17px; color: var(--cpl-apagado); line-height: 1.3; }
+
+/* Item da liga dentro de uma faixa já existente (pausa) */
+.cpl-faixa { display: flex; align-items: center; justify-content: center; gap: 16px; width: 100%; min-width: 0; padding: 0 28px; }
+.cpl-faixa .cpl-rotulo { flex: none; font-size: 17px; }
+.cpl-faixa .cpl-corpo { flex: 0 1 auto; }
+.cpl-faixa .cpl-nome { font-size: 27px; flex: 0 1 auto; max-width: 560px; }
+.cpl-faixa .cpl-meio { font-size: 34px; }
+.cpl-faixa .cpl-moeda { width: 42px; height: 42px; }
+.cpl-faixa-texto { font-size: 24px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.cpl-faixa-texto b { color: var(--cpl-ouro); }

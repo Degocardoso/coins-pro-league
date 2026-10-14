@@ -68,7 +68,8 @@ export function LigaView({ dados }: { dados: Dados }) {
 
       <section className="abertura">
         <div>
-          <h1 className="titulo-liga"><b>Coin&apos;s</b> Pro League</h1>
+          <span className="rotulo">Liga de Pro Clubs {"//"} EA SPORTS FC 26</span>
+          <h1 className="titulo-liga"><b>Coin&apos;s</b> Pro <span>League</span></h1>
           <p className="lead">
             A liga de Pro Clubs da comunidade thecoinsquash. EA SPORTS FC 26, com crossplay entre PS5, Xbox e PC.
           </p>
