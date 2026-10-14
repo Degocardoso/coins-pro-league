@@ -4,8 +4,10 @@
 // - "confirmar" abre a janela de confirmação do painel antes de enviar.
 // - "semMensagem" (botões em tabela): sucesso fica silencioso; erro e alerta abrem numa janela.
 // - Dentro de um <Popup>, a janela fecha sozinha quando salva.
+// - Sucesso aparece no aviso flutuante (canto de baixo), sem a tela pular; erros ficam junto do formulário.
 import { createContext, startTransition, useActionState, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import type { Estado } from "@/controllers/acoes/estado";
+import { AvisosContexto } from "@/views/comum/Avisos";
 import { Aviso, Confirmacao } from "./Dialogo";
 import { PopupContexto } from "./Popup";
 
@@ -32,14 +34,26 @@ export function FormAcao({
   semMensagem?: boolean;
   limparAoSalvar?: boolean;
 }) {
-  const [estado, executar, pendente] = useActionState(acao, null);
+  // O aviso de sucesso sai no instante em que a resposta chega: se a tela nova não tiver mais este
+  // formulário (ex.: "Desfazer resultado" some junto com a seção), o aviso aparece do mesmo jeito.
+  const avisos = useContext(AvisosContexto);
+  const avisosRef = useRef(avisos);
+  avisosRef.current = avisos;
+  const [estado, executar, pendente] = useActionState(async (anterior: Estado, dados: FormData) => {
+    const resposta = await acao(anterior, dados);
+    if (resposta?.ok && !resposta.erros?.length) avisosRef.current?.avisar(resposta.ok);
+    return resposta;
+  }, null);
   const form = useRef<HTMLFormElement>(null);
   const [aguardando, setAguardando] = useState<FormData | null>(null);
   const [aviso, setAviso] = useState(false);
   const popup = useContext(PopupContexto);
 
+  // Cada resposta do servidor é tratada uma vez só (aviso, fechar janela, limpar campos)
+  const tratado = useRef<Estado>(null);
   useEffect(() => {
-    if (!estado) return;
+    if (!estado || estado === tratado.current) return;
+    tratado.current = estado;
     const temProblema = !!estado.erros?.length || !!estado.alertas?.length;
     if (semMensagem && temProblema) setAviso(true);
     if (estado.ok && !estado.erros?.length) {
@@ -63,7 +77,7 @@ export function FormAcao({
       }}
     >
       <Pendente.Provider value={pendente}>{children}</Pendente.Provider>
-      {!semMensagem && <Mensagem estado={estado} />}
+      {!semMensagem && <Mensagem estado={estado} semOk={!!avisos} />}
       {aguardando && (
         <Confirmacao
           mensagem={confirmar!}
@@ -82,7 +96,7 @@ export function FormAcao({
   );
 }
 
-export function Mensagem({ estado }: { estado: Estado }) {
+export function Mensagem({ estado, semOk }: { estado: Estado; semOk?: boolean }) {
   if (!estado) return null;
   return (
     <div aria-live="polite">
@@ -91,7 +105,7 @@ export function Mensagem({ estado }: { estado: Estado }) {
           {estado.erros.length === 1 ? estado.erros[0] : <ul>{estado.erros.map((e) => <li key={e}>{e}</li>)}</ul>}
         </div>
       ) : null}
-      {estado.ok && <div className="msg msg-ok">{estado.ok}</div>}
+      {estado.ok && !semOk && <div className="msg msg-ok">{estado.ok}</div>}
       {estado.alertas?.length ? (
         <div className="msg msg-alerta">
           <ul>{estado.alertas.map((a) => <li key={a}>{a}</li>)}</ul>

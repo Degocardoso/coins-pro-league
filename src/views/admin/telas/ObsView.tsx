@@ -1,6 +1,11 @@
-// VIEW — todas as cenas do OBS hospedadas no site, organizadas por categoria, com o link pronto para copiar
+// VIEW — todas as cenas do OBS hospedadas no site, organizadas por categoria, com o link pronto para copiar.
+// Protegida pela senha do OBS; no topo, o botão que liga ou desliga a liga em todas as cenas.
+import { abrirObs, alternarLigaNaLive, fecharObs } from "@/controllers/acoes/obs";
+import { formatarDataHora } from "@/lib/datas";
 import { CopiarLink } from "../CopiarLink";
-import { Cabeca, Secao } from "../componentes";
+import { Enviar, FormAcao } from "../FormAcao";
+import { Popup } from "../Popup";
+import { Cabeca, Campo, Secao } from "../componentes";
 
 type Cena = { caminho: string; nome: string; detalhe: string; camera?: string };
 
@@ -51,9 +56,77 @@ function Lista({ cenas }: { cenas: Cena[] }) {
   );
 }
 
-export function ObsView() {
+type EstadoLiga = { ligada: boolean; atualizadoEm: Date | null; por: string | null };
+
+/** Página trancada: pede a senha do OBS (variável OBS_SENHA), separada do login. */
+export function ObsBloqueadaView({ configurada }: { configurada: boolean }) {
   return (
     <>
+      <Cabeca titulo="Cenas do OBS" descricao="Área protegida pela senha do OBS. Depois de aberta, fica liberada por 10 minutos." />
+      <Secao titulo="Abrir a área do OBS">
+        {configurada ? (
+          <FormAcao acao={abrirObs} className="obs-senha">
+            <Campo rotulo="Senha do OBS">
+              <input type="password" name="senha" required autoComplete="off" autoFocus />
+            </Campo>
+            <Enviar>Abrir</Enviar>
+          </FormAcao>
+        ) : (
+          <div className="msg msg-alerta">
+            A senha do OBS ainda não foi configurada. Na Vercel, em <b>Settings &gt; Environment Variables</b>, crie a variável{" "}
+            <b>OBS_SENHA</b> com pelo menos 8 caracteres e faça um <b>Redeploy</b>. No seu PC, coloque a mesma linha no <b>.env</b>.
+          </div>
+        )}
+      </Secao>
+    </>
+  );
+}
+
+/** Botão geral: liga ou desliga tudo da liga em todas as cenas. Sempre pede a senha do OBS. */
+function LigaNaLive({ liga }: { liga: EstadoLiga }) {
+  const acao = liga.ligada ? "Desligar a liga" : "Ligar a liga";
+  return (
+    <section className={`liga-na-live ${liga.ligada ? "ligada" : "desligada"}`} aria-live="polite">
+      <div className="liga-na-live-estado">
+        <span className="rotulo-adm">Liga na live</span>
+        <strong>{liga.ligada ? "Ligada" : "Desligada"}</strong>
+        <p>
+          {liga.ligada
+            ? "As cenas mostram a liga: card, revezamento da pausa, letreiro, QR das inscrições, rodapé e campeão."
+            : "Nada da liga aparece nas cenas. Os links continuam os mesmos."}
+          {liga.atualizadoEm && <> Última troca: {formatarDataHora(liga.atualizadoEm)}{liga.por ? `, por ${liga.por}` : ""}.</>}
+        </p>
+      </div>
+      <div className="liga-na-live-acoes">
+        <Popup rotulo={acao} titulo={acao} mini={false} variante={liga.ligada ? "perigo" : "ouro"}>
+          <FormAcao acao={alternarLigaNaLive}>
+            <input type="hidden" name="ligar" value={liga.ligada ? "0" : "1"} />
+            <p className="dialogo-texto">
+              {liga.ligada
+                ? "Tudo da liga some das cenas do OBS em até 20 segundos."
+                : "A liga volta a aparecer nas cenas do OBS em até 20 segundos."}{" "}
+              Digite a senha do OBS para confirmar.
+            </p>
+            <Campo rotulo="Senha do OBS">
+              <input type="password" name="senha" required autoComplete="off" />
+            </Campo>
+            <div className="dialogo-acoes">
+              <Enviar variante={liga.ligada ? "perigo" : "ouro"}>{acao}</Enviar>
+            </div>
+          </FormAcao>
+        </Popup>
+        <FormAcao acao={fecharObs} semMensagem>
+          <Enviar variante="normal">Trancar a página</Enviar>
+        </FormAcao>
+      </div>
+    </section>
+  );
+}
+
+export function ObsView({ liga }: { liga: EstadoLiga }) {
+  return (
+    <>
+      <LigaNaLive liga={liga} />
       <Cabeca titulo="Cenas do OBS" descricao="Todas as suas cenas hospedadas no site. Mudou aqui, muda no OBS: é só atualizar a fonte." />
       <Secao titulo="Como colocar no OBS">
         <ol className="obs-passos">

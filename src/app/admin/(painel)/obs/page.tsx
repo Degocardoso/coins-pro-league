@@ -1,7 +1,11 @@
 import { exigirAdmin } from "@/controllers/sessao";
-import { ObsView } from "@/views/admin/telas/ObsView";
+import { obsLiberada, senhaObsConfigurada } from "@/controllers/obsAcesso";
+import { LigaNaLiveController } from "@/controllers/LigaNaLiveController";
+import { getDb } from "@/models/db";
+import { ObsBloqueadaView, ObsView } from "@/views/admin/telas/ObsView";
 
 export default async function Pagina() {
-  await exigirAdmin();
-  return <ObsView />;
+  const admin = await exigirAdmin();
+  if (!(await obsLiberada(admin.id))) return <ObsBloqueadaView configurada={senhaObsConfigurada()} />;
+  return <ObsView liga={await new LigaNaLiveController(getDb()).estado()} />;
 }

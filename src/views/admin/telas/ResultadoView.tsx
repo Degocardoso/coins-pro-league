@@ -67,7 +67,7 @@ function TabelaAtletas({ lado, estatisticas }: { lado: Lado; estatisticas: Map<n
   );
 }
 
-export function ResultadoView({ dados, desfeito }: { dados: Dados; desfeito?: boolean }) {
+export function ResultadoView({ dados }: { dados: Dados }) {
   const { partida: p, competicao, rodada, lados } = dados;
   const voltar = { href: `/admin/competicoes/${competicao.id}/partidas?rodada=${rodada.numero}`, rotulo: `${competicao.nome}, ${rodada.nome}` };
   if (!lados)
@@ -95,7 +95,6 @@ export function ResultadoView({ dados, desfeito }: { dados: Dados; desfeito?: bo
           </>
         }
       />
-      {desfeito && !encerrada && <div className="msg msg-ok" style={{ margin: "-10px 0 18px" }}>Resultado desfeito: a partida voltou a ficar sem resultado.</div>}
       <FormAcao acao={lancarResultado}>
         <input type="hidden" name="partidaId" value={p.id} />
         <input type="hidden" name="competicaoId" value={competicao.id} />

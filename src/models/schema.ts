@@ -4,6 +4,7 @@ import {
   pgEnum,
   serial,
   integer,
+  jsonb,
   varchar,
   text,
   boolean,
@@ -254,4 +255,12 @@ export const arquivos = pgTable("arquivos", {
   tamanho: integer().notNull(),
   bytes: bytea().notNull(),
   criadoEm: agora(),
+});
+
+// Configurações do site (ex.: "liga_na_live" = a liga aparece nas cenas do OBS)
+export const configuracoes = pgTable("configuracoes", {
+  chave: varchar({ length: 60 }).primaryKey(),
+  valor: jsonb().notNull(),
+  atualizadoEm: agora(),
+  atualizadoPor: integer().references(() => admins.id, { onDelete: "set null" }),
 });

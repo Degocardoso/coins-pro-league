@@ -43,3 +43,11 @@ describe("cenas do OBS", () => {
     }
   });
 });
+
+describe("botão liga na live nas cenas", () => {
+  it("as peças da liga escondem tudo quando os dados chegam com ligaNaLive false", () => {
+    const js = readFileSync("public/obs/cpl.js", "utf8");
+    expect(js.match(/ligaNaLive === false/g)?.length).toBeGreaterThanOrEqual(2); // card e revezamento
+    expect(js).toContain("d.ligaNaLive !== false"); // teste também obedece
+  });
+});

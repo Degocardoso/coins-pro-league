@@ -1,5 +1,6 @@
 /* Coin's Pro League nas cenas do OBS (JavaScript de 2017: roda em qualquer versão do OBS).
    Lê /obs/dados a cada 20 s. Nomes de clubes e atletas entram sempre como texto, nunca como HTML.
+   Botão "liga na live" desligado no admin: tudo da liga some da cena (inclusive no modo de teste).
    Opções pelo link da cena: ?teste=1 (dados de exemplo), &c=ID (outra competição),
    &a_cada=10 (minutos entre aparições do card), &duracao=12 (segundos do card na tela). */
 (function () {
@@ -26,6 +27,7 @@
     var t = function (n) { return { nome: n, escudo: null }; };
     var j = function (id, m, v, gm, gv, q) { return { id: id, m: t(m), v: t(v), gm: gm, gv: gv, pm: null, pv: null, wo: false, quando: q, rodada: "Rodada 6", novo: id === 1 }; };
     return {
+      ligaNaLive: true,
       competicao: { id: 1, nome: "Coin's Pro League", tipo: "liga" },
       resultados: { titulo: "Últimos resultados", jogos: [j(1, "Moeda FC", "Combo United", 3, 1), j(2, "Respawn AC", "Power-Up SC", 2, 2)] },
       proximos: { titulo: "Próximos jogos", jogos: [j(5, "Crossplay EC", "Fliperama FC", null, null, "qua. 14/10, 21:30")] },
@@ -39,10 +41,15 @@
   // Busca única compartilhada por todas as peças da cena
   var ouvintes = [], ultimo = null, iniciado = false;
   function buscar() {
-    if (teste) { entregar(exemplo()); return; }
     var c = params.get("c");
     fetch("/obs/dados" + (c ? "?c=" + encodeURIComponent(c) : ""), { cache: "no-store" })
-      .then(function (r) { return r.json(); }).then(entregar).catch(function () {});
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        // Modo de teste usa dados de exemplo, mas obedece ao botão do admin
+        if (teste && d.ligaNaLive !== false) d = exemplo();
+        entregar(d);
+      })
+      .catch(function () { if (teste) entregar(exemplo()); });
   }
   function entregar(d) { ultimo = d; ouvintes.forEach(function (fn) { fn(d); }); }
   function aoChegar(fn) {
@@ -114,7 +121,7 @@
     var c = el("div", "cpl cpl-hud cpl-card " + lado);
     c.style.bottom = (opcoes.base || 24) + "px";
     document.body.appendChild(c);
-    var dados = null, vez = 0, saindo = null, ultimoVisto = null;
+    var dados = null, vez = 0, saindo = null, ultimoVisto = null, desligada = false;
     function mostrar(partes) {
       c.textContent = "";
       partes.forEach(function (e) { c.appendChild(e); });
@@ -124,14 +131,22 @@
       saindo = setTimeout(function () { c.classList.remove("visivel"); }, comQr ? Math.max(duracao, 20000) : duracao);
     }
     function aparecer() {
+      if (desligada) return;
       var lista = dados ? assuntos(dados) : [];
       if (!lista.length || c.classList.contains("visivel")) return;
       mostrar(lista[vez++ % lista.length]);
     }
     aoChegar(function (d) {
+      if (d.ligaNaLive === false) {
+        // Desligada: some na hora e esquece o último resultado (ao religar, não solta "acabou de sair" antigo)
+        desligada = true; dados = null; ultimoVisto = null;
+        clearTimeout(saindo); c.classList.remove("visivel");
+        return;
+      }
       var r = d.resultados && d.resultados.jogos[0];
       var chave = r ? r.id + ":" + r.gm + "x" + r.gv : null;
-      var primeira = !dados;
+      var primeira = !dados || desligada;
+      desligada = false;
       dados = d;
       // Resultado novo lançado no admin: aparece na hora
       if (!primeira && chave && chave !== ultimoVisto) mostrar([topo("Acabou de sair", r.rodada, true), confronto(r, r.gm + " × " + r.gv)]);
@@ -182,7 +197,11 @@
     var original = [].slice.call(faixa.childNodes);
     var tempoProprio = (opcoes && opcoes.tempoProprio) || 12000, tempoLiga = (opcoes && opcoes.tempoLiga) || 7000;
     var dados = null, fila = [], estado = "proprio";
-    aoChegar(function (d) { dados = d; });
+    aoChegar(function (d) {
+      dados = d;
+      // Desligada no meio de um item da liga: volta na hora para o conteúdo original
+      if (d.ligaNaLive === false) { fila = []; if (estado === "liga") { estado = "proprio"; trocar(original); } }
+    });
     function itensLiga(d) {
       var itens = [];
       var res = d.resultados && d.resultados.jogos[0];

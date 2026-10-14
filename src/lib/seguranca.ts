@@ -1,5 +1,5 @@
 // Senhas (scrypt) e token de sessão assinado (HMAC), só com o crypto do Node.
-import { createHmac, randomBytes, scrypt, timingSafeEqual } from "node:crypto";
+import { createHash, createHmac, randomBytes, scrypt, timingSafeEqual } from "node:crypto";
 
 const scryptAsync = (senha: string, sal: Buffer, tamanho: number) =>
   new Promise<Buffer>((ok, erro) => scrypt(senha, sal, tamanho, (e, chave) => (e ? erro(e) : ok(chave))));
@@ -27,7 +27,11 @@ export function criarToken(dados: DadosSessao, segredo: string): string {
   return `${corpo}.${assinar(corpo, segredo)}`;
 }
 
-export function lerToken(token: string | undefined, segredo: string, agora = Date.now()): DadosSessao | null {
+/**
+ * Lê um token assinado. "duracaoMaxMs" recusa tokens com prazo maior que o permitido hoje
+ * (assim, encurtar a sessão também derruba quem logou com a regra antiga).
+ */
+export function lerToken(token: string | undefined, segredo: string, agora = Date.now(), duracaoMaxMs?: number): DadosSessao | null {
   if (!token) return null;
   const [corpo, assinatura] = token.split(".");
   if (!corpo || !assinatura) return null;
@@ -37,8 +41,17 @@ export function lerToken(token: string | undefined, segredo: string, agora = Dat
   try {
     const dados = JSON.parse(Buffer.from(corpo, "base64url").toString()) as DadosSessao;
     if (typeof dados.adminId !== "number" || typeof dados.expiraEm !== "number") return null;
-    return dados.expiraEm > agora ? dados : null;
+    if (dados.expiraEm <= agora) return null;
+    if (duracaoMaxMs !== undefined && dados.expiraEm - agora > duracaoMaxMs + 60_000) return null;
+    return dados;
   } catch {
     return null;
   }
+}
+
+/** Compara duas senhas sem vazar pelo tempo de resposta (os dois lados viram hash do mesmo tamanho). */
+export function senhaIgual(digitada: string, configurada: string): boolean {
+  const a = createHash("sha256").update(digitada).digest();
+  const b = createHash("sha256").update(configurada).digest();
+  return timingSafeEqual(a, b);
 }

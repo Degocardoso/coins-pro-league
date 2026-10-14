@@ -450,8 +450,11 @@
 <!-- Coin's Pro League (frases da liga no letreiro e QR das inscrições) -->
 <script src="/obs/cpl.js"></script>
 <script>CPL.painelQr({ x: 1556, y: 330 });
+var letreiroAtual = "";
 CPL.aoChegar(function (d) {
   var lista = FRASES.concat(CPL.frases(d));
+  if (lista.join("|") === letreiroAtual) return; // só remonta quando muda (liga desligada: volta às frases do canal)
+  letreiroAtual = lista.join("|");
   var fita = document.getElementById("fita");
   fita.textContent = "";
   for (var vez = 0; vez < 2; vez++) lista.forEach(function (f) {

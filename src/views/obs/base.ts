@@ -44,9 +44,12 @@ var CPL = {
   carregar: function (aoChegar) {
     var c = CPL.params.get("c");
     var url = "/obs/dados" + (c ? "?c=" + encodeURIComponent(c) : "");
+    var teste = CPL.params.get("teste") === "1";
     function buscar() {
-      if (CPL.params.get("teste") === "1") { aoChegar(CPL.exemplo()); return; }
-      fetch(url, { cache: "no-store" }).then(function (r) { return r.json(); }).then(aoChegar).catch(function () {});
+      // Modo de teste usa dados de exemplo, mas obedece ao botão "liga na live" do admin
+      fetch(url, { cache: "no-store" }).then(function (r) { return r.json(); })
+        .then(function (d) { aoChegar(teste && d.ligaNaLive !== false ? CPL.exemplo() : d); })
+        .catch(function () { if (teste) aoChegar(CPL.exemplo()); });
     }
     buscar();
     setInterval(buscar, 20000);
@@ -56,6 +59,7 @@ var CPL = {
     var t = function (n) { return { nome: n, escudo: null }; };
     var j = function (id, m, v, gm, gv, q) { return { id: id, m: t(m), v: t(v), gm: gm, gv: gv, pm: null, pv: null, wo: false, quando: q, rodada: "Rodada 6", novo: id === 1 }; };
     return {
+      ligaNaLive: true,
       competicao: { id: 1, nome: "Coin's Pro League", tipo: "liga" },
       resultados: { titulo: "Últimos resultados", jogos: [j(1, "Moeda FC", "Combo United", 3, 1), j(2, "Respawn AC", "Power-Up SC", 2, 2), j(3, "Level Up EC", "Lobby FC", 0, 1), j(4, "Coroa City", "Hexágono SC", 4, 2)] },
       proximos: { titulo: "Próximos jogos", jogos: [j(5, "Crossplay EC", "Fliperama FC", null, null, "qua. 14/10, 21:30"), j(6, "Turbo City", "Esmeralda AC", null, null, "qui. 15/10, 21:30"), j(7, "Jackpot SC", "Bônus AC", null, null, "sex. 16/10, 22:00")] },

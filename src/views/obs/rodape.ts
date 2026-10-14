@@ -149,13 +149,20 @@ function mostrarProxima() {
   setTimeout(destacar, 400);
 }
 
-var assinaturaAtual = "";
+var assinaturaAtual = "", rodando = false;
 CPL.carregar(function (d) {
-  var primeira = !dados, assinatura = CPL.assinatura(d);
+  if (d.ligaNaLive === false) {
+    // Liga desligada no admin: some na hora (a fila vazia mantém escondido até religar)
+    fila = []; indice = 0; dados = d; assinaturaAtual = "";
+    rodape.classList.remove("visivel"); painel.classList.remove("visivel");
+    if (!rodando) { rodando = true; mostrarProxima(); } // o ciclo começa mesmo desligado, para voltar sozinho ao religar
+    return;
+  }
+  var primeira = !rodando, assinatura = CPL.assinatura(d);
   if (!primeira && assinatura !== assinaturaAtual) { fila = []; indice = 0; } // dado novo: recomeça pelos últimos resultados na próxima página
   assinaturaAtual = assinatura;
   dados = d;
-  if (primeira) mostrarProxima();
+  if (primeira) { rodando = true; mostrarProxima(); }
 });
 `;
 

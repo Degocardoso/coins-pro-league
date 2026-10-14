@@ -51,6 +51,7 @@ for (var i = 0; i < 16; i++) {
 }
 var mostrado = "";
 CPL.carregar(function (d) {
+  if (d.ligaNaLive === false) { mostrado = "desligada"; palco.textContent = ""; return; } // liga desligada: só o fundo
   var c = d.campeao;
   var chave = c ? [c.nome, c.escudo, c.banner, c.competicao].join("|") : "";
   if (chave === mostrado && palco.childNodes.length) return;

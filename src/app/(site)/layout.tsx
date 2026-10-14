@@ -1,4 +1,5 @@
 import "@fontsource-variable/inter";
+import { AvisosProvider } from "@/views/comum/Avisos";
 import "@fontsource-variable/newsreader/opsz.css";
 import "@/views/site/site.css";
 import type { ReactNode } from "react";
@@ -10,5 +11,9 @@ export const metadata = {
 };
 
 export default function Layout({ children }: { children: ReactNode }) {
-  return <MolduraSite>{children}</MolduraSite>;
+  return (
+    <MolduraSite>
+      <AvisosProvider>{children}</AvisosProvider>
+    </MolduraSite>
+  );
 }

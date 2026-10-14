@@ -1,6 +1,5 @@
 "use server";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { getDb } from "@/models/db";
 import { PartidaController } from "../PartidaController";
 import { exigirAdmin } from "../sessao";
@@ -78,7 +77,8 @@ export async function desfazerResultado(_: Estado, form: FormData): Promise<Esta
   } catch (e) {
     return falha(e);
   }
+  revalidatePath(`/admin/partidas/${partidaId}`);
   revalidatePath(`/admin/competicoes/${inteiro(form.get("competicaoId"))}/partidas`);
-  // A seção do botão some (a partida não tem mais resultado), então o aviso vai no topo da página
-  redirect(`/admin/partidas/${partidaId}?desfeito=1`);
+  // O aviso vai no canto (aviso flutuante): a seção do botão some, mas a tela não pula
+  return sucesso("Resultado desfeito: a partida voltou a ficar sem resultado.");
 }

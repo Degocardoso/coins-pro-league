@@ -6,6 +6,7 @@ import { formatarDataHora } from "@/lib/datas";
 import { ClassificacaoController } from "./ClassificacaoController";
 import { InscricaoController } from "./InscricaoController";
 import { SiteController } from "./SiteController";
+import { LigaNaLiveController } from "./LigaNaLiveController";
 
 type Lado = { nome: string; escudo: string | null } | null;
 export type JogoObs = {
@@ -32,6 +33,9 @@ export class ObsController {
   constructor(private db: Db) {}
 
   async dados(competicaoId: number | null, agora = new Date()) {
+    // Botão "liga na live" desligado: nenhum dado da liga sai daqui (as cenas escondem tudo)
+    if (!(await new LigaNaLiveController(this.db).ligada()))
+      return { atualizadoEm: agora.toISOString(), ligaNaLive: false as boolean, competicao: null, resultados: null, proximos: null, classificacao: [], artilharia: [], inscricao: null, campeao: null };
     const site = new SiteController(this.db);
     const { lista } = await site.competicoes();
     const comp = lista.find((c) => c.id === competicaoId) ?? lista[0] ?? null;
@@ -44,7 +48,7 @@ export class ObsController {
           ate: abertas[0].situacao.aberta && abertas[0].situacao.fechaEm ? formatarDataHora(abertas[0].situacao.fechaEm) : null,
         }
       : null;
-    if (!comp) return { atualizadoEm: agora.toISOString(), competicao: null, resultados: null, proximos: null, classificacao: [], artilharia: [], inscricao, campeao: null };
+    if (!comp) return { atualizadoEm: agora.toISOString(), ligaNaLive: true as boolean, competicao: null, resultados: null, proximos: null, classificacao: [], artilharia: [], inscricao, campeao: null };
 
     const todas = await partidasRepo.daCompeticao(this.db, comp.id);
     const ids = todas.flatMap((t) => [t.partida.mandanteId, t.partida.visitanteId]).filter((x): x is number => x !== null);
@@ -113,6 +117,7 @@ export class ObsController {
     const vencedor = await site.campeao(comp);
     return {
       atualizadoEm: agora.toISOString(),
+      ligaNaLive: true as boolean,
       competicao: { id: comp.id, nome: comp.nome, tipo: comp.tipo },
       resultados,
       proximos,

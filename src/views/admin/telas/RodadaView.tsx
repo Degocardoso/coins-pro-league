@@ -1,4 +1,5 @@
 // VIEW — rodadas (ou fases da copa) com horários e resultados
+import Link from "next/link";
 import { agendarPartida, definirPrazo } from "@/controllers/acoes/partida";
 import type { PartidaController } from "@/controllers/PartidaController";
 import { formatarDataHora, paraInputLocal } from "@/lib/datas";
@@ -19,15 +20,16 @@ export function RodadaView({ competicao, dados }: { competicao: { id: number; no
       />
       <nav className="rodadas" aria-label="Rodadas">
         {dados.rodadas.map((r) => (
-          <a
+          <Link
             key={r.id}
             href={`${base}?rodada=${r.numero}`}
+            scroll={false}
             aria-current={r.id === atual.id ? "page" : undefined}
             className={r.pendentes === 0 ? "feita" : undefined}
             title={`${r.nome}: ${r.total - r.pendentes} de ${r.total} com resultado`}
           >
             {competicao.tipo === "liga" ? r.numero : r.nome}
-          </a>
+          </Link>
         ))}
       </nav>
 

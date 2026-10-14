@@ -3,6 +3,7 @@ import { and, asc, desc, eq, inArray, isNull, ne, sql } from "drizzle-orm";
 import type { Db } from "../db";
 import {
   admins,
+  configuracoes,
   arquivos,
   atletas,
   clubes,
@@ -341,5 +342,27 @@ export const exclusoesRepo = {
   async temporadaPorNumero(db: Db, numero: number) {
     const [t] = await db.select().from(temporadas).where(eq(temporadas.numero, numero));
     return t ?? null;
+  },
+};
+
+// ---- Configurações do site ----
+const codigoDoErro = (e: unknown) => (e as { code?: string })?.code ?? (e as { cause?: { code?: string } })?.cause?.code;
+
+export const configuracoesRepo = {
+  /** Lê uma configuração. Se a tabela ainda não existe (migração não rodada), devolve null: vale o padrão. */
+  async ler(db: Db, chave: string) {
+    try {
+      const [c] = await db.select().from(configuracoes).where(eq(configuracoes.chave, chave));
+      return c ?? null;
+    } catch (e) {
+      if (codigoDoErro(e) === "42P01") return null;
+      throw e;
+    }
+  },
+  async gravar(db: Db, chave: string, valor: unknown, adminId: number | null) {
+    await db
+      .insert(configuracoes)
+      .values({ chave, valor, atualizadoPor: adminId })
+      .onConflictDoUpdate({ target: configuracoes.chave, set: { valor, atualizadoEm: new Date(), atualizadoPor: adminId } });
   },
 };

@@ -114,7 +114,15 @@ O `vercel.json` já fixa as funções em São Paulo (`gru1`), perto do banco do 
 
 Depois disso, todo `git push` na branch `main` publica sozinho. O domínio `.com.br` entra em **Settings > Domains**.
 
+## Sessão do painel
+
+O login dura **8 horas** desde a entrada, mesmo usando. Sessões com prazo maior (criadas pela regra antiga de 7 dias) são recusadas, então todo mundo é deslogado uma vez no deploy.
+
 ## Cenas do OBS (hospedadas no site)
+
+**Liga na live:** no topo da página OBS do admin, um botão liga ou desliga tudo da liga em todas as cenas de uma vez (card, revezamento da pausa, letreiro, QR, rodapé e campeão), com os mesmos links. Muda em até 20 s. Desligada, `/obs/dados` não devolve nada da liga.
+
+**Senha do OBS:** a página OBS pede a senha da variável `OBS_SENHA` (mínimo 8 caracteres), separada do login. Abrir libera por 10 minutos; ligar ou desligar a liga pede a senha de novo, sempre. O estado do botão fica na tabela `configuracoes` (migração `0002`).
 
 No admin, a página **OBS** lista tudo por categoria, com o link pronto para copiar e a posição da webcam de cada cena. Em todas: fonte de Navegador, "Arquivo local" desmarcado, 1920 × 1080, posição 0/0, escala 1.
 

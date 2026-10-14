@@ -61,7 +61,8 @@
 .campo-largo { grid-column: 1 / -1; }
 .adm input[type="text"], .adm input[type="email"], .adm input[type="password"], .adm input[type="number"],
 .adm input[type="datetime-local"], .adm select, .adm textarea,
-.dialogo input[type="text"], .dialogo input[type="number"], .dialogo select, .dialogo textarea {
+.dialogo input[type="text"], .dialogo input[type="number"], .dialogo input[type="password"], .dialogo input[type="email"],
+.dialogo input[type="datetime-local"], .dialogo select, .dialogo textarea {
   background: var(--painel); color: var(--texto); border: 1px solid var(--linha-forte);
   border-radius: var(--raio); padding: 8px 10px; font: inherit; min-width: 0;
 }
@@ -273,3 +274,18 @@ html:has(.dialogo[open]) { overflow: hidden; }
 /* Identidade do canal nos painéis do admin */
 .dialogo { border: 2px solid var(--hud-borda); box-shadow: 0 0 0 2px var(--hud-linha) inset, 0 20px 60px rgba(0, 0, 0, .45); border-radius: 18px; }
 .btn { border-radius: 10px; }
+
+/* Área do OBS: senha e botão "liga na live" no topo de tudo */
+.obs-senha { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px; max-width: 520px; }
+.obs-senha .campo { flex: 1 1 260px; }
+.rotulo-adm { display: block; font-size: 12px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: var(--apagado); }
+.liga-na-live { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 24px; padding: 18px 22px; margin: 0 0 22px;
+  border-radius: 16px; border: 2px solid var(--linha-forte); background: var(--painel); }
+.liga-na-live.ligada { border-color: var(--ok-borda); background: var(--ok-fundo); }
+.liga-na-live.desligada { border-color: var(--erro-borda); background: var(--erro-fundo); }
+.liga-na-live-estado { flex: 1 1 380px; min-width: 0; }
+.liga-na-live-estado strong { display: block; font-size: 30px; font-weight: 900; letter-spacing: -0.02em; line-height: 1.15; margin-top: 2px; }
+.liga-na-live.ligada strong { color: var(--ok-texto); }
+.liga-na-live.desligada strong { color: var(--erro-texto); }
+.liga-na-live-estado p { margin: 6px 0 0; font-size: 14px; max-width: 70ch; }
+.liga-na-live-acoes { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }

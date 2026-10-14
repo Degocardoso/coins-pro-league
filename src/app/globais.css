@@ -4,3 +4,18 @@
 html, body { margin: 0; padding: 0; background: var(--fundo); color: var(--texto); }
 /* Reserva o espaço da barra de rolagem: ao abrir um painel, a página não pula para o lado */
 html { scrollbar-gutter: stable; }
+
+/* Avisos flutuantes de confirmação (site e painel) */
+.avisos-flutuantes { position: fixed; right: 20px; bottom: 20px; z-index: 50; display: grid; gap: 10px; width: min(380px, calc(100vw - 32px)); pointer-events: none; }
+.aviso-flutuante { pointer-events: auto; display: flex; align-items: flex-start; gap: 12px; padding: 12px 12px 12px 14px; border-radius: 14px;
+  background: var(--painel); color: var(--texto); border: 2px solid var(--ok-borda); box-shadow: 0 0 0 2px var(--hud-linha) inset, 0 12px 32px rgba(0, 0, 0, .35);
+  font-family: var(--fonte-texto); font-size: 15px; line-height: 1.4; }
+.aviso-flutuante p { margin: 2px 0 0; flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.aviso-flutuante-icone { flex: none; display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--ok-fundo); color: var(--ok-texto); font-weight: 900; border: 1px solid var(--ok-borda); }
+.aviso-flutuante button { flex: none; width: 28px; height: 28px; border-radius: 8px; border: 1px solid var(--linha-forte); background: transparent; color: var(--apagado); font-size: 18px; line-height: 1; cursor: pointer; }
+.aviso-flutuante button:hover { color: var(--texto); }
+@media (max-width: 560px) { .avisos-flutuantes { right: 16px; left: 16px; bottom: 16px; width: auto; } }
+@media (prefers-reduced-motion: no-preference) {
+  .aviso-flutuante { animation: aviso-entra .22s ease-out; }
+  @keyframes aviso-entra { from { opacity: 0; transform: translateY(10px); } }
+}

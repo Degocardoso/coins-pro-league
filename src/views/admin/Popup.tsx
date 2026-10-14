@@ -5,11 +5,28 @@ import { Dialogo } from "./Dialogo";
 
 export const PopupContexto = createContext<{ fechar: () => void } | null>(null);
 
-export function Popup({ rotulo, titulo, children, mini = true }: { rotulo: string; titulo: string; children: ReactNode; mini?: boolean }) {
+export function Popup({
+  rotulo,
+  titulo,
+  children,
+  mini = true,
+  variante,
+}: {
+  rotulo: string;
+  titulo: string;
+  children: ReactNode;
+  mini?: boolean;
+  variante?: "ouro" | "perigo";
+}) {
   const [aberto, setAberto] = useState(false);
   return (
     <>
-      <button type="button" className={mini ? "btn btn-mini" : "btn"} onClick={() => setAberto(true)} aria-haspopup="dialog">
+      <button
+        type="button"
+        className={["btn", mini ? "btn-mini" : "", variante === "ouro" ? "btn-ouro" : variante === "perigo" ? "btn-perigo" : ""].filter(Boolean).join(" ")}
+        onClick={() => setAberto(true)}
+        aria-haspopup="dialog"
+      >
         {rotulo}
       </button>
       {aberto && (

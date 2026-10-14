@@ -1,4 +1,5 @@
 // VIEW — aba "Tabela": classificação (ou chave da copa), rodada, rankings e jornal
+import Link from "next/link";
 import type { SiteController } from "@/controllers/SiteController";
 import { formatarDataHora } from "@/lib/datas";
 import { vencedorDaPartida } from "@/controllers/regras/copa";
@@ -67,8 +68,9 @@ function Rodada({ dados, competicaoId }: { dados: Liga; competicaoId: number }) 
           {r.atual.prazo && <p className="nota">Prazo para jogar: {formatarDataHora(r.atual.prazo)}</p>}
         </div>
         <nav className="rodada-nav" aria-label="Trocar de rodada">
-          {numero > 1 ? <a href={link(numero - 1)} aria-label="Rodada anterior">‹</a> : <span aria-hidden>‹</span>}
-          {numero < total ? <a href={link(numero + 1)} aria-label="Próxima rodada">›</a> : <span aria-hidden>›</span>}
+          {/* scroll={false}: troca a rodada sem voltar ao topo da página */}
+          {numero > 1 ? <Link href={link(numero - 1)} scroll={false} aria-label="Rodada anterior">‹</Link> : <span aria-hidden>‹</span>}
+          {numero < total ? <Link href={link(numero + 1)} scroll={false} aria-label="Próxima rodada">›</Link> : <span aria-hidden>›</span>}
         </nav>
       </header>
       <ListaJogos
@@ -133,7 +135,7 @@ export function TabelaView({ dados }: { dados: Dados }) {
       {dados.competicoes.length > 1 && (
         <nav className="seletor-comp" aria-label="Competições">
           {dados.competicoes.map((x) => (
-            <a key={x.id} href={`/tabela?c=${x.id}`} aria-current={x.id === c.id ? "page" : undefined}>{x.nome}</a>
+            <Link key={x.id} href={`/tabela?c=${x.id}`} scroll={false} aria-current={x.id === c.id ? "page" : undefined}>{x.nome}</Link>
           ))}
         </nav>
       )}
