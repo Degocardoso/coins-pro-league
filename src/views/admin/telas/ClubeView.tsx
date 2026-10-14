@@ -5,6 +5,7 @@ import type { ClubeController } from "@/controllers/ClubeController";
 import { CAPITAES_POR_CLUBE, ELENCO_MAXIMO, ELENCO_MINIMO } from "@/controllers/regras/elenco";
 import { FormAcao, Enviar } from "../FormAcao";
 import { Cabeca, Campo, Escudo, Secao } from "../componentes";
+import { CampoImagem } from "../CampoImagem";
 
 type Dados = NonNullable<Awaited<ReturnType<ClubeController["detalhe"]>>>;
 const PLATAFORMA: Record<string, string> = { ps5: "PS5", xbox: "Xbox", pc: "PC" };
@@ -22,7 +23,7 @@ export function ClubeView({ dados, temporada, elencoLivre }: { dados: Dados; tem
           <div className="linha-form">
             <Escudo url={clube.escudoUrl} nome={clube.nome} />
             <Campo rotulo="Nome"><input type="text" name="nome" defaultValue={clube.nome} required /></Campo>
-            <Campo rotulo="Trocar escudo"><input type="file" name="escudo" accept="image/png,image/jpeg,image/webp" /></Campo>
+            <CampoImagem nome="escudo" rotulo="Escudo" atual={clube.escudoUrl} proporcao="1 / 1" ajuste="contain" dica="Ideal: quadrada, 512 × 512 px, PNG com fundo transparente." />
             {clube.escudoUrl && <label className="marcar"><input type="checkbox" name="removerEscudo" /> Remover escudo</label>}
             <Enviar>Salvar</Enviar>
           </div>

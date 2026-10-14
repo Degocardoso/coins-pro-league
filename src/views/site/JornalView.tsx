@@ -1,6 +1,7 @@
 // VIEW — aba Notícias: capa do jornal e página de cada notícia
 import type { JornalController } from "@/controllers/JornalController";
 import { formatarData, formatarDataLonga } from "@/lib/datas";
+import { resumir } from "@/lib/texto";
 
 type Capa = Awaited<ReturnType<JornalController["capa"]>>;
 type Materia = NonNullable<Awaited<ReturnType<JornalController["noticia"]>>>;
@@ -32,13 +33,24 @@ function Imagem({ url, alt = "" }: { url: string | null; alt?: string }) {
   return url ? <img src={url} alt={alt} loading="lazy" /> : null;
 }
 
+/** Na capa, só o resumo: o texto inteiro fica na página da notícia. */
+function Resumo({ n, limite, capitular }: { n: Noticia; limite: number; capitular?: boolean }) {
+  const r = resumir(n.texto, limite);
+  return (
+    <div className="corpo">
+      {r.paragrafos.map((p, i) => <p key={i} className={capitular && i === 0 ? "capitular" : undefined}>{p}</p>)}
+      {r.cortado && <p className="continuar"><a href={`/noticias/${n.id}`}>Ler a notícia completa</a></p>}
+    </div>
+  );
+}
+
 function Nota({ n }: { n: Noticia }) {
   return (
     <article className="nota-jornal">
-      <Imagem url={n.imagemUrl} />
+      <a href={`/noticias/${n.id}`} tabIndex={-1} aria-hidden><Imagem url={n.imagemUrl} /></a>
       <h3><a href={`/noticias/${n.id}`}>{n.titulo}</a></h3>
       <time dateTime={n.publicadaEm.toISOString()}>{formatarData(n.publicadaEm)}</time>
-      <div className="corpo"><Paragrafos texto={n.texto} /></div>
+      <Resumo n={n} limite={200} />
     </article>
   );
 }
@@ -55,10 +67,10 @@ export function JornalView({ capa }: { capa: Capa }) {
           <article className={manchete.imagemUrl ? "manchete com-imagem" : "manchete"}>
             <h2><a href={`/noticias/${manchete.id}`}>{manchete.titulo}</a></h2>
             <div className="manchete-corpo">
-              <Imagem url={manchete.imagemUrl} />
-              <div className="corpo">
+              {manchete.imagemUrl && <a href={`/noticias/${manchete.id}`} tabIndex={-1} aria-hidden><Imagem url={manchete.imagemUrl} /></a>}
+              <div>
                 <time dateTime={manchete.publicadaEm.toISOString()}>{formatarData(manchete.publicadaEm)}</time>
-                <Paragrafos texto={manchete.texto} capitular />
+                <Resumo n={manchete} limite={manchete.imagemUrl ? 340 : 520} capitular />
               </div>
             </div>
           </article>

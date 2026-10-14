@@ -228,3 +228,20 @@ html:has(.dialogo[open]) { overflow: hidden; }
   .dialogo[open] { animation: dialogo-entra 0.14s ease-out; }
   @keyframes dialogo-entra { from { opacity: 0; transform: translateY(6px); } }
 }
+
+/* Campo de imagem com prévia */
+.campo-imagem { gap: 8px; }
+.dica-imagem { margin: 0; color: var(--apagado); font-size: 13px; max-width: 70ch; }
+.previa-moldura { width: 100%; border: 1px dashed var(--linha-forte); border-radius: var(--raio); background: var(--fundo-fundo); overflow: hidden; display: grid; place-items: center; }
+.previa-moldura img { width: 100%; height: 100%; display: block; }
+.previa-moldura span { color: var(--apagado); font-size: 13px; }
+
+/* Contador de pendências no menu */
+.contador { display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 6px; margin-left: 8px; border-radius: 999px; background: var(--ouro); color: var(--sobre-ouro); font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; vertical-align: 1px; }
+.secao { scroll-margin-top: 16px; }
+
+/* Link para copiar */
+.copiar-link { display: grid; gap: 6px; margin: 4px 0 8px; padding: 14px 16px; border: 1px solid var(--alerta-borda); background: var(--alerta-fundo); border-radius: 10px; }
+.copiar-link > span { font-size: 14px; color: var(--alerta-texto); font-weight: 600; }
+.copiar-link > div { display: flex; flex-wrap: wrap; gap: 8px; }
+.adm .copiar-link input { flex: 1 1 280px; font-variant-numeric: tabular-nums; }

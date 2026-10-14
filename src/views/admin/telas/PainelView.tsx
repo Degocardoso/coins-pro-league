@@ -1,6 +1,7 @@
 // VIEW — tela inicial do painel
 import type { PainelController } from "@/controllers/PainelController";
-import { Cabeca, Secao, Selo } from "../componentes";
+import { formatarDataHora } from "@/lib/datas";
+import { Cabeca, Clube, Secao, Selo } from "../componentes";
 
 type Dados = Awaited<ReturnType<PainelController["resumo"]>>;
 
@@ -35,6 +36,29 @@ export function PainelView({ dados }: { dados: Dados }) {
           <span>inscrições esperando análise</span>
         </div>
       </div>
+      {dados.pendentes.length > 0 && (
+        <Secao titulo="Inscrições para analisar" dica="Abra a competição para confirmar ou recusar. Sem vaga, a confirmação manda o clube para a lista de espera.">
+          <div className="rolagem">
+            <table className="tabela">
+              <thead><tr><th>Clube</th><th>Competição</th><th>Recebida em</th><th /></tr></thead>
+              <tbody>
+                {dados.pendentes.map((i) => (
+                  <tr key={i.inscricaoId}>
+                    <td>
+                      <Clube nome={i.clube} escudoUrl={i.escudoUrl} />
+                      {i.capitaoSub && <span className="selo selo-ouro" style={{ marginLeft: 8 }}>Capitão sub</span>}
+                    </td>
+                    <td>{i.competicao}</td>
+                    <td>{formatarDataHora(i.criadoEm)}</td>
+                    <td className="acoes"><a className="btn btn-mini btn-ouro" href={`/admin/competicoes/${i.competicaoId}#inscricoes`}>Analisar</a></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Secao>
+      )}
+
       <Secao titulo="Competições da temporada">
         {dados.competicoes.length === 0 ? (
           <p className="vazio">

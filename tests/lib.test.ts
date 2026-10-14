@@ -83,3 +83,20 @@ describe("mensagens de erro das ações", () => {
     expect(falha(new Error("Já existe um clube com esse nome"))).toEqual({ erros: ["Já existe um clube com esse nome"] });
   });
 });
+
+import { resumir } from "@/lib/texto";
+
+describe("resumo da capa do jornal", () => {
+  it("junta parágrafos inteiros até o limite e corta o primeiro se ele sozinho passar", () => {
+    const p1 = "Mercado de periféricos é agitado após administrador anunciar aquisição de nova interface de áudio.";
+    const p2 = "Em uma movimentação que promete entrar para a história da liga, o administrador surpreendeu a comunidade.";
+    const texto = `${p1}\n\n${p2}\n\nTerceiro parágrafo bem mais longo que não cabe mais no resumo da capa do jornal.`;
+    expect(resumir(texto, 220)).toEqual({ paragrafos: [p1, p2], cortado: true });
+    expect(resumir(texto, 120)).toEqual({ paragrafos: [p1], cortado: true });
+    const r = resumir(texto, 40);
+    expect(r.paragrafos).toHaveLength(1);
+    expect(r.paragrafos[0].endsWith("…")).toBe(true);
+    expect(r.paragrafos[0]).not.toMatch(/\s…$/); // não termina com espaço antes das reticências
+    expect(resumir("Curto.", 100)).toEqual({ paragrafos: ["Curto."], cortado: false });
+  });
+});

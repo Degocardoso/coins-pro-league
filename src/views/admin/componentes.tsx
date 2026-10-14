@@ -15,9 +15,9 @@ export function Cabeca({ titulo, descricao, voltar }: { titulo: string; descrica
   );
 }
 
-export function Secao({ titulo, dica, children }: { titulo: string; dica?: ReactNode; children: ReactNode }) {
+export function Secao({ titulo, dica, children, id }: { titulo: string; dica?: ReactNode; children: ReactNode; id?: string }) {
   return (
-    <section className="secao">
+    <section className="secao" id={id}>
       <h2>{titulo}</h2>
       {dica && <p className="dica">{dica}</p>}
       {children}

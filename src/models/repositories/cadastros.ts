@@ -86,6 +86,34 @@ export const competicoesAdminRepo = {
       .groupBy(partidas.competicaoId);
     return new Map(linhas.map((l) => [l.competicaoId, { jogadas: l.jogadas, total: l.total }]));
   },
+  /** Inscrições esperando análise, com clube e competição, da mais antiga para a mais nova. */
+  listaPendentes: (db: Db, competicaoIds: number[]) =>
+    competicaoIds.length
+      ? db
+          .select({
+            inscricaoId: inscricoes.id,
+            criadoEm: inscricoes.criadoEm,
+            capitaoSub: inscricoes.capitaoSub,
+            competicaoId: competicoes.id,
+            competicao: competicoes.nome,
+            clube: clubes.nome,
+            escudoUrl: clubes.escudoUrl,
+          })
+          .from(inscricoes)
+          .innerJoin(clubes, eq(clubes.id, inscricoes.clubeId))
+          .innerJoin(competicoes, eq(competicoes.id, inscricoes.competicaoId))
+          .where(and(inArray(inscricoes.competicaoId, competicaoIds), eq(inscricoes.status, "pendente")))
+          .orderBy(asc(inscricoes.criadoEm))
+      : Promise.resolve([]),
+  async pendentesPorCompeticao(db: Db, competicaoIds: number[]) {
+    if (!competicaoIds.length) return new Map<number, number>();
+    const linhas = await db
+      .select({ competicaoId: inscricoes.competicaoId, n: sql<number>`count(*)::int` })
+      .from(inscricoes)
+      .where(and(inArray(inscricoes.competicaoId, competicaoIds), eq(inscricoes.status, "pendente")))
+      .groupBy(inscricoes.competicaoId);
+    return new Map(linhas.map((l) => [l.competicaoId, l.n]));
+  },
   async pendentes(db: Db, competicaoIds: number[]) {
     if (!competicaoIds.length) return 0;
     const [r] = await db

@@ -1,6 +1,7 @@
 // VIEW — peças reutilizadas nas abas do site
 import type { JogoSite } from "@/controllers/SiteController";
 import { formatarData, formatarDataHora, formatarDia, formatarHora } from "@/lib/datas";
+import { resumir } from "@/lib/texto";
 
 export function Moeda({ url, nome, tamanho }: { url: string | null | undefined; nome: string; tamanho?: "p" | "g" }) {
   return (
@@ -117,7 +118,7 @@ export function Jornal({ noticias }: { noticias: Noticia[] }) {
           {n.imagemUrl && <img src={n.imagemUrl} alt="" loading="lazy" />}
           <h3><a href={`/noticias/${n.id}`}>{n.titulo}</a></h3>
           <time dateTime={n.publicadaEm.toISOString()}>{formatarData(n.publicadaEm)}</time>
-          <p>{n.texto}</p>
+          <p>{resumir(n.texto, 160).paragrafos[0]}</p>
         </article>
       ))}
     </div>

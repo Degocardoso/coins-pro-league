@@ -62,7 +62,7 @@ export function FormInscricao({ competicoes }: { competicoes: CompeticaoAberta[]
             <input type="text" name="nomeClube" required minLength={2} maxLength={60} autoComplete="off" />
           </label>
           <label className="campo-site">
-            <span>Escudo (PNG, JPG ou WEBP, até 3 MB)</span>
+            <span>Escudo (quadrado, ideal 512 × 512 px; PNG, JPG ou WEBP até 3 MB)</span>
             <input type="file" name="escudo" accept="image/png,image/jpeg,image/webp" required />
           </label>
         </div>

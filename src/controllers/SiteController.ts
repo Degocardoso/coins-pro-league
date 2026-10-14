@@ -37,7 +37,7 @@ export class SiteController {
   }
 
   /** Campeão de uma competição encerrada: líder da liga ou vencedor da final da copa. */
-  private async campeao(c: { id: number; tipo: "liga" | "copa"; status: string }) {
+  async campeao(c: { id: number; tipo: "liga" | "copa"; status: string }) {
     if (c.status !== "encerrada") return null;
     if (c.tipo === "liga") {
       const [lider] = await new ClassificacaoController(this.db).classificacao(c.id);

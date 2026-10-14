@@ -5,7 +5,11 @@ import { FormInscricao } from "./FormInscricao";
 
 type Abertas = Awaited<ReturnType<InscricaoController["abertas"]>>;
 
-export function InscricaoView({ abertas }: { abertas: Abertas }) {
+export function InscricaoView({ abertas: todas, competicaoId }: { abertas: Abertas; competicaoId?: number }) {
+  // Link de uma competição específica (?c=ID): o formulário já vem só com ela
+  const escolhida = competicaoId ? todas.filter((a) => a.competicao.id === competicaoId) : todas;
+  const fechadaPeloLink = !!competicaoId && escolhida.length === 0;
+  const abertas = fechadaPeloLink ? [] : escolhida;
   const fecha = abertas.length === 1 && abertas[0].situacao.aberta ? abertas[0].situacao.fechaEm : null;
   const qual = abertas.length === 1 ? `Inscrição para a ${abertas[0].competicao.nome}. ` : "";
   return (
@@ -13,7 +17,12 @@ export function InscricaoView({ abertas }: { abertas: Abertas }) {
       <h1 className="titulo-liga" style={{ fontSize: "clamp(40px, 6vw, 64px)" }}>Inscrever clube</h1>
       {abertas.length === 0 ? (
         <p className="lead" style={{ color: "var(--apagado)", marginTop: 16 }}>
-          As inscrições estão fechadas no momento. Acompanhe a data de abertura na aba <a href="/">A Liga</a>.
+          {fechadaPeloLink ? "As inscrições desta competição não estão abertas agora." : "As inscrições estão fechadas no momento."}{" "}
+          {fechadaPeloLink && todas.length > 0 ? (
+            <>Há outra competição com inscrições abertas: <a href="/inscricao">ver aqui</a>.</>
+          ) : (
+            <>Acompanhe a data de abertura na aba <a href="/">A Liga</a>.</>
+          )}
         </p>
       ) : (
         <>

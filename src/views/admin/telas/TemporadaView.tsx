@@ -37,6 +37,7 @@ export function TemporadaView({ lista }: { lista: Temporada[] }) {
         {lista.length === 0 ? (
           <p className="vazio">Nenhuma temporada criada.</p>
         ) : (
+          <div className="rolagem">
           <table className="tabela">
             <thead>
               <tr><th>Temporada</th><th>Janela</th><th /></tr>
@@ -76,6 +77,7 @@ export function TemporadaView({ lista }: { lista: Temporada[] }) {
               ))}
             </tbody>
           </table>
+          </div>
         )}
       </Secao>
       <Secao titulo="Nova temporada">

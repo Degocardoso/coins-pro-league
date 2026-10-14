@@ -39,7 +39,7 @@ tests/                    testes das regras e de integração (Postgres em memó
 
 ```bash
 npm install          # o .npmrc já liga legacy-peer-deps
-npm test             # 56 testes, sem precisar de banco
+npm test             # testes automáticos, sem precisar de banco
 npm run typecheck
 ```
 
@@ -114,9 +114,23 @@ O `vercel.json` já fixa as funções em São Paulo (`gru1`), perto do banco do 
 
 Depois disso, todo `git push` na branch `main` publica sozinho. O domínio `.com.br` entra em **Settings > Domains**.
 
+## Telas do OBS (fase 4)
+
+No admin, a página **OBS** tem todos os links prontos para copiar. Em todas: fonte de Navegador, 1920 × 1080, posição 0/0, escala 1.
+
+| Tela | Link | Onde usar |
+| --- | --- | --- |
+| Rodapé estilo ESPN | `/obs/rodape` | Just Chatting, pausa e abertura (faixa de Y 996 a 1060) |
+| Card do gameplay | `/obs/card?cena=01a` (01a a 01d) | Cada cena de gameplay; entra no canto inferior oposto ao da câmera |
+| Campeão | `/obs/campeao` | Cena inteira, quando a competição estiver Encerrada |
+
+- Opções do card: `a_cada` (minutos, padrão 10) e `duracao` (segundos, padrão 12). Ex.: `/obs/card?cena=01b&a_cada=15`.
+- Todas aceitam `teste=1` (dados de exemplo) para posicionar antes da liga começar, e `c=ID` para mostrar outra competição.
+- São HTML puro com JavaScript simples (roda até em OBS antigo) e buscam `/obs/dados` a cada 30 s. Os nomes entram como texto, nunca como HTML.
+
 ## Fases
 
 - [x] **Fase 1** — banco, regras do regulamento e testes
 - [x] **Fase 2** — painel admin com login: competições, inscrições, elencos, partidas e resultados, notícias, regulamento, upload de escudos
 - [x] **Fase 3** — site público (A Liga, Regulamento, Tabela) e formulário de inscrição
-- [ ] **Fase 4** — telas do OBS: rodapé de resultados, card periódico no gameplay, banner do campeão
+- [x] **Fase 4** — telas do OBS: rodapé de resultados, card periódico no gameplay, banner do campeão

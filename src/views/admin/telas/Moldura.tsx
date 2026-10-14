@@ -4,7 +4,7 @@ import { sair } from "@/controllers/acoes/auth";
 import { Menu } from "../Menu";
 import { SeletorTema } from "@/views/comum/SeletorTema";
 
-export function Moldura({ nome, temporada, children }: { nome: string; temporada: string | null; children: ReactNode }) {
+export function Moldura({ nome, temporada, pendentes, children }: { nome: string; temporada: string | null; pendentes: number; children: ReactNode }) {
   return (
     <div className="adm">
       <aside className="adm-menu">
@@ -12,7 +12,7 @@ export function Moldura({ nome, temporada, children }: { nome: string; temporada
           <b>Coin&apos;s</b> Pro League
           <span>{temporada ?? "Nenhuma temporada ativa"}</span>
         </a>
-        <Menu />
+        <Menu pendentes={pendentes} />
         <div className="adm-conta">
           <span>{nome}</span>
           <form action={sair}>

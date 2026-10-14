@@ -6,6 +6,8 @@ import { paraInputLocal } from "@/lib/datas";
 import { reais } from "@/lib/texto";
 import { FormAcao, Enviar } from "../FormAcao";
 import { Cabeca, Campo, Clube, Secao, Selo } from "../componentes";
+import { CampoImagem } from "../CampoImagem";
+import { CopiarLink } from "../CopiarLink";
 
 type Competicao = NonNullable<Awaited<ReturnType<CompeticaoController["buscar"]>>>;
 type Inscricoes = Awaited<ReturnType<CompeticaoController["inscricoes"]>>;
@@ -48,6 +50,10 @@ export function CompeticaoView({
         </p>
       )}
 
+      {c.status === "inscricoes" && (
+        <CopiarLink caminho={`/inscricao?c=${c.id}`} rotulo="Link de inscrição desta competição (já abre com ela escolhida)" />
+      )}
+
       <Secao titulo="Ficha da competição" dica="Esses valores aparecem no site e completam o regulamento.">
         <FormAcao acao={salvarFicha}>
           <input type="hidden" name="id" value={c.id} />
@@ -73,13 +79,14 @@ export function CompeticaoView({
             <Campo rotulo="Premiação" largo>
               <textarea name="premio" defaultValue={c.premio ?? ""} placeholder="Valor do prêmio e como será pago" style={{ minHeight: 70 }} />
             </Campo>
-            <Campo rotulo="Banner do campeão (PNG, JPG ou WEBP, até 3 MB)" largo>
-              {c.bannerUrl && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img className="previa-imagem" src={c.bannerUrl} alt="Banner atual" />
-              )}
-              <input type="file" name="banner" accept="image/png,image/jpeg,image/webp" />
-            </Campo>
+            <CampoImagem
+              nome="banner"
+              rotulo="Banner do campeão"
+              atual={c.bannerUrl}
+              proporcao="16 / 9"
+              ajuste="contain"
+              dica="1920 × 1080 px (o mesmo da live). Aparece inteiro no site, sem cortes. PNG, JPG ou WEBP, até 3 MB."
+            />
           </div>
           <div className="linha-form" style={{ marginBottom: 4 }}>
             <label className="marcar"><input type="checkbox" name="ativa" defaultChecked={c.ativa} /> Competição ativa (aparece no site)</label>
@@ -90,6 +97,7 @@ export function CompeticaoView({
       </Secao>
 
       <Secao
+        id="inscricoes"
         titulo={`Inscrições (${confirmadas} de ${c.maxClubes} vagas)`}
         dica={c.taxaCentavos ? "Com taxa, marque o pagamento antes de confirmar." : "Confirme os clubes aprovados. Sem vaga, o clube vai para a lista de espera."}
       >

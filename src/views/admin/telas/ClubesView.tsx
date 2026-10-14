@@ -4,6 +4,7 @@ import type { ClubeController } from "@/controllers/ClubeController";
 import { ELENCO_MAXIMO, ELENCO_MINIMO } from "@/controllers/regras/elenco";
 import { FormAcao, Enviar } from "../FormAcao";
 import { Cabeca, Campo, Clube, Secao } from "../componentes";
+import { CampoImagem } from "../CampoImagem";
 
 type Lista = Awaited<ReturnType<ClubeController["listar"]>>;
 
@@ -14,6 +15,7 @@ export function ClubesView({ lista }: { lista: Lista }) {
       {lista.length === 0 ? (
         <p className="vazio">Nenhum clube cadastrado.</p>
       ) : (
+        <div className="rolagem">
         <table className="tabela">
           <thead><tr><th>Clube</th><th className="num">Elenco</th><th /></tr></thead>
           <tbody>
@@ -31,12 +33,13 @@ export function ClubesView({ lista }: { lista: Lista }) {
             })}
           </tbody>
         </table>
+        </div>
       )}
       <Secao titulo="Novo clube">
         <FormAcao acao={criarClube}>
           <div className="linha-form">
             <Campo rotulo="Nome"><input type="text" name="nome" required /></Campo>
-            <Campo rotulo="Escudo (PNG, JPG ou WEBP)"><input type="file" name="escudo" accept="image/png,image/jpeg,image/webp" /></Campo>
+            <CampoImagem nome="escudo" rotulo="Escudo" proporcao="1 / 1" ajuste="contain" dica="Ideal: imagem quadrada, 512 × 512 px. PNG com fundo transparente fica melhor dentro do aro de moeda." />
             <Enviar>Criar clube</Enviar>
           </div>
         </FormAcao>

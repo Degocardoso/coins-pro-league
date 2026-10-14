@@ -4,6 +4,7 @@ import type { noticias } from "@/models/schema";
 import { formatarData } from "@/lib/datas";
 import { FormAcao, Enviar } from "../FormAcao";
 import { Cabeca, Campo, Secao } from "../componentes";
+import { CampoImagem } from "../CampoImagem";
 
 type Noticia = typeof noticias.$inferSelect;
 
@@ -15,6 +16,7 @@ export function NoticiasView({ lista }: { lista: Noticia[] }) {
       {lista.length === 0 ? (
         <p className="vazio">Nenhuma notícia publicada.</p>
       ) : (
+        <div className="rolagem">
         <table className="tabela">
           <thead><tr><th /><th>Título</th><th>Data</th><th>Situação</th><th /></tr></thead>
           <tbody>
@@ -38,6 +40,7 @@ export function NoticiasView({ lista }: { lista: Noticia[] }) {
             ))}
           </tbody>
         </table>
+        </div>
       )}
     </>
   );
@@ -50,13 +53,19 @@ export function NoticiaView({ noticia }: { noticia: Noticia | null }) {
       <FormAcao acao={salvarNoticia}>
         {noticia && <input type="hidden" name="id" value={noticia.id} />}
         <div className="campos" style={{ maxWidth: 760 }}>
-          <Campo rotulo="Título" largo><input type="text" name="titulo" required maxLength={120} defaultValue={noticia?.titulo} /></Campo>
-          <Campo rotulo="Texto" largo><textarea name="texto" required defaultValue={noticia?.texto} style={{ minHeight: 180 }} /></Campo>
-          <Campo rotulo="Imagem (PNG, JPG ou WEBP, até 3 MB)" largo>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            {noticia?.imagemUrl && <img className="previa-imagem" src={noticia.imagemUrl} alt="Imagem atual" />}
-            <input type="file" name="imagem" accept="image/png,image/jpeg,image/webp" />
+          <Campo rotulo="Título (curto, até uns 80 caracteres; evite tudo em MAIÚSCULAS, no jornal ele já aparece grande)" largo>
+            <input type="text" name="titulo" required maxLength={120} defaultValue={noticia?.titulo} />
           </Campo>
+          <Campo rotulo="Texto (linha em branco separa parágrafos; na capa aparece só o começo)" largo>
+            <textarea name="texto" required defaultValue={noticia?.texto} style={{ minHeight: 180 }} />
+          </Campo>
+          <CampoImagem
+            nome="imagem"
+            rotulo="Imagem"
+            dica="Tamanho ideal: 1600 × 900 px (formato 16:9, de tela de TV). PNG, JPG ou WEBP, até 3 MB. Outros formatos são cortados nas bordas, como na prévia."
+            atual={noticia?.imagemUrl}
+            proporcao="16 / 9"
+          />
         </div>
         <div className="linha-form" style={{ marginBottom: 14 }}>
           <label className="marcar"><input type="checkbox" name="publicada" defaultChecked={noticia?.publicada ?? true} /> Publicada no site</label>

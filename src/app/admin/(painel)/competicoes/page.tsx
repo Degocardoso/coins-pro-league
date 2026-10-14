@@ -1,6 +1,7 @@
 import { exigirAdmin } from "@/controllers/sessao";
 import { CompeticaoController } from "@/controllers/CompeticaoController";
 import { TemporadaController } from "@/controllers/TemporadaController";
+import { PainelController } from "@/controllers/PainelController";
 import { getDb } from "@/models/db";
 import { CompeticoesView } from "@/views/admin/telas/CompeticoesView";
 import { Cabeca } from "@/views/admin/componentes";
@@ -16,5 +17,6 @@ export default async function Pagina() {
       </>
     );
   const lista = await new CompeticaoController(getDb()).listar(temporada.id);
-  return <CompeticoesView lista={lista} temporada={temporada.nome} />;
+  const pendentes = await new PainelController(getDb()).pendentesPorCompeticao(lista.map((c) => c.id));
+  return <CompeticoesView lista={lista} temporada={temporada.nome} pendentes={pendentes} />;
 }

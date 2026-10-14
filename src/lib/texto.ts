@@ -25,3 +25,28 @@ export function centavos(v: FormDataEntryValue | null): number | null {
 
 export const reais = (c: number | null | undefined) =>
   c == null ? "" : (c / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+
+/**
+ * Resumo para a capa do jornal: parágrafos inteiros do começo do texto, até o limite de caracteres.
+ * Se o primeiro parágrafo sozinho passar do limite, ele é cortado no fim de uma palavra.
+ * "cortado" diz se ficou texto de fora (para mostrar "Ler a notícia completa").
+ */
+export function resumir(texto: string, limite: number): { paragrafos: string[]; cortado: boolean } {
+  const todos = texto
+    .split(/\n\s*\n/)
+    .map((p) => p.replace(/\s*\n\s*/g, " ").trim())
+    .filter(Boolean);
+  const escolhidos: string[] = [];
+  let total = 0;
+  for (const p of todos) {
+    if (escolhidos.length && total + p.length > limite) break;
+    if (!escolhidos.length && p.length > limite) {
+      const corte = p.slice(0, limite + 1);
+      const ate = corte.lastIndexOf(" ") > limite * 0.6 ? corte.lastIndexOf(" ") : limite;
+      return { paragrafos: [p.slice(0, ate).replace(/[\s,;:.–-]+$/, "") + "…"], cortado: true };
+    }
+    escolhidos.push(p);
+    total += p.length;
+  }
+  return { paragrafos: escolhidos, cortado: escolhidos.length < todos.length };
+}
