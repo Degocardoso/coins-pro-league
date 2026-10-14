@@ -128,6 +128,7 @@ No admin, a página **OBS** tem todos os links prontos para copiar. Em todas: fo
 - Todas aceitam `teste=1` (dados de exemplo) para posicionar antes da liga começar, e `c=ID` para mostrar outra competição.
 - São HTML puro com JavaScript simples (roda até em OBS antigo) e buscam `/obs/dados` a cada 20 s, sem cache. Os nomes entram como texto, nunca como HTML.
 - "Últimos resultados" são os lançados mais recentemente, de qualquer rodada. Resultado novo: o rodapé recomeça por ele (com o selo "novo" por 15 minutos) e o card do gameplay aparece na hora com "Acabou de sair".
+- Inscrições abertas: o rodapé mostra um painel com QR code (520 × 232 px, à esquerda, colado no rodapé) e o card do gameplay cresce para mostrar o QR por 20 s. O QR leva ao link curto `/i/ID`, que abre a inscrição daquela competição. Na ficha da competição, o admin tem o QR para baixar em PNG ou SVG.
 - Se algo não atualizar, abra `/obs/dados` no navegador: se o resultado está lá, confira se a fonte do OBS não está com `teste=1` no link.
 
 ## Fases

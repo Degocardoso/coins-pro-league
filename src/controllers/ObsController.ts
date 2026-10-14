@@ -39,7 +39,8 @@ export class ObsController {
     const inscricao = abertas[0]
       ? {
           competicao: abertas[0].competicao.nome,
-          link: `/inscricao?c=${abertas[0].competicao.id}`,
+          link: `/i/${abertas[0].competicao.id}`,
+          qr: `/obs/qr?c=${abertas[0].competicao.id}`,
           ate: abertas[0].situacao.aberta && abertas[0].situacao.fechaEm ? formatarDataHora(abertas[0].situacao.fechaEm) : null,
         }
       : null;

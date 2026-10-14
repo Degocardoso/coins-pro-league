@@ -58,7 +58,7 @@ var CPL = {
       proximos: { titulo: "Próximos jogos", jogos: [j(5, "Crossplay EC", "Fliperama FC", null, null, "qua. 14/10, 21:30"), j(6, "Turbo City", "Esmeralda AC", null, null, "qui. 15/10, 21:30"), j(7, "Jackpot SC", "Bônus AC", null, null, "sex. 16/10, 22:00")] },
       classificacao: [{ pos: 1, nome: "Moeda FC", escudo: null, pontos: 16, jogos: 6, saldo: 9 }, { pos: 2, nome: "Crossplay EC", escudo: null, pontos: 14, jogos: 6, saldo: 6 }, { pos: 3, nome: "Lobby FC", escudo: null, pontos: 12, jogos: 6, saldo: 4 }],
       artilharia: [{ pos: 1, atleta: "cifrao_7", clube: "Cifrão EC", escudo: null, gols: 7 }, { pos: 2, atleta: "power_6", clube: "Power-Up SC", escudo: null, gols: 6 }],
-      inscricao: { competicao: "Copa Moeda", link: "/inscricao?c=2", ate: "qui. 22/10, 23:59" },
+      inscricao: { competicao: "Copa Moeda", link: "/i/2", qr: "/obs/qr?c=2", ate: "qui. 22/10, 23:59" },
       campeao: { competicao: "Coin's Pro League", nome: "Moeda FC", escudo: null, banner: null }
     };
   }

@@ -64,3 +64,24 @@ describe("dados do OBS", () => {
     expect(d.campeao?.nome).toBe(d.classificacao[0].nome);
   });
 });
+
+describe("QR code da inscrição", () => {
+  it("gera SVG com a moeda no centro e o link curto leva à inscrição da competição", async () => {
+    const { gerarQrSvg } = await import("@/lib/qr");
+    const svg = await gerarQrSvg("https://coins-pro-league.vercel.app/i/2");
+    expect(svg).toMatch(/^<svg[^>]+viewBox="0 0 37 37"/); // versão 4 com margem: quadradinhos maiores
+    expect(svg).toContain('fill="#f5b53c"'); // a moeda
+    const { GET } = await import("@/app/i/[id]/route");
+    const r = await GET(new Request("https://x.dev/i/2"), { params: Promise.resolve({ id: "2" }) });
+    expect([r.status, r.headers.get("location")]).toEqual([307, "https://x.dev/inscricao?c=2"]);
+  });
+
+  it("dados do OBS trazem o QR só quando há inscrição aberta", async () => {
+    expect((await new ObsController(db).dados(null)).inscricao).toBeNull();
+    const [copa] = await db
+      .insert(schema.competicoes)
+      .values({ temporadaId: ids.temporadaId, nome: "Copa Moeda", tipo: "copa", status: "inscricoes" })
+      .returning();
+    expect((await new ObsController(db).dados(null)).inscricao).toMatchObject({ link: `/i/${copa.id}`, qr: `/obs/qr?c=${copa.id}` });
+  });
+});

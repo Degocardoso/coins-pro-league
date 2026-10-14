@@ -7,7 +7,7 @@ import { reais } from "@/lib/texto";
 import { FormAcao, Enviar } from "../FormAcao";
 import { Cabeca, Campo, Clube, Secao, Selo } from "../componentes";
 import { CampoImagem } from "../CampoImagem";
-import { CopiarLink } from "../CopiarLink";
+import { Divulgacao } from "../Divulgacao";
 
 type Competicao = NonNullable<Awaited<ReturnType<CompeticaoController["buscar"]>>>;
 type Inscricoes = Awaited<ReturnType<CompeticaoController["inscricoes"]>>;
@@ -51,7 +51,7 @@ export function CompeticaoView({
       )}
 
       {c.status === "inscricoes" && (
-        <CopiarLink caminho={`/inscricao?c=${c.id}`} rotulo="Link de inscrição desta competição (já abre com ela escolhida)" />
+        <Divulgacao competicaoId={c.id} nome={c.nome} />
       )}
 
       <Secao titulo="Ficha da competição" dica="Esses valores aparecem no site e completam o regulamento.">

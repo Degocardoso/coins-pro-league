@@ -1,6 +1,7 @@
 // VIEW — card do gameplay: 560 × 140 px, entra de tempos em tempos no canto livre da cena.
 // Endereço: /obs/card?cena=01a (01a e 01c: canto inferior esquerdo; 01b e 01d: inferior direito)
 // Opções: a_cada=10 (minutos entre aparições), duracao=12 (segundos na tela), teste=1 (dados de exemplo, a cada 20 s)
+// Inscrições abertas: o card cresce para 560 × 232 px com o QR code e fica 20 s na tela.
 import { pagina } from "./base";
 
 const CSS = `
@@ -31,8 +32,12 @@ const CSS = `
 .info small { display: block; font-size: 16px; color: var(--apagado); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .grande { flex: none; font-family: var(--titulo); font-weight: 900; font-size: 46px; color: var(--ouro); line-height: 1; }
 .grande small { font-family: var(--corpo); font-size: 15px; font-weight: 600; color: var(--apagado); margin-left: 4px; }
-.texto { font-size: 19px; font-weight: 600; line-height: 1.3; }
-.texto b { color: var(--ouro); }
+.card.com-qr { height: 232px; }
+.qr { display: flex; align-items: center; gap: 20px; }
+.qr img { width: 196px; height: 196px; flex: none; display: block; background: #fff; border-radius: 6px; }
+.qr strong { display: block; font-family: var(--titulo); font-weight: 800; font-size: 32px; line-height: 1; color: var(--ouro); }
+.qr p { margin: 10px 0 0; font-size: 18px; line-height: 1.3; }
+.qr small { display: block; margin-top: 10px; font-size: 15px; color: var(--apagado); line-height: 1.3; }
 `;
 
 const SCRIPT = `
@@ -83,12 +88,16 @@ function assuntos(d) {
   if (lider) lista.push([topo("Líder da liga"), pessoa(lider.escudo, lider.nome, lider.nome, lider.jogos + " jogos, saldo " + (lider.saldo > 0 ? "+" + lider.saldo : lider.saldo), lider.pontos, "pts")]);
   var art = d.artilharia && d.artilharia[0];
   if (art) lista.push([topo("Artilheiro"), pessoa(art.escudo, art.clube, art.atleta, art.clube, art.gols, art.gols === 1 ? "gol" : "gols")]);
-  if (d.inscricao) {
-    var t = CPL.el("div", "texto");
-    t.appendChild(document.createTextNode("Inscrições abertas para a "));
-    t.appendChild(CPL.el("b", null, d.inscricao.competicao));
-    t.appendChild(document.createTextNode((d.inscricao.ate ? " até " + d.inscricao.ate : "") + ". " + location.host + d.inscricao.link));
-    lista.push([topo("Inscreva seu clube"), t]);
+  if (d.inscricao && d.inscricao.qr) {
+    var q = CPL.el("div", "qr");
+    var img = document.createElement("img"); img.src = d.inscricao.qr; img.alt = "QR code da inscrição";
+    q.appendChild(img);
+    var txt = CPL.el("div");
+    txt.appendChild(CPL.el("strong", null, "Inscreva seu clube"));
+    txt.appendChild(CPL.el("p", null, "Aponte a câmera do celular para o QR code."));
+    txt.appendChild(CPL.el("small", null, d.inscricao.competicao + (d.inscricao.ate ? ", até " + d.inscricao.ate : "")));
+    q.appendChild(txt);
+    lista.push([q]);
   }
   return lista;
 }
@@ -97,9 +106,12 @@ var saindo = null;
 function mostrar(partes) {
   conteudo.textContent = "";
   partes.forEach(function (e) { conteudo.appendChild(e); });
+  var comQr = !!conteudo.querySelector(".qr");
+  card.classList.toggle("com-qr", comQr);
   card.classList.add("visivel");
   clearTimeout(saindo);
-  saindo = setTimeout(function () { card.classList.remove("visivel"); }, duracao);
+  // Com QR code, fica mais tempo para dar tempo de apontar o celular
+  saindo = setTimeout(function () { card.classList.remove("visivel"); }, comQr ? Math.max(duracao, 20000) : duracao);
 }
 function aparecer() {
   var lista = dados ? assuntos(dados) : [];

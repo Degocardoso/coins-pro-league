@@ -245,3 +245,9 @@ html:has(.dialogo[open]) { overflow: hidden; }
 .copiar-link > span { font-size: 14px; color: var(--alerta-texto); font-weight: 600; }
 .copiar-link > div { display: flex; flex-wrap: wrap; gap: 8px; }
 .adm .copiar-link input { flex: 1 1 280px; font-variant-numeric: tabular-nums; }
+
+/* Divulgação da inscrição: QR code + link curto */
+.divulgacao { display: flex; gap: 18px; align-items: flex-start; margin: 4px 0 8px; padding: 14px 16px; border: 1px solid var(--alerta-borda); background: var(--alerta-fundo); border-radius: 10px; flex-wrap: wrap; }
+.divulgacao > img { flex: none; width: 168px; height: 168px; background: #fff; border-radius: 8px; padding: 6px; box-sizing: border-box; }
+.divulgacao > div { flex: 1 1 320px; min-width: 0; display: grid; gap: 10px; }
+.divulgacao .copiar-link { margin: 0; padding: 0; border: 0; background: none; }
