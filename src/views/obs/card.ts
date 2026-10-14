@@ -77,8 +77,8 @@ function assuntos(d) {
   var lista = [];
   var prox = d.proximos && d.proximos.jogos.filter(function (j) { return j.quando; })[0];
   if (prox) lista.push([topo("Próximo jogo", prox.quando, true), confronto(prox, "×", "x")]);
-  var res = d.resultados && d.resultados.jogos[d.resultados.jogos.length - 1];
-  if (res) lista.push([topo("Último resultado", d.resultados.titulo.replace("Resultados: ", "")), confronto(res, res.gm + " × " + res.gv)]);
+  var res = d.resultados && d.resultados.jogos[0];
+  if (res) lista.push([topo("Último resultado", res.rodada), confronto(res, res.gm + " × " + res.gv)]);
   var lider = d.classificacao && d.classificacao[0];
   if (lider) lista.push([topo("Líder da liga"), pessoa(lider.escudo, lider.nome, lider.nome, lider.jogos + " jogos, saldo " + (lider.saldo > 0 ? "+" + lider.saldo : lider.saldo), lider.pontos, "pts")]);
   var art = d.artilharia && d.artilharia[0];
@@ -93,17 +93,35 @@ function assuntos(d) {
   return lista;
 }
 
+var saindo = null;
+function mostrar(partes) {
+  conteudo.textContent = "";
+  partes.forEach(function (e) { conteudo.appendChild(e); });
+  card.classList.add("visivel");
+  clearTimeout(saindo);
+  saindo = setTimeout(function () { card.classList.remove("visivel"); }, duracao);
+}
 function aparecer() {
   var lista = dados ? assuntos(dados) : [];
-  if (!lista.length) return;
-  var escolhido = lista[vez++ % lista.length];
-  conteudo.textContent = "";
-  escolhido.forEach(function (e) { conteudo.appendChild(e); });
-  card.classList.add("visivel");
-  setTimeout(function () { card.classList.remove("visivel"); }, duracao);
+  if (!lista.length || card.classList.contains("visivel")) return;
+  mostrar(lista[vez++ % lista.length]);
 }
 
-CPL.carregar(function (d) { dados = d; });
+// Resultado novo lançado no admin: o card aparece na hora, sem esperar o intervalo
+var ultimoVisto = null;
+function chaveResultado(d) {
+  var r = d.resultados && d.resultados.jogos[0];
+  return r ? r.id + ":" + r.gm + "x" + r.gv : null;
+}
+CPL.carregar(function (d) {
+  var chave = chaveResultado(d), primeira = !dados;
+  dados = d;
+  if (!primeira && chave && chave !== ultimoVisto) {
+    var r = d.resultados.jogos[0];
+    mostrar([topo("Acabou de sair", r.rodada, true), confronto(r, r.gm + " × " + r.gv)]);
+  }
+  ultimoVisto = chave;
+});
 // Primeira aparição: 2 s no modo teste; senão, 1 minuto depois de a cena abrir
 setTimeout(function () { aparecer(); setInterval(aparecer, aCada); }, teste ? 2000 : 60000);
 `;

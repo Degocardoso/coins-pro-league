@@ -23,6 +23,7 @@ const CSS = `
 .item { flex: 0 0 33.333%; min-width: 0; box-sizing: border-box; display: flex; align-items: center; gap: 12px;
   padding: 0 20px; border-left: 1px solid var(--linha); transition: background .3s, box-shadow .3s; }
 .item.ativo { background: var(--painel-2); box-shadow: inset 0 -4px 0 var(--ouro); }
+.novo { flex: none; font-size: 12px; font-weight: 700; color: var(--sobre-ouro); background: var(--verde); border-radius: 4px; padding: 2px 6px; margin-right: -4px; }
 .item.largo { flex-basis: 100%; }
 .nome { font-weight: 600; font-size: 19px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
 .nome.m { flex: 1; text-align: right; }
@@ -46,6 +47,7 @@ var dados = null, fila = [], indice = 0;
 
 function itemJogo(j) {
   var it = CPL.el("div", "item");
+  if (j.novo) it.appendChild(CPL.el("span", "novo", "novo"));
   it.appendChild(CPL.el("span", "nome m", j.m ? j.m.nome : "A definir"));
   it.appendChild(CPL.moeda(j.m && j.m.escudo, j.m ? j.m.nome : "?"));
   if (j.gm !== null && j.gv !== null) {
@@ -127,7 +129,14 @@ function mostrarProxima() {
   setTimeout(destacar, 400);
 }
 
-CPL.carregar(function (d) { var primeira = !dados; dados = d; if (primeira) mostrarProxima(); });
+var assinaturaAtual = "";
+CPL.carregar(function (d) {
+  var primeira = !dados, assinatura = CPL.assinatura(d);
+  if (!primeira && assinatura !== assinaturaAtual) { fila = []; indice = 0; } // dado novo: recomeça pelos últimos resultados na próxima página
+  assinaturaAtual = assinatura;
+  dados = d;
+  if (primeira) mostrarProxima();
+});
 `;
 
 export const telaRodape = () =>

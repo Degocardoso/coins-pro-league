@@ -36,6 +36,8 @@ var CPL = {
     }
     return m;
   },
+  // Assinatura do conteúdo (sem o horário da leitura): muda só quando algum dado muda de verdade
+  assinatura: function (d) { var c = {}; for (var k in d) if (k !== "atualizadoEm") c[k] = d[k]; return JSON.stringify(c); },
   carregar: function (aoChegar) {
     var c = CPL.params.get("c");
     var url = "/obs/dados" + (c ? "?c=" + encodeURIComponent(c) : "");
@@ -44,15 +46,15 @@ var CPL = {
       fetch(url, { cache: "no-store" }).then(function (r) { return r.json(); }).then(aoChegar).catch(function () {});
     }
     buscar();
-    setInterval(buscar, 30000);
+    setInterval(buscar, 20000);
   },
   // Dados de exemplo (?teste=1): para posicionar no OBS antes de a liga ter jogos
   exemplo: function () {
     var t = function (n) { return { nome: n, escudo: null }; };
-    var j = function (id, m, v, gm, gv, q) { return { id: id, m: t(m), v: t(v), gm: gm, gv: gv, pm: null, pv: null, wo: false, quando: q }; };
+    var j = function (id, m, v, gm, gv, q) { return { id: id, m: t(m), v: t(v), gm: gm, gv: gv, pm: null, pv: null, wo: false, quando: q, rodada: "Rodada 6", novo: id === 1 }; };
     return {
       competicao: { id: 1, nome: "Coin's Pro League", tipo: "liga" },
-      resultados: { titulo: "Resultados: Rodada 6", jogos: [j(1, "Moeda FC", "Combo United", 3, 1), j(2, "Respawn AC", "Power-Up SC", 2, 2), j(3, "Level Up EC", "Lobby FC", 0, 1), j(4, "Coroa City", "Hexágono SC", 4, 2)] },
+      resultados: { titulo: "Últimos resultados", jogos: [j(1, "Moeda FC", "Combo United", 3, 1), j(2, "Respawn AC", "Power-Up SC", 2, 2), j(3, "Level Up EC", "Lobby FC", 0, 1), j(4, "Coroa City", "Hexágono SC", 4, 2)] },
       proximos: { titulo: "Próximos jogos", jogos: [j(5, "Crossplay EC", "Fliperama FC", null, null, "qua. 14/10, 21:30"), j(6, "Turbo City", "Esmeralda AC", null, null, "qui. 15/10, 21:30"), j(7, "Jackpot SC", "Bônus AC", null, null, "sex. 16/10, 22:00")] },
       classificacao: [{ pos: 1, nome: "Moeda FC", escudo: null, pontos: 16, jogos: 6, saldo: 9 }, { pos: 2, nome: "Crossplay EC", escudo: null, pontos: 14, jogos: 6, saldo: 6 }, { pos: 3, nome: "Lobby FC", escudo: null, pontos: 12, jogos: 6, saldo: 4 }],
       artilharia: [{ pos: 1, atleta: "cifrao_7", clube: "Cifrão EC", escudo: null, gols: 7 }, { pos: 2, atleta: "power_6", clube: "Power-Up SC", escudo: null, gols: 6 }],

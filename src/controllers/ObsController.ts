@@ -18,7 +18,11 @@ export type JogoObs = {
   pv: number | null;
   wo: boolean;
   quando: string | null;
+  rodada: string;
+  novo: boolean; // resultado lançado há menos de 15 minutos
 };
+
+const QUINZE_MINUTOS = 15 * 60 * 1000;
 
 export type DadosObs = Awaited<ReturnType<ObsController["dados"]>>;
 
@@ -48,7 +52,7 @@ export class ObsController {
       const c = id ? nomes.get(id) : undefined;
       return c ? { nome: c.nome, escudo: c.escudoUrl } : null;
     };
-    const jogo = (p: Partida): JogoObs => ({
+    const jogo = (p: Partida, rodada: string): JogoObs => ({
       id: p.id,
       m: lado(p.mandanteId),
       v: lado(p.visitanteId),
@@ -58,14 +62,17 @@ export class ObsController {
       pv: p.penaltisVisitante,
       wo: p.status === "wo",
       quando: p.dataHora ? formatarDataHora(p.dataHora) : null,
+      rodada,
+      novo: encerrada(p) && agora.getTime() - p.atualizadoEm.getTime() < QUINZE_MINUTOS,
     });
 
-    // Últimos resultados: a rodada (ou fase) mais recente que já tem jogo encerrado
+    // Últimos resultados: os lançados mais recentemente, de qualquer rodada (os capitães marcam os jogos livremente)
     const comResultado = todas.filter((t) => encerrada(t.partida));
-    const ultimaRodada = comResultado.length ? Math.max(...comResultado.map((t) => t.rodadaNumero)) : null;
-    const daUltima = comResultado.filter((t) => t.rodadaNumero === ultimaRodada);
-    const resultados = daUltima.length
-      ? { titulo: `Resultados: ${daUltima[0].rodadaNome}`, jogos: daUltima.map((t) => jogo(t.partida)) }
+    const recentes = [...comResultado]
+      .sort((a, b) => b.partida.atualizadoEm.getTime() - a.partida.atualizadoEm.getTime() || b.partida.id - a.partida.id)
+      .slice(0, 8);
+    const resultados = recentes.length
+      ? { titulo: "Últimos resultados", jogos: recentes.map((t) => jogo(t.partida, t.rodadaNome)) }
       : null;
 
     // Próximos jogos: os marcados a partir de agora; sem nenhum marcado, os da próxima rodada "a combinar"
@@ -80,7 +87,7 @@ export class ObsController {
         ? todas.filter((t) => t.rodadaNumero === pendente.rodadaNumero && !encerrada(t.partida)).slice(0, 8)
         : [];
     const proximos = lista2.length
-      ? { titulo: marcados.length ? "Próximos jogos" : `${pendente!.rodadaNome}: a combinar`, jogos: lista2.map((t) => jogo(t.partida)) }
+      ? { titulo: marcados.length ? "Próximos jogos" : `${pendente!.rodadaNome}: a combinar`, jogos: lista2.map((t) => jogo(t.partida, t.rodadaNome)) }
       : null;
 
     const cls = new ClassificacaoController(this.db);

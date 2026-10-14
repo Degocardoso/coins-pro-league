@@ -31,7 +31,7 @@ describe("dados do OBS", () => {
     await new CompeticaoController(db).gerarTabelaLiga(ids.ligaId);
     await simular(db, 3);
     const d = await new ObsController(db).dados(ids.ligaId);
-    expect(d.resultados?.titulo).toBe("Resultados: Rodada 3");
+    expect(d.resultados?.titulo).toBe("Últimos resultados");
     expect(d.resultados?.jogos).toHaveLength(8);
     expect(d.proximos?.titulo).toBe("Próximos jogos");
     expect(d.proximos!.jogos.every((j) => j.quando && j.gm === null)).toBe(true);
@@ -40,6 +40,19 @@ describe("dados do OBS", () => {
     expect(d.artilharia.length).toBeGreaterThan(0);
     // Só dados públicos: nada de ID de plataforma nem Twitch
     expect(JSON.stringify(d)).not.toMatch(/idPlataforma|twitch|-fc-\d/);
+  });
+
+  it("último resultado é o lançado por último, de qualquer rodada, com o selo de novo", async () => {
+    await new CompeticaoController(db).gerarTabelaLiga(ids.ligaId);
+    await simular(db, 3);
+    const { PartidaController } = await import("@/controllers/PartidaController");
+    const { partidasRepo } = await import("@/models/repositories");
+    const daRodada1 = (await partidasRepo.daCompeticao(db, ids.ligaId))[0].partida; // jogo antigo, da rodada 1
+    await db.update(schema.partidas).set({ atualizadoEm: new Date(Date.now() - 3_600_000) }); // todo o resto ficou "velho"
+    await new PartidaController(db).aplicarWO(daRodada1.id, "visitante_vence"); // corrigido agora
+    const d = await new ObsController(db).dados(ids.ligaId);
+    expect(d.resultados!.jogos[0]).toMatchObject({ id: daRodada1.id, rodada: "Rodada 1", gm: 0, gv: 3, novo: true });
+    expect(d.resultados!.jogos.slice(1).every((j) => !j.novo)).toBe(true);
   });
 
   it("competição encerrada mostra o campeão com o banner", async () => {
