@@ -54,7 +54,7 @@ npm run typecheck
 
 ```bash
 npm run db:migrate   # cria as tabelas
-npm run db:seed      # opcional: 16 clubes fictícios + tabela gerada
+npm run db:seed -- --teste       # opcional, só para TESTE: 16 clubes fictícios (recusa se já houver clubes)
 ```
 
 Observação: projeto grátis do Supabase pausa depois de uma semana sem acesso. Com a liga rodando isso não acontece; se pausar, é só reativar no painel.
@@ -73,8 +73,8 @@ Quatro abas: **A Liga** (`/`), **Regulamento** (`/regulamento`), **Tabela** (`/t
 - Para ver o site com cara de liga rodando antes da hora:
 
 ```bash
-npm run db:simular -- 6     # resultados aleatórios nas 6 primeiras rodadas
-npm run db:limpar -- --sim  # apaga tudo depois
+npm run db:simular -- 6 --teste  # só para TESTE: resultados aleatórios nas 6 primeiras rodadas
+npm run db:limpar -- --sim      # apaga tudo da liga e recomeça do 1
 ```
 
 ## Painel admin (fase 2)
@@ -84,7 +84,7 @@ Endereço: `/admin` (no PC, http://localhost:3000/admin).
 ```bash
 npm run admin:criar -- seu@email.com "Seu nome"   # cria o login e mostra a senha gerada
 npm run admin:senha -- seu@email.com              # gera uma senha nova
-npm run db:limpar -- --sim                        # apaga os dados de teste (mantém admins e regulamento)
+npm run db:limpar -- --sim                        # apaga tudo da liga e recomeça do 1 (mantém a Equipe e o regulamento; --equipe deixa só o dono)
 ```
 
 O login precisa da variável `SESSION_SECRET` no `.env` e na Vercel. Gere uma com:
@@ -110,7 +110,7 @@ O `vercel.json` já fixa as funções em São Paulo (`gru1`), perto do banco do 
    - `SESSION_SECRET`: a mesma do seu `.env` (ou uma nova)
    - `SITE_URL`: só quando tiver domínio próprio
 4. Deploy. O endereço sai como `<nome>.vercel.app`. O login do admin é o mesmo do seu PC, porque o banco é o mesmo.
-5. Antes de divulgar, apague os dados de teste no PC com `npm run db:limpar -- --sim` (mantém admins e regulamento) e cadastre a temporada e a competição de verdade no admin.
+5. Antes de divulgar, apague os dados de teste no PC com `npm run db:limpar -- --sim` (mantém a Equipe e o regulamento) e cadastre a temporada e a competição de verdade no admin.
 
 Depois disso, todo `git push` na branch `main` publica sozinho. O domínio `.com.br` entra em **Settings > Domains**.
 

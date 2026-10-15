@@ -26,7 +26,6 @@ export function MolduraSite({ children }: { children: ReactNode }) {
             <a href="https://twitch.tv/thecoinsquash" target="_blank" rel="noopener noreferrer">Twitch</a>
             <a href="https://kick.com/thecoinsquash" target="_blank" rel="noopener noreferrer">Kick</a>
             <a href="https://x.com/thecoinsquash" target="_blank" rel="noopener noreferrer">X</a>
-            <a href="https://instagram.com/cardoso.dego23" target="_blank" rel="noopener noreferrer">Instagram</a>
           </nav>
         </div>
       </footer>

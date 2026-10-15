@@ -47,12 +47,12 @@ export class PartidaController {
       if (!comp) return { ok: false, erros: ["Competição não encontrada"] };
 
       const dataDoJogo = p.dataHora ?? new Date();
-      const [elencoMandante, elencoVisitante, suspensos, nomes] = await Promise.all([
-        elencoRepo.naData(tx, comp.temporadaId, p.mandanteId, dataDoJogo),
-        elencoRepo.naData(tx, comp.temporadaId, p.visitanteId, dataDoJogo),
-        suspensoesRepo.suspensosNaPartida(tx, p.id),
-        nomesRepo.atletas(tx, dados.estatisticas.map((e) => e.atletaId)),
-      ]);
+      // Em sequência: dentro de uma transação a conexão é uma só (consultas em paralelo nela
+      // geram aviso no driver pg e viram erro na próxima versão dele)
+      const elencoMandante = await elencoRepo.naData(tx, comp.temporadaId, p.mandanteId, dataDoJogo);
+      const elencoVisitante = await elencoRepo.naData(tx, comp.temporadaId, p.visitanteId, dataDoJogo);
+      const suspensos = await suspensoesRepo.suspensosNaPartida(tx, p.id);
+      const nomes = await nomesRepo.atletas(tx, dados.estatisticas.map((e) => e.atletaId));
 
       const resultado = {
         tipoCompeticao: comp.tipo,
