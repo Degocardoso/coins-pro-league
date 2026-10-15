@@ -18,7 +18,7 @@ export async function conferirSenha(senha: string, hash: string): Promise<boolea
   return timingSafeEqual(esperada, calculada);
 }
 
-export type DadosSessao = { adminId: number; expiraEm: number };
+export type DadosSessao = { adminId: number; expiraEm: number; v?: number }; // v: versão da sessão do admin
 
 const assinar = (dados: string, segredo: string) => createHmac("sha256", segredo).update(dados).digest("base64url");
 

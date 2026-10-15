@@ -1,11 +1,11 @@
 import { notFound } from "next/navigation";
-import { exigirAdmin } from "@/controllers/sessao";
+import { exigirArea } from "@/controllers/sessao";
 import { PartidaController } from "@/controllers/PartidaController";
 import { getDb } from "@/models/db";
 import { ResultadoView } from "@/views/admin/telas/ResultadoView";
 
 export default async function Pagina({ params }: { params: Promise<{ id: string }> }) {
-  await exigirAdmin();
+  await exigirArea("resultados");
   const id = Number((await params).id);
   const dados = Number.isInteger(id) ? await new PartidaController(getDb()).paraResultado(id) : null;
   if (!dados) notFound();

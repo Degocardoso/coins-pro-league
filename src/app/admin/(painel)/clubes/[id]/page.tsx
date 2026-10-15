@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { exigirAdmin } from "@/controllers/sessao";
+import { exigirArea } from "@/controllers/sessao";
 import { ClubeController } from "@/controllers/ClubeController";
 import { TemporadaController } from "@/controllers/TemporadaController";
 import { getDb } from "@/models/db";
@@ -7,7 +7,7 @@ import { temporadasRepo } from "@/models/repositories/cadastros";
 import { ClubeView } from "@/views/admin/telas/ClubeView";
 
 export default async function Pagina({ params }: { params: Promise<{ id: string }> }) {
-  await exigirAdmin();
+  await exigirArea("clubes");
   const id = Number((await params).id);
   const db = getDb();
   const temporada = await new TemporadaController(db).ativa();

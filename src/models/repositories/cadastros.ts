@@ -260,6 +260,29 @@ export const arquivosRepo = {
 };
 
 export const adminsRepo = {
+  listar: (db: Db) => db.select().from(admins).orderBy(desc(admins.dono), asc(admins.nome)),
+  async existeDono(db: Db) {
+    const [a] = await db.select({ id: admins.id }).from(admins).where(eq(admins.dono, true)).limit(1);
+    return !!a;
+  },
+  atualizarAcesso: (db: Db, id: number, dados: { nome: string; areas: string[] }) =>
+    db.update(admins).set(dados).where(eq(admins.id, id)),
+  /** Troca a senha e muda a versão da sessão: quem estava logado com a senha antiga cai. */
+  async trocarSenha(db: Db, id: number, senhaHash: string) {
+    const [a] = await db
+      .update(admins)
+      .set({ senhaHash, versaoSessao: sql`${admins.versaoSessao} + 1` })
+      .where(eq(admins.id, id))
+      .returning();
+    return a;
+  },
+  marcarLogin: (db: Db, id: number) => db.update(admins).set({ ultimoLoginEm: new Date() }).where(eq(admins.id, id)),
+  remover: (db: Db, id: number) => db.delete(admins).where(eq(admins.id, id)),
+  /** Passa o posto de dono para uma pessoa (só pelo comando no PC). */
+  async definirDono(db: Db, id: number) {
+    await db.update(admins).set({ dono: false }).where(eq(admins.dono, true));
+    await db.update(admins).set({ dono: true }).where(eq(admins.id, id));
+  },
   async porEmail(db: Db, email: string) {
     const [a] = await db.select().from(admins).where(eq(admins.email, email.trim().toLowerCase()));
     return a ?? null;

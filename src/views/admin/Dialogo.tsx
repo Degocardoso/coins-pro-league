@@ -89,3 +89,37 @@ export function Aviso({ erros, alertas, aoFechar }: { erros: string[]; alertas: 
     </Dialogo>
   );
 }
+
+/** Senha gerada: mostrada uma vez, com botão de copiar. */
+export function Segredo({ titulo, valor, aoFechar }: { titulo: string; valor: string; aoFechar: () => void }) {
+  const [copiado, setCopiado] = useState(false);
+  return (
+    <Dialogo titulo={titulo} aoFechar={aoFechar}>
+      <p className="dialogo-texto">Copie agora e passe para a pessoa por mensagem privada. Esta senha não aparece de novo.</p>
+      <div className="segredo">
+        <code>{valor}</code>
+        <button
+          type="button"
+          className="btn btn-ouro"
+          data-foco
+          onClick={async () => {
+            try {
+              await navigator.clipboard.writeText(valor);
+              setCopiado(true);
+            } catch {
+              /* sem permissão: a senha continua na tela para copiar à mão */
+            }
+          }}
+        >
+          {copiado ? "Copiada" : "Copiar senha"}
+        </button>
+      </div>
+      <p className="dialogo-texto" style={{ marginTop: 12, color: "var(--apagado)", fontSize: 14 }}>
+        Com ela, a pessoa entra em /admin e pode trocar a senha em Minha conta.
+      </p>
+      <div className="dialogo-acoes">
+        <button type="button" className="btn" onClick={aoFechar}>Já copiei</button>
+      </div>
+    </Dialogo>
+  );
+}

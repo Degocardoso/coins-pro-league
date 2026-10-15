@@ -5,7 +5,7 @@ import { getDb } from "@/models/db";
 import { ClubeController } from "../ClubeController";
 import { ArquivoController } from "../ArquivoController";
 import { TemporadaController } from "../TemporadaController";
-import { exigirAdmin } from "../sessao";
+import { exigirArea } from "../sessao";
 import { inteiro, texto } from "@/lib/texto";
 import { falha, sucesso, type Estado } from "./estado";
 
@@ -19,7 +19,7 @@ async function temporadaAtivaId() {
 }
 
 export async function criarClube(_: Estado, form: FormData): Promise<Estado> {
-  await exigirAdmin();
+  await exigirArea("clubes");
   let novoId: number;
   try {
     const escudo = await new ArquivoController(getDb()).salvarImagem(form.get("escudo"));
@@ -32,7 +32,7 @@ export async function criarClube(_: Estado, form: FormData): Promise<Estado> {
 }
 
 export async function salvarClube(_: Estado, form: FormData): Promise<Estado> {
-  await exigirAdmin();
+  await exigirArea("clubes");
   const id = inteiro(form.get("id")) ?? 0;
   try {
     const escudo = await new ArquivoController(getDb()).salvarImagem(form.get("escudo"));
@@ -47,7 +47,7 @@ export async function salvarClube(_: Estado, form: FormData): Promise<Estado> {
 }
 
 export async function adicionarAtleta(_: Estado, form: FormData): Promise<Estado> {
-  await exigirAdmin();
+  await exigirArea("clubes");
   const clubeId = inteiro(form.get("clubeId")) ?? 0;
   try {
     const r = await ctrl().adicionarAtleta(await temporadaAtivaId(), clubeId, {
@@ -65,7 +65,7 @@ export async function adicionarAtleta(_: Estado, form: FormData): Promise<Estado
 }
 
 export async function removerAtleta(_: Estado, form: FormData): Promise<Estado> {
-  await exigirAdmin();
+  await exigirArea("clubes");
   const clubeId = inteiro(form.get("clubeId")) ?? 0;
   try {
     const r = await ctrl().removerAtleta(await temporadaAtivaId(), clubeId, inteiro(form.get("atletaId")) ?? 0);
@@ -78,7 +78,7 @@ export async function removerAtleta(_: Estado, form: FormData): Promise<Estado> 
 }
 
 export async function alternarCapitao(_: Estado, form: FormData): Promise<Estado> {
-  await exigirAdmin();
+  await exigirArea("clubes");
   const clubeId = inteiro(form.get("clubeId")) ?? 0;
   try {
     await ctrl().definirCapitao(inteiro(form.get("vinculoId")) ?? 0, form.get("capitao") === "1");
@@ -90,7 +90,7 @@ export async function alternarCapitao(_: Estado, form: FormData): Promise<Estado
 }
 
 export async function excluirClube(_: Estado, form: FormData): Promise<Estado> {
-  await exigirAdmin();
+  await exigirArea("clubes");
   try {
     await ctrl().excluir(inteiro(form.get("id")) ?? 0);
   } catch (e) {
@@ -101,7 +101,7 @@ export async function excluirClube(_: Estado, form: FormData): Promise<Estado> {
 }
 
 export async function editarAtleta(_: Estado, form: FormData): Promise<Estado> {
-  await exigirAdmin();
+  await exigirArea("clubes");
   try {
     await ctrl().editarAtleta(inteiro(form.get("atletaId")) ?? 0, {
       nomePersonagem: texto(form.get("nomePersonagem")),
@@ -117,7 +117,7 @@ export async function editarAtleta(_: Estado, form: FormData): Promise<Estado> {
 }
 
 export async function excluirAtleta(_: Estado, form: FormData): Promise<Estado> {
-  await exigirAdmin();
+  await exigirArea("clubes");
   try {
     await ctrl().excluirAtleta(inteiro(form.get("atletaId")) ?? 0);
   } catch (e) {

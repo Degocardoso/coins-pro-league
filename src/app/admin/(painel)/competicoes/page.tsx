@@ -1,4 +1,4 @@
-import { exigirAdmin } from "@/controllers/sessao";
+import { exigirArea } from "@/controllers/sessao";
 import { CompeticaoController } from "@/controllers/CompeticaoController";
 import { TemporadaController } from "@/controllers/TemporadaController";
 import { PainelController } from "@/controllers/PainelController";
@@ -7,7 +7,7 @@ import { CompeticoesView } from "@/views/admin/telas/CompeticoesView";
 import { Cabeca } from "@/views/admin/componentes";
 
 export default async function Pagina() {
-  await exigirAdmin();
+  await exigirArea("competicoes");
   const temporada = await new TemporadaController(getDb()).ativa();
   if (!temporada)
     return (

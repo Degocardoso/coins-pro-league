@@ -2,13 +2,13 @@
 import { revalidatePath } from "next/cache";
 import { getDb } from "@/models/db";
 import { TemporadaController } from "../TemporadaController";
-import { exigirAdmin } from "../sessao";
+import { exigirArea } from "../sessao";
 import { deInputLocal } from "@/lib/datas";
 import { inteiro, texto } from "@/lib/texto";
 import { falha, sucesso, type Estado } from "./estado";
 
 export async function criarTemporada(_: Estado, form: FormData): Promise<Estado> {
-  await exigirAdmin();
+  await exigirArea("temporada");
   try {
     await new TemporadaController(getDb()).criar(inteiro(form.get("numero")) ?? 0, texto(form.get("nome")));
   } catch (e) {
@@ -19,7 +19,7 @@ export async function criarTemporada(_: Estado, form: FormData): Promise<Estado>
 }
 
 export async function salvarJanela(_: Estado, form: FormData): Promise<Estado> {
-  await exigirAdmin();
+  await exigirArea("temporada");
   try {
     await new TemporadaController(getDb()).definirJanela(
       inteiro(form.get("id")) ?? 0,
@@ -34,14 +34,14 @@ export async function salvarJanela(_: Estado, form: FormData): Promise<Estado> {
 }
 
 export async function ativarTemporada(_: Estado, form: FormData): Promise<Estado> {
-  await exigirAdmin();
+  await exigirArea("temporada");
   await new TemporadaController(getDb()).ativar(inteiro(form.get("id")) ?? 0);
   revalidatePath("/admin", "layout");
   return sucesso("Temporada ativada.");
 }
 
 export async function editarTemporada(_: Estado, form: FormData): Promise<Estado> {
-  await exigirAdmin();
+  await exigirArea("temporada");
   try {
     await new TemporadaController(getDb()).editar(inteiro(form.get("id")) ?? 0, inteiro(form.get("numero")) ?? 0, texto(form.get("nome")));
   } catch (e) {
@@ -52,7 +52,7 @@ export async function editarTemporada(_: Estado, form: FormData): Promise<Estado
 }
 
 export async function excluirTemporada(_: Estado, form: FormData): Promise<Estado> {
-  await exigirAdmin();
+  await exigirArea("temporada");
   try {
     await new TemporadaController(getDb()).excluir(inteiro(form.get("id")) ?? 0);
   } catch (e) {

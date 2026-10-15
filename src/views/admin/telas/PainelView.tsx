@@ -4,14 +4,16 @@ import { formatarDataHora } from "@/lib/datas";
 import { Cabeca, Clube, Secao, Selo } from "../componentes";
 
 type Dados = Awaited<ReturnType<PainelController["resumo"]>>;
+export type AcessoPainel = { competicoes: boolean; resultados: boolean; temporada: boolean };
 
-export function PainelView({ dados }: { dados: Dados }) {
+export function PainelView({ dados, acesso }: { dados: Dados; acesso: AcessoPainel }) {
   if (!dados.temporada)
     return (
       <>
         <Cabeca titulo="Painel" />
         <p className="vazio">
-          Nenhuma temporada ativa. <a href="/admin/temporada">Crie a primeira temporada</a> para começar.
+          Nenhuma temporada ativa.{" "}
+          {acesso.temporada ? <><a href="/admin/temporada">Crie a primeira temporada</a> para começar.</> : "Quem cuida da Temporada cria a primeira."}
         </p>
       </>
     );
@@ -36,7 +38,7 @@ export function PainelView({ dados }: { dados: Dados }) {
           <span>inscrições esperando análise</span>
         </div>
       </div>
-      {dados.pendentes.length > 0 && (
+      {acesso.competicoes && dados.pendentes.length > 0 && (
         <Secao titulo="Inscrições para analisar" dica="Abra a competição para confirmar ou recusar. Sem vaga, a confirmação manda o clube para a lista de espera.">
           <div className="rolagem">
             <table className="tabela">
@@ -62,7 +64,8 @@ export function PainelView({ dados }: { dados: Dados }) {
       <Secao titulo="Competições da temporada">
         {dados.competicoes.length === 0 ? (
           <p className="vazio">
-            Nenhuma competição ainda. <a href="/admin/competicoes">Crie a liga ou uma copa</a>.
+            Nenhuma competição ainda.{" "}
+            {acesso.competicoes ? <><a href="/admin/competicoes">Crie a liga ou uma copa</a>.</> : "Quem cuida de Competições cria a liga ou uma copa."}
           </p>
         ) : (
           <div className="rolagem">
@@ -81,7 +84,7 @@ export function PainelView({ dados }: { dados: Dados }) {
                   return (
                     <tr key={c.id}>
                       <td>
-                        <a href={`/admin/competicoes/${c.id}`}>{c.nome}</a>
+                        {acesso.competicoes ? <a href={`/admin/competicoes/${c.id}`}>{c.nome}</a> : c.nome}
                         {!c.ativa && <span className="selo selo-cinza" style={{ marginLeft: 8 }}>Desativada</span>}
                       </td>
                       <td><Selo status={c.status} /></td>
@@ -96,7 +99,7 @@ export function PainelView({ dados }: { dados: Dados }) {
                         )}
                       </td>
                       <td className="acoes">
-                        {c.progresso.total > 0 && (
+                        {acesso.resultados && c.progresso.total > 0 && (
                           <a className="btn btn-mini" href={`/admin/competicoes/${c.id}/partidas`}>Lançar resultados</a>
                         )}
                       </td>

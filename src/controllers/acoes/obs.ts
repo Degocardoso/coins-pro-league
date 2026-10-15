@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getDb } from "@/models/db";
-import { exigirAdmin } from "../sessao";
+import { exigirArea } from "../sessao";
 import { conferirSenhaObs, liberarObs, obsLiberada, senhaObsConfigurada, trancarObs } from "../obsAcesso";
 import { LigaNaLiveController } from "../LigaNaLiveController";
 import { falha, sucesso, type Estado } from "./estado";
@@ -11,7 +11,7 @@ import { falha, sucesso, type Estado } from "./estado";
 const SEM_SENHA = "A senha do OBS não está configurada. Crie a variável OBS_SENHA na Vercel (mínimo de 8 caracteres) e faça um Redeploy.";
 
 export async function abrirObs(_: Estado, form: FormData): Promise<Estado> {
-  const admin = await exigirAdmin();
+  const admin = await exigirArea("obs");
   if (!senhaObsConfigurada()) return { erros: [SEM_SENHA] };
   if (!(await conferirSenhaObs(String(form.get("senha") ?? "")))) return { erros: ["Senha do OBS incorreta."] };
   await liberarObs(admin.id);
@@ -19,13 +19,13 @@ export async function abrirObs(_: Estado, form: FormData): Promise<Estado> {
 }
 
 export async function fecharObs(): Promise<Estado> {
-  await exigirAdmin();
+  await exigirArea("obs");
   await trancarObs();
   redirect("/admin/obs");
 }
 
 export async function alternarLigaNaLive(_: Estado, form: FormData): Promise<Estado> {
-  const admin = await exigirAdmin();
+  const admin = await exigirArea("obs");
   if (!(await obsLiberada(admin.id))) return { erros: ["A página do OBS trancou (10 minutos). Recarregue e abra de novo com a senha."] };
   if (!senhaObsConfigurada()) return { erros: [SEM_SENHA] };
   if (!(await conferirSenhaObs(String(form.get("senha") ?? "")))) return { erros: ["Senha do OBS incorreta. Nada foi alterado."] };

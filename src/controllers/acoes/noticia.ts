@@ -4,12 +4,12 @@ import { redirect } from "next/navigation";
 import { getDb } from "@/models/db";
 import { NoticiaController } from "../NoticiaController";
 import { ArquivoController } from "../ArquivoController";
-import { exigirAdmin } from "../sessao";
+import { exigirArea } from "../sessao";
 import { inteiro, texto } from "@/lib/texto";
 import { falha, sucesso, type Estado } from "./estado";
 
 export async function salvarNoticia(_: Estado, form: FormData): Promise<Estado> {
-  await exigirAdmin();
+  await exigirArea("noticias");
   const id = inteiro(form.get("id"));
   let novaId: number | null = null;
   try {
@@ -34,7 +34,7 @@ export async function salvarNoticia(_: Estado, form: FormData): Promise<Estado> 
 }
 
 export async function excluirNoticia(_: Estado, form: FormData): Promise<Estado> {
-  await exigirAdmin();
+  await exigirArea("noticias");
   await new NoticiaController(getDb()).excluir(inteiro(form.get("id")) ?? 0);
   revalidatePath("/admin/noticias");
   redirect("/admin/noticias");

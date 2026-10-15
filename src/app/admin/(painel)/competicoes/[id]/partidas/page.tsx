@@ -1,5 +1,5 @@
 import { notFound, redirect } from "next/navigation";
-import { exigirAdmin } from "@/controllers/sessao";
+import { exigirArea } from "@/controllers/sessao";
 import { CompeticaoController } from "@/controllers/CompeticaoController";
 import { PartidaController } from "@/controllers/PartidaController";
 import { getDb } from "@/models/db";
@@ -12,7 +12,7 @@ export default async function Pagina({
   params: Promise<{ id: string }>;
   searchParams: Promise<{ rodada?: string }>;
 }) {
-  await exigirAdmin();
+  await exigirArea("resultados");
   const id = Number((await params).id);
   const numero = Number((await searchParams).rodada) || undefined;
   const db = getDb();

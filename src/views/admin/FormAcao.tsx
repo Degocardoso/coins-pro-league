@@ -8,7 +8,7 @@
 import { createContext, startTransition, useActionState, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import type { Estado } from "@/controllers/acoes/estado";
 import { AvisosContexto } from "@/views/comum/Avisos";
-import { Aviso, Confirmacao } from "./Dialogo";
+import { Aviso, Confirmacao, Segredo } from "./Dialogo";
 import { PopupContexto } from "./Popup";
 
 type Acao = (estado: Estado, form: FormData) => Promise<Estado>;
@@ -47,6 +47,7 @@ export function FormAcao({
   const form = useRef<HTMLFormElement>(null);
   const [aguardando, setAguardando] = useState<FormData | null>(null);
   const [aviso, setAviso] = useState(false);
+  const [segredo, setSegredo] = useState<{ titulo: string; valor: string } | null>(null);
   const popup = useContext(PopupContexto);
 
   // Cada resposta do servidor é tratada uma vez só (aviso, fechar janela, limpar campos)
@@ -54,6 +55,7 @@ export function FormAcao({
   useEffect(() => {
     if (!estado || estado === tratado.current) return;
     tratado.current = estado;
+    if (estado.segredo) setSegredo(estado.segredo);
     const temProblema = !!estado.erros?.length || !!estado.alertas?.length;
     if (semMensagem && temProblema) setAviso(true);
     if (estado.ok && !estado.erros?.length) {
@@ -92,6 +94,7 @@ export function FormAcao({
         />
       )}
       {aviso && estado && <Aviso erros={estado.erros ?? []} alertas={estado.alertas ?? []} aoFechar={() => setAviso(false)} />}
+      {segredo && <Segredo titulo={segredo.titulo} valor={segredo.valor} aoFechar={() => setSegredo(null)} />}
     </form>
   );
 }

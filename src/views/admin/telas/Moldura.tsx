@@ -4,7 +4,9 @@ import { sair } from "@/controllers/acoes/auth";
 import { Menu } from "../Menu";
 import { SeletorTema } from "@/views/comum/SeletorTema";
 
-export function Moldura({ nome, temporada, pendentes, children }: { nome: string; temporada: string | null; pendentes: number; children: ReactNode }) {
+type Pessoa = { nome: string; dono: boolean; areas: string[] };
+
+export function Moldura({ pessoa, temporada, pendentes, children }: { pessoa: Pessoa; temporada: string | null; pendentes: number; children: ReactNode }) {
   return (
     <div className="adm">
       <aside className="adm-menu">
@@ -13,9 +15,12 @@ export function Moldura({ nome, temporada, pendentes, children }: { nome: string
           <span className="sub">Pro League</span>
           <span className="temporada">{temporada ?? "Nenhuma temporada ativa"}</span>
         </a>
-        <Menu pendentes={pendentes} />
+        <Menu pendentes={pendentes} dono={pessoa.dono} areas={pessoa.areas} />
         <div className="adm-conta">
-          <span>{nome}</span>
+          <a className="minha-conta" href="/admin/conta">
+            <span>{pessoa.nome}</span>
+            <small>{pessoa.dono ? "Dono" : "Minha conta"}</small>
+          </a>
           <form action={sair}>
             <button type="submit" className="btn btn-mini">Sair</button>
           </form>

@@ -9,7 +9,7 @@ import type { Estado } from "./estado";
 export async function entrar(_: Estado, form: FormData): Promise<Estado> {
   const admin = await new AuthController(getDb()).login(texto(form.get("email")), texto(form.get("senha")));
   if (!admin) return { erros: ["E-mail ou senha incorretos."] };
-  await iniciarSessao(admin.id);
+  await iniciarSessao(admin);
   redirect("/admin");
 }
 

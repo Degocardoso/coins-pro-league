@@ -242,7 +242,11 @@ export const admins = pgTable("admins", {
   nome: varchar({ length: 60 }).notNull(),
   email: varchar({ length: 120 }).notNull().unique(),
   senhaHash: text().notNull(),
-  papel: papelAdminEnum().notNull().default("admin"),
+  papel: papelAdminEnum().notNull().default("admin"), // antigo, sem uso: o acesso agora é por área
+  dono: boolean().notNull().default(false), // acesso total e o único que mexe na Equipe
+  areas: text().array().notNull().default(sql`'{}'::text[]`), // áreas que a pessoa pode usar (ver lib/acesso.ts)
+  versaoSessao: integer().notNull().default(0), // muda ao trocar senha: derruba as sessões abertas
+  ultimoLoginEm: data(),
   criadoEm: agora(),
 });
 

@@ -5,7 +5,7 @@ import { getDb } from "@/models/db";
 import { CompeticaoController, type FichaCompeticao } from "../CompeticaoController";
 import { ArquivoController } from "../ArquivoController";
 import { TemporadaController } from "../TemporadaController";
-import { exigirAdmin } from "../sessao";
+import { exigirArea } from "../sessao";
 import { deInputLocal } from "@/lib/datas";
 import { centavos, inteiro, texto } from "@/lib/texto";
 import { falha, sucesso, type Estado } from "./estado";
@@ -15,7 +15,7 @@ const id = (form: FormData, campo = "id") => inteiro(form.get(campo)) ?? 0;
 const ctrl = () => new CompeticaoController(getDb());
 
 export async function criarCompeticao(_: Estado, form: FormData): Promise<Estado> {
-  await exigirAdmin();
+  await exigirArea("competicoes");
   let novaId: number;
   try {
     const temporada = await new TemporadaController(getDb()).ativa();
@@ -29,7 +29,7 @@ export async function criarCompeticao(_: Estado, form: FormData): Promise<Estado
 }
 
 export async function salvarFicha(_: Estado, form: FormData): Promise<Estado> {
-  await exigirAdmin();
+  await exigirArea("competicoes");
   try {
     const banner = await new ArquivoController(getDb()).salvarImagem(form.get("banner"));
     if (banner && "erro" in banner) return { erros: [banner.erro] };
@@ -57,7 +57,7 @@ export async function salvarFicha(_: Estado, form: FormData): Promise<Estado> {
 }
 
 export async function inscreverClube(_: Estado, form: FormData): Promise<Estado> {
-  await exigirAdmin();
+  await exigirArea("competicoes");
   try {
     await ctrl().inscreverClube(id(form), id(form, "clubeId"));
   } catch (e) {
@@ -68,7 +68,7 @@ export async function inscreverClube(_: Estado, form: FormData): Promise<Estado>
 }
 
 export async function acaoInscricao(_: Estado, form: FormData): Promise<Estado> {
-  await exigirAdmin();
+  await exigirArea("competicoes");
   const competicaoId = id(form);
   const inscricaoId = id(form, "inscricaoId");
   let msg = "Inscrição atualizada.";
@@ -104,7 +104,7 @@ export async function acaoInscricao(_: Estado, form: FormData): Promise<Estado> 
 }
 
 export async function gerarTabela(_: Estado, form: FormData): Promise<Estado> {
-  await exigirAdmin();
+  await exigirArea("competicoes");
   const competicaoId = id(form);
   try {
     await ctrl().gerar(competicaoId, form.get("sortear") === "on");
@@ -115,7 +115,7 @@ export async function gerarTabela(_: Estado, form: FormData): Promise<Estado> {
 }
 
 export async function apagarTabela(_: Estado, form: FormData): Promise<Estado> {
-  await exigirAdmin();
+  await exigirArea("competicoes");
   const competicaoId = id(form);
   try {
     await ctrl().apagarTabela(competicaoId);
@@ -128,7 +128,7 @@ export async function apagarTabela(_: Estado, form: FormData): Promise<Estado> {
 }
 
 export async function excluirCompeticao(_: Estado, form: FormData): Promise<Estado> {
-  await exigirAdmin();
+  await exigirArea("competicoes");
   try {
     await ctrl().excluir(id(form));
   } catch (e) {

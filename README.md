@@ -114,6 +114,17 @@ O `vercel.json` já fixa as funções em São Paulo (`gru1`), perto do banco do 
 
 Depois disso, todo `git push` na branch `main` publica sozinho. O domínio `.com.br` entra em **Settings > Domains**.
 
+## Equipe e acesso
+
+No admin, **Equipe** (só o dono vê) lista quem tem acesso e a quais áreas: Competições, Resultados, Clubes, Notícias, Regulamento, Temporada e OBS. Todo mundo vê o Painel. O dono acessa tudo e é o único que mexe na Equipe; não pode ser removido.
+
+- Adicionar pessoa: nome, e-mail e áreas. A senha é gerada e aparece uma vez só, com botão de copiar.
+- Senha nova e remover: as sessões abertas da pessoa caem na hora (a versão da sessão vai no cookie).
+- Minha conta (clicando no nome, embaixo do menu): cada um troca a própria senha.
+- O acesso é checado no servidor em toda página e ação, não só no menu.
+- Comandos de emergência no PC: `npm run admin:criar` (a primeira pessoa vira dona), `npm run admin:senha -- email` e `npm run admin:dono -- email`.
+- A migração `0003_equipe` faz o primeiro usuário virar dono e dá todas as áreas a quem já existia: ninguém perde acesso no deploy.
+
 ## Sessão do painel
 
 O login dura **8 horas** desde a entrada, mesmo usando. Sessões com prazo maior (criadas pela regra antiga de 7 dias) são recusadas, então todo mundo é deslogado uma vez no deploy.

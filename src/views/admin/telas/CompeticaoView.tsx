@@ -19,12 +19,14 @@ export function CompeticaoView({
   clubes,
   temPartidas,
   resultados,
+  podeResultados,
 }: {
   c: Competicao;
   inscricoes: Inscricoes;
   clubes: ClubeLinha[];
   temPartidas: boolean;
   resultados: number;
+  podeResultados: boolean;
 }) {
   const confirmadas = inscricoes.filter((i) => i.inscricao.status === "confirmada").length;
   const inscritos = new Set(inscricoes.map((i) => i.clube.id));
@@ -42,7 +44,7 @@ export function CompeticaoView({
         voltar={{ href: "/admin/competicoes", rotulo: "Competições" }}
         descricao={c.tipo === "liga" ? "Liga em pontos corridos, ida e volta." : "Copa em mata-mata, jogo único, com prorrogação e pênaltis."}
       />
-      {temPartidas && (
+      {temPartidas && podeResultados && (
         <p>
           <a className="btn btn-ouro" href={`/admin/competicoes/${c.id}/partidas`}>
             {c.tipo === "liga" ? "Rodadas e resultados" : "Chave e resultados"}
