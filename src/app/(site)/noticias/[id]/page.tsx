@@ -17,8 +17,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: titulo,
     description: resumo,
-    openGraph: { title: titulo, description: resumo, type: "article", images: imagemUrl ? [imagemUrl] : undefined },
-    twitter: { card: imagemUrl ? "summary_large_image" : "summary", title: titulo, description: resumo },
+    // Notícia sem foto usa a imagem da liga (senão a prévia do link fica sem imagem)
+    openGraph: { title: titulo, description: resumo, type: "article", images: [imagemUrl ?? "/og.jpg"] },
+    twitter: { card: "summary_large_image", title: titulo, description: resumo, images: [imagemUrl ?? "/og.jpg"] },
   };
 }
 

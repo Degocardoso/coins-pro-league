@@ -8,6 +8,8 @@ export function LoginView() {
   return (
     <main className="adm login">
       <div className="login-caixa">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img className="logo-login" src="/liga/logo-720.webp" alt="" width={720} height={714} />
         <div className="marca">
           <span className="wordmark">the<b className="c">coin</b><b className="s">squash</b></span>
           <span className="sub">Pro League</span>

@@ -1,7 +1,7 @@
 // Regulamento oficial aprovado (Temporada 1). Carregado pelo botão do admin e pelo seed.
 export const REGULAMENTO_OFICIAL = `## 1. Disposições gerais
 
-A Coin's Pro League (CPL) é a competição de Pro Clubs do EA SPORTS FC 26 organizada pelo canal thecoinsquash.
+A Coin's Pro League (CPL) é a competição de Pro Clubs do EA SPORTS FC 27 organizada pelo canal thecoinsquash.
 
 1. A CPL realiza dois tipos de competição: a Liga, em pontos corridos, e as Copas, em mata-mata.
 2. Cada competição tem uma ficha no site com datas, prazos, taxa de inscrição e premiação. Os valores da ficha completam este regulamento.

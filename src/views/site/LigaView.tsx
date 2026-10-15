@@ -45,9 +45,13 @@ export function LigaView({ dados }: { dados: Dados }) {
   const p = dados.principal;
   if (!p)
     return (
-      <section className="abertura">
+      <section className="abertura sem-placar">
         <div>
-          <h1 className="titulo-liga"><b>Coin&apos;s</b> Pro League</h1>
+          <h1 className="logo-liga">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/liga/logo-720.webp" alt="Coin's Pro League" width={720} height={714} fetchPriority="high" />
+          </h1>
+          <span className="rotulo">Liga de Pro Clubs {"//"} EA SPORTS FC 27</span>
           <p className="lead">A liga de Pro Clubs da comunidade thecoinsquash está sendo preparada. Volte em breve.</p>
         </div>
       </section>
@@ -66,12 +70,16 @@ export function LigaView({ dados }: { dados: Dados }) {
         </section>
       ))}
 
-      <section className="abertura">
+      <section className={dados.destaque ? "abertura" : "abertura sem-placar"}>
         <div>
-          <span className="rotulo">Liga de Pro Clubs {"//"} EA SPORTS FC 26</span>
-          <h1 className="titulo-liga"><b>Coin&apos;s</b> Pro <span>League</span></h1>
+          {/* O logo já traz o nome: ele é o título da página (o alt é o que leitores de tela e buscadores leem) */}
+          <h1 className="logo-liga">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/liga/logo-720.webp" alt="Coin's Pro League" width={720} height={714} fetchPriority="high" />
+          </h1>
+          <span className="rotulo">Liga de Pro Clubs {"//"} EA SPORTS FC 27</span>
           <p className="lead">
-            A liga de Pro Clubs da comunidade thecoinsquash. EA SPORTS FC 26, com crossplay entre PS5, Xbox e PC.
+            A liga de Pro Clubs da comunidade thecoinsquash. EA SPORTS FC 27, com crossplay entre PS5, Xbox e PC.
           </p>
           <Chamada inscricoes={dados.inscricoes} />
         </div>

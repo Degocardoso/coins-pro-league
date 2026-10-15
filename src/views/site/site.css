@@ -74,6 +74,11 @@
 .titulo-liga b { display: block; color: var(--ouro-texto); font-weight: 900; }
 .titulo-liga span { color: var(--verde-texto); }
 .abertura .rotulo { display: block; margin-bottom: 16px; }
+/* Logo da liga no topo da página inicial */
+.logo-liga { margin: 0 0 22px; line-height: 0; }
+.logo-liga img { display: block; width: min(320px, 72vw); height: auto; filter: drop-shadow(0 18px 40px rgba(0, 0, 0, .35)); }
+.abertura.sem-placar { grid-template-columns: minmax(0, 1fr); }
+.abertura.sem-placar .logo-liga img { width: min(380px, 80vw); }
 .abertura .lead { font-size: 19px; color: var(--apagado); margin: 20px 0 26px; max-width: 46ch; }
 .chamada { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; }
 .chamada p { margin: 0; color: var(--apagado); font-size: 15px; }

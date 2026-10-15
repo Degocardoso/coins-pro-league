@@ -308,3 +308,6 @@ html:has(.dialogo[open]) { overflow: hidden; }
 .segredo code { flex: 1 1 220px; font-family: ui-monospace, "Cascadia Code", Consolas, monospace; font-size: 20px; letter-spacing: 0.04em;
   padding: 10px 14px; border-radius: 10px; border: 1px solid var(--linha-forte); background: var(--fundo-fundo); color: var(--texto); user-select: all; overflow-wrap: anywhere; }
 .sem-acesso { max-width: 60ch; }
+
+/* Logo da liga no login */
+.logo-login { display: block; width: 150px; height: auto; margin: 0 0 18px; }
