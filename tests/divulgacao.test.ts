@@ -73,3 +73,31 @@ describe("textos dos posts", () => {
     expect(tamanhoNoX("🏆")).toBe(2);
   });
 });
+
+import { LIMITE_CHAT_TWITCH, montarConvites } from "@/controllers/regras/divulgacao";
+
+describe("convites para outros streamers", () => {
+  it("aberta: pergunta sem link, link com prazo e DM com tudo da ficha", () => {
+    const fim = new Date("2026-10-22T23:59:00-03:00");
+    const c = montarConvites(montarConteudo({ ...base, taxaCentavos: 3000, premio: "R$ 300", inscricaoFim: fim }, ORIGEM, agora))!;
+    expect(c.chat).toContain("Tô organizando a Copa Moeda, uma copa de Pro Clubs em mata-mata");
+    expect(c.chat).not.toContain("vercel.app"); // primeiro contato sem link
+    expect(c.link).toContain("coins-pro-league.vercel.app/i/2");
+    expect(c.link).toContain("As inscrições vão até");
+    for (const t of ["Inscrição: R$ 30,00 por clube", "Premiação: R$ 300", "coins-pro-league.vercel.app/i/2", "Crossplay PS5, Xbox e PC"]) expect(c.dm).toContain(t);
+  });
+
+  it("em breve: avisa quando abre; em andamento: sem convite", () => {
+    const c = montarConvites(montarConteudo({ ...base, status: "rascunho", inscricaoInicio: new Date("2026-10-25T10:00:00-03:00") }, ORIGEM, agora))!;
+    expect(c.chat).toContain("Vou abrir a Copa Moeda");
+    expect(c.chat).toContain("As inscrições abrem");
+    expect(montarConvites(montarConteudo({ ...base, status: "em_andamento" }, ORIGEM, agora))).toBeNull();
+  });
+
+  it("a liga aparece como liga, e as mensagens de chat cabem no limite da Twitch mesmo com nome enorme", () => {
+    expect(montarConvites(montarConteudo({ ...base, nome: "Coin's Pro League", tipo: "liga" }, ORIGEM, agora))!.chat).toContain("uma liga de Pro Clubs");
+    const c = montarConvites(montarConteudo({ ...base, nome: "Copa ".padEnd(80, "x"), status: "rascunho", inscricaoInicio: new Date("2026-10-25T10:00:00-03:00") }, ORIGEM, agora))!;
+    expect([...c.chat].length).toBeLessThanOrEqual(LIMITE_CHAT_TWITCH);
+    expect([...c.link].length).toBeLessThanOrEqual(LIMITE_CHAT_TWITCH);
+  });
+});

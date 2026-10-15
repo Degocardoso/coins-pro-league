@@ -23,6 +23,9 @@ export type Estado = "aberta" | "em_breve" | "andamento";
 export type ConteudoArte = {
   estado: Estado;
   nome: string;
+  tipo: "liga" | "copa";
+  prazo: string | null; // fim das inscrições (aberta)
+  abreEm: string | null; // início das inscrições (em breve)
   mostrarNome: boolean; // o logo já diz "Coin's Pro League": o nome só aparece se for outro (ex.: uma copa)
   eyebrow: string;
   titulo: [string, string]; // [parte branca, parte dourada]
@@ -58,6 +61,9 @@ export function montarConteudo(c: FichaDivulgacao, origem: string, agora = new D
   return {
     estado,
     nome: c.nome,
+    tipo: c.tipo,
+    prazo: s.aberta && s.fechaEm ? formatarDataHora(s.fechaEm) : null,
+    abreEm: estado === "em_breve" && c.inscricaoInicio ? formatarDataHora(c.inscricaoInicio) : null,
     mostrarNome: c.nome.trim().toLowerCase() !== NOME_DO_LOGO,
     eyebrow: `${c.temporada} // EA SPORTS FC 27`,
     titulo: estado === "aberta" ? ["Inscrições", "abertas"] : estado === "em_breve" ? ["Inscrições", "em breve"] : ["Acompanhe", tipo],
@@ -129,4 +135,44 @@ export function montarTextos(a: ConteudoArte) {
   ];
   const x = tentativas.find((t) => tamanhoNoX(t) <= 280) ?? tentativas[tentativas.length - 1];
   return { whatsapp, instagram, x };
+}
+
+/** Limite de uma mensagem no chat da Twitch. */
+export const LIMITE_CHAT_TWITCH = 500;
+
+/**
+ * Convites para outros streamers de FIFA: pergunta no chat (sem link), link no chat (só com permissão)
+ * e DM para o streamer. Com a competição em andamento não há convite (null).
+ */
+export function montarConvites(a: ConteudoArte) {
+  if (a.estado === "andamento") return null;
+  const oQue = a.tipo === "liga" ? "uma liga de Pro Clubs" : "uma copa de Pro Clubs em mata-mata";
+  const apresentacao = "Sou do canal thecoinsquash, também jogo FIFA na Twitch.";
+  const aberta = a.estado === "aberta";
+  const quando = aberta ? (a.prazo ? ` As inscrições vão até ${a.prazo}.` : "") : a.abreEm ? ` As inscrições abrem ${a.abreEm}.` : " As inscrições abrem em breve.";
+
+  let chat = `Salve! Tudo certo por aí? ${apresentacao} ${aberta ? "Tô organizando" : "Vou abrir"} a ${a.nome}, ${oQue} no EA FC 27 com crossplay PS5, Xbox e PC.${aberta ? "" : quando} Curtiria montar um time com a sua comunidade? Se puder, te mando o link aqui ou na DM 🙏`;
+  if ([...chat].length > LIMITE_CHAT_TWITCH) chat = chat.replace(` ${apresentacao}`, "");
+
+  const link = aberta
+    ? `Valeu demais! Segue o link da ${a.nome}: ${a.cta.link} ⚽ A inscrição do clube é por lá e o regulamento completo tá no site.${quando} Qualquer dúvida, só chamar!`
+    : `Valeu demais! O link da ${a.nome} é este: ${a.cta.link} ⚽${quando} O regulamento completo já tá no site. Qualquer dúvida, só chamar!`;
+
+  const icone = (f: string) =>
+    f.startsWith("Crossplay") ? "🎮" : f.startsWith("Inscrição") ? "💵" : f.startsWith("Premiação") ? "💰" : f.startsWith("Inscrições") ? "⏰" : "⚽";
+  const dm = [
+    `Fala! Tudo bem? ${apresentacao}`,
+    "",
+    `${aberta ? "Tô organizando" : "Vou abrir"} a ${a.nome}, ${oQue} no EA FC 27:`,
+    ...a.fatos.map((f) => `${icone(f)} ${f}`),
+    "📺 Jogos transmitidos na live",
+    "",
+    aberta
+      ? `Achei que tem tudo a ver com a sua comunidade. Se quiser montar um time com o seu chat (ou só ajudar a divulgar), a inscrição é por aqui: ${a.cta.link}`
+      : `Achei que tem tudo a ver com a sua comunidade. Se quiser montar um time com o seu chat, o link de inscrição é este: ${a.cta.link}`,
+    "",
+    "Tamo junto! 🤝",
+  ].join("\n");
+
+  return { chat, link, dm };
 }

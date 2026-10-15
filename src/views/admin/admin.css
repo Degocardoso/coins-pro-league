@@ -324,3 +324,5 @@ html:has(.dialogo[open]) { overflow: hidden; }
 .copiar-texto { display: grid; gap: 8px; align-content: start; }
 .copiar-texto-topo { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .adm .copiar-texto textarea { min-height: 0; font-size: 14px; line-height: 1.5; resize: vertical; }
+.subtitulo-divulgacao { font-size: 17px; font-weight: 800; margin: 26px 0 4px; letter-spacing: -0.01em; }
+.subtitulo-divulgacao + .dica-imagem { margin-bottom: 12px; }

@@ -32,7 +32,7 @@ export default async function Pagina({ params }: { params: Promise<{ id: string 
       resultados={resultados}
       podeResultados={podeAcessar(admin, "resultados")}
       // versão: as prévias das artes recarregam a cada visita (a ficha pode ter mudado)
-      divulgacao={divulgacao ? { textos: divulgacao.textos, versao: Date.now() } : null}
+      divulgacao={divulgacao ? { textos: divulgacao.textos, convites: divulgacao.convites, versao: Date.now() } : null}
     />
   );
 }

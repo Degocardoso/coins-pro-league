@@ -2,7 +2,7 @@
 import type { Db } from "@/models/db";
 import { competicoesRepo } from "@/models/repositories";
 import { temporadasRepo } from "@/models/repositories/cadastros";
-import { montarConteudo, montarTextos } from "./regras/divulgacao";
+import { montarConteudo, montarConvites, montarTextos } from "./regras/divulgacao";
 
 export class DivulgacaoController {
   constructor(private db: Db) {}
@@ -12,6 +12,6 @@ export class DivulgacaoController {
     if (!c || !c.ativa) return null;
     const temporada = await temporadasRepo.buscar(this.db, c.temporadaId);
     const conteudo = montarConteudo({ ...c, temporada: temporada?.nome ?? "Temporada" }, origem, agora);
-    return { competicao: c, conteudo, textos: montarTextos(conteudo) };
+    return { competicao: c, conteudo, textos: montarTextos(conteudo), convites: montarConvites(conteudo) };
   }
 }

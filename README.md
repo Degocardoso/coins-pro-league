@@ -121,6 +121,7 @@ Na ficha de cada competição, a seção **Artes e textos para divulgar** gera t
 - Artes em PNG: `/divulgacao/ID/feed` (1080 × 1350), `/story` (1080 × 1920, faixa 1340–1640 livre para o adesivo de link), `/x` (1600 × 900) e `/og` (1200 × 630). `?baixar=1` salva o arquivo.
 - Título conforme a situação: "Inscrições abertas", "Inscrições em breve" ou "Acompanhe a liga/copa". Sem prêmio na ficha, a linha some; sem taxa, sai "Inscrição gratuita".
 - Textos prontos para WhatsApp, Instagram e X (o do X sempre cabe em 280 caracteres).
+- Convites para outros streamers de FIFA: pergunta no chat (sem link), link no chat (só com permissão) e DM para o streamer. Cabem no limite de 500 caracteres do chat da Twitch e somem com a competição em andamento.
 - O link de inscrição da competição (`/i/ID`) mostra a arte dela na prévia do WhatsApp e do X.
 - Geradas com o `ImageResponse` do Next.js; a fonte Inter vai em WOFF em `public/fontes` (o gerador não lê woff2).
 
