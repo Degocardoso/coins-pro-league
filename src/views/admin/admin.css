@@ -311,3 +311,16 @@ html:has(.dialogo[open]) { overflow: hidden; }
 
 /* Logo da liga no login */
 .logo-login { display: block; width: 150px; height: auto; margin: 0 0 18px; }
+
+/* Artes e textos de divulgação */
+.artes { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 14px; align-items: end; margin-bottom: 18px; }
+.arte { margin: 0; display: grid; gap: 8px; }
+.arte-previa { display: block; border-radius: 10px; overflow: hidden; border: 1px solid var(--linha); background: var(--fundo-fundo); max-height: 340px; }
+.arte-previa img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.arte figcaption { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; font-size: 13px; }
+.arte figcaption strong { flex: 1 1 100%; font-size: 14px; }
+.arte figcaption span { color: var(--apagado); margin-right: auto; }
+.textos-divulgacao { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
+.copiar-texto { display: grid; gap: 8px; align-content: start; }
+.copiar-texto-topo { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.adm .copiar-texto textarea { min-height: 0; font-size: 14px; line-height: 1.5; resize: vertical; }

@@ -8,6 +8,7 @@ import { FormAcao, Enviar } from "../FormAcao";
 import { Cabeca, Campo, Clube, Secao, Selo } from "../componentes";
 import { CampoImagem } from "../CampoImagem";
 import { Divulgacao } from "../Divulgacao";
+import { ArtesDivulgacao } from "../ArtesDivulgacao";
 
 type Competicao = NonNullable<Awaited<ReturnType<CompeticaoController["buscar"]>>>;
 type Inscricoes = Awaited<ReturnType<CompeticaoController["inscricoes"]>>;
@@ -20,6 +21,7 @@ export function CompeticaoView({
   temPartidas,
   resultados,
   podeResultados,
+  divulgacao,
 }: {
   c: Competicao;
   inscricoes: Inscricoes;
@@ -27,6 +29,7 @@ export function CompeticaoView({
   temPartidas: boolean;
   resultados: number;
   podeResultados: boolean;
+  divulgacao: { textos: { whatsapp: string; instagram: string; x: string }; versao: number } | null;
 }) {
   const confirmadas = inscricoes.filter((i) => i.inscricao.status === "confirmada").length;
   const inscritos = new Set(inscricoes.map((i) => i.clube.id));
@@ -97,6 +100,15 @@ export function CompeticaoView({
           <p><Enviar>Salvar ficha</Enviar></p>
         </FormAcao>
       </Secao>
+
+      {divulgacao && (
+        <Secao
+          titulo="Artes e textos para divulgar"
+          dica="Saem da ficha acima: taxa, prêmio, prazo e a situação das inscrições. Salvou a ficha, as artes e os textos já mudam."
+        >
+          <ArtesDivulgacao competicaoId={c.id} textos={divulgacao.textos} versao={divulgacao.versao} />
+        </Secao>
+      )}
 
       <Secao
         id="inscricoes"

@@ -114,6 +114,16 @@ O `vercel.json` já fixa as funções em São Paulo (`gru1`), perto do banco do 
 
 Depois disso, todo `git push` na branch `main` publica sozinho. O domínio `.com.br` entra em **Settings > Domains**.
 
+## Divulgação por competição
+
+Na ficha de cada competição, a seção **Artes e textos para divulgar** gera tudo a partir da ficha (taxa, prêmio, prazo, formato e situação das inscrições):
+
+- Artes em PNG: `/divulgacao/ID/feed` (1080 × 1350), `/story` (1080 × 1920, faixa 1340–1640 livre para o adesivo de link), `/x` (1600 × 900) e `/og` (1200 × 630). `?baixar=1` salva o arquivo.
+- Título conforme a situação: "Inscrições abertas", "Inscrições em breve" ou "Acompanhe a liga/copa". Sem prêmio na ficha, a linha some; sem taxa, sai "Inscrição gratuita".
+- Textos prontos para WhatsApp, Instagram e X (o do X sempre cabe em 280 caracteres).
+- O link de inscrição da competição (`/i/ID`) mostra a arte dela na prévia do WhatsApp e do X.
+- Geradas com o `ImageResponse` do Next.js; a fonte Inter vai em WOFF em `public/fontes` (o gerador não lê woff2).
+
 ## Equipe e acesso
 
 No admin, **Equipe** (só o dono vê) lista quem tem acesso e a quais áreas: Competições, Resultados, Clubes, Notícias, Regulamento, Temporada e OBS. Todo mundo vê o Painel. O dono acessa tudo e é o único que mexe na Equipe; não pode ser removido.

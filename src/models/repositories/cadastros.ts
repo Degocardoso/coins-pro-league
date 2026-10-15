@@ -20,6 +20,10 @@ import {
 
 export const temporadasRepo = {
   listar: (db: Db) => db.select().from(temporadas).orderBy(desc(temporadas.numero)),
+  async buscar(db: Db, id: number) {
+    const [t] = await db.select().from(temporadas).where(eq(temporadas.id, id));
+    return t ?? null;
+  },
   async ativa(db: Db) {
     const [t] = await db.select().from(temporadas).where(eq(temporadas.ativa, true));
     return t ?? null;
