@@ -133,6 +133,7 @@ export const inscricoes = pgTable(
     status: statusInscricaoEnum().notNull().default("pendente"),
     pago: boolean().notNull().default(false),
     capitaoSub: boolean().notNull().default(false),
+  discordCapitao: varchar({ length: 40 }), // contato do capitão que inscreveu: só no admin, nunca no site
     motivoRecusa: text(),
     criadoEm: agora(),
   },

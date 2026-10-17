@@ -17,8 +17,17 @@ export function FormInscricao({ competicoes }: { competicoes: CompeticaoAberta[]
 
   if (estado?.ok)
     return (
-      <div className="aviso aviso-ok" role="status">
-        {estado.ok} Enquanto isso, leia o <a href="/regulamento">regulamento</a> com o seu elenco.
+      <div className="aviso aviso-ok inscricao-recebida" role="status">
+        <p>{estado.ok}</p>
+        {estado.discord ? (
+          <>
+            <p><strong>Próximo passo:</strong> entre no Discord da liga. É lá que sai a confirmação da vaga e onde os capitães combinam os jogos e mandam os resultados.</p>
+            <p><a className="botao" href={estado.discord} target="_blank" rel="noopener noreferrer">Entrar no Discord da liga</a></p>
+          </>
+        ) : (
+          <p>A organização vai te chamar no Discord pelo usuário que você informou.</p>
+        )}
+        <p>Enquanto isso, leia o <a href="/regulamento">regulamento</a> com o seu elenco.</p>
       </div>
     );
 
@@ -66,6 +75,11 @@ export function FormInscricao({ competicoes }: { competicoes: CompeticaoAberta[]
             <input type="file" name="escudo" accept="image/png,image/jpeg,image/webp" required />
           </label>
         </div>
+        <label className="campo-site">
+          <span>Seu usuário no Discord (de quem está inscrevendo)</span>
+          <input type="text" name="discord" required minLength={2} maxLength={40} placeholder="seu_usuario" autoComplete="off" />
+          <small>É por lá que a organização fala com você. Não aparece no site.</small>
+        </label>
       </fieldset>
 
       <fieldset>

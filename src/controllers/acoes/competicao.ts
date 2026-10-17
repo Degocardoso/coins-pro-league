@@ -1,4 +1,5 @@
 "use server";
+import { DiscordController } from "../DiscordController";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getDb } from "@/models/db";
@@ -136,4 +137,15 @@ export async function excluirCompeticao(_: Estado, form: FormData): Promise<Esta
   }
   revalidatePath("/admin", "layout");
   redirect("/admin/competicoes");
+}
+
+export async function salvarDiscord(_: Estado, form: FormData): Promise<Estado> {
+  const admin = await exigirArea("competicoes");
+  try {
+    const link = await new DiscordController(getDb()).definir(texto(form.get("convite")), admin.id);
+    revalidatePath("/admin", "layout");
+    return sucesso(link ? "Link do Discord salvo." : "Link do Discord removido.");
+  } catch (e) {
+    return falha(e);
+  }
 }

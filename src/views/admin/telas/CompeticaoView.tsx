@@ -8,6 +8,7 @@ import { FormAcao, Enviar } from "../FormAcao";
 import { Cabeca, Campo, Clube, Secao, Selo } from "../componentes";
 import { CampoImagem } from "../CampoImagem";
 import { Divulgacao } from "../Divulgacao";
+import { CopiarCurto } from "../CopiarCurto";
 import { ArtesDivulgacao } from "../ArtesDivulgacao";
 
 type Competicao = NonNullable<Awaited<ReturnType<CompeticaoController["buscar"]>>>;
@@ -125,7 +126,7 @@ export function CompeticaoView({
           <div className="rolagem">
             <table className="tabela">
               <thead>
-                <tr><th>Clube</th><th>Situação</th><th>Capitão sub</th>{c.taxaCentavos ? <th>Pagamento</th> : null}<th /></tr>
+                <tr><th>Clube</th><th>Discord do capitão</th><th>Situação</th><th>Capitão sub</th>{c.taxaCentavos ? <th>Pagamento</th> : null}<th /></tr>
               </thead>
               <tbody>
                 {inscricoes.map(({ inscricao: i, clube }) => {
@@ -147,6 +148,13 @@ export function CompeticaoView({
                   return (
                     <tr key={i.id}>
                       <td><Clube nome={clube.nome} escudoUrl={clube.escudoUrl} href={`/admin/clubes/${clube.id}`} /></td>
+                      <td>
+                        {i.discordCapitao ? (
+                          <CopiarCurto valor={i.discordCapitao} rotulo={`o Discord do capitão do ${clube.nome}`} />
+                        ) : (
+                          <span className="apagado" title="Inscrito pelo painel, sem o formulário do site">Não informado</span>
+                        )}
+                      </td>
                       <td>
                         <Selo status={i.status} />
                         {i.motivoRecusa && <span className="aviso-linha">{i.motivoRecusa}</span>}

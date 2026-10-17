@@ -1,0 +1,1 @@
+ALTER TABLE "inscricoes" ADD COLUMN "discord_capitao" varchar(40);

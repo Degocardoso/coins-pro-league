@@ -1,4 +1,5 @@
 // CONTROLLER — inscrição de clube pelo site público (regulamento, seção 4)
+import { normalizarUsuarioDiscord } from "@/lib/discord";
 import type { Db } from "@/models/db";
 import { competicoesRepo } from "@/models/repositories";
 import { arquivosRepo, clubesRepo, competicoesAdminRepo, temporadasRepo } from "@/models/repositories/cadastros";
@@ -12,6 +13,7 @@ export type DadosInscricao = {
   escudo: { nome: string; mime: string; bytes: Buffer } | null;
   capitaoSub: boolean;
   twitchCapitao: string | null;
+  discordCapitao: string; // contato de quem inscreveu: a organização fala com o capitão por lá
   atletas: (NovoAtleta & { capitao: boolean })[];
 };
 
@@ -34,6 +36,8 @@ export class InscricaoController {
     if (d.nomeClube.length < 2 || d.nomeClube.length > 60) erros.push("O nome do clube precisa ter entre 2 e 60 caracteres.");
     if (!d.escudo) erros.push("Envie o escudo do clube.");
     if (d.capitaoSub && !d.twitchCapitao) erros.push("Informe o usuário da Twitch do capitão sub, para a organização conferir.");
+    const discord = normalizarUsuarioDiscord(d.discordCapitao);
+    if (!discord) erros.push("Informe seu usuário do Discord (ex.: fulano ou Fulano#1234). É por lá que a organização fala com você.");
     erros.push(...validarElencoDeInscricao(d.atletas.length, d.atletas.filter((a) => a.capitao).length));
     const repetidos = (lista: string[]) => lista.filter((v, i) => lista.indexOf(v) !== i);
     for (const nome of new Set(repetidos(d.atletas.map((a) => a.nomePersonagem.toLowerCase()))))
@@ -60,7 +64,7 @@ export class InscricaoController {
         }
         await competicoesAdminRepo.inscrever(tx, comp.id, clube.id);
         const [insc] = (await competicoesAdminRepo.inscricoesComClubes(tx, comp.id)).filter((i) => i.clube.id === clube.id);
-        await competicoesRepo.atualizarInscricao(tx, insc.inscricao.id, { capitaoSub: d.capitaoSub });
+        await competicoesRepo.atualizarInscricao(tx, insc.inscricao.id, { capitaoSub: d.capitaoSub, discordCapitao: discord });
       });
     } catch (e) {
       if (e instanceof ErroInscricao) return { ok: false, erros: [e.message] };

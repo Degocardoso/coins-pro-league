@@ -6,7 +6,7 @@ import { Cabeca, Clube, Secao, Selo } from "../componentes";
 type Dados = Awaited<ReturnType<PainelController["resumo"]>>;
 export type AcessoPainel = { competicoes: boolean; resultados: boolean; temporada: boolean };
 
-export function PainelView({ dados, acesso }: { dados: Dados; acesso: AcessoPainel }) {
+export function PainelView({ dados, acesso, semDiscord }: { dados: Dados; acesso: AcessoPainel; semDiscord: boolean }) {
   if (!dados.temporada)
     return (
       <>
@@ -38,6 +38,13 @@ export function PainelView({ dados, acesso }: { dados: Dados; acesso: AcessoPain
           <span>inscrições esperando análise</span>
         </div>
       </div>
+      {acesso.competicoes && semDiscord && (
+        <div className="msg msg-alerta">
+          Falta o link do Discord da liga: é ele que o capitão recebe logo depois de se inscrever.{" "}
+          <a href="/admin/competicoes#discord">Configurar agora</a>
+        </div>
+      )}
+
       {acesso.competicoes && dados.pendentes.length > 0 && (
         <Secao titulo="Inscrições para analisar" dica="Abra a competição para confirmar ou recusar. Sem vaga, a confirmação manda o clube para a lista de espera.">
           <div className="rolagem">

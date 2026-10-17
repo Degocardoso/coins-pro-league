@@ -1,6 +1,7 @@
 // Estado devolvido pelas ações para a tela (mensagem de sucesso, erros e alertas)
 // segredo: senha gerada, mostrada numa janela uma vez só (Equipe)
-export type Estado = { ok?: string; erros?: string[]; alertas?: string[]; segredo?: { titulo: string; valor: string } } | null;
+// discord: convite da liga, mostrado ao capitão logo depois da inscrição
+export type Estado = { ok?: string; erros?: string[]; alertas?: string[]; segredo?: { titulo: string; valor: string }; discord?: string } | null;
 
 type ErroDoBanco = { code?: string; message?: string };
 

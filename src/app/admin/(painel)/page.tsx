@@ -3,6 +3,7 @@ import { PainelController } from "@/controllers/PainelController";
 import { podeAcessar } from "@/lib/acesso";
 import { getDb } from "@/models/db";
 import { PainelView } from "@/views/admin/telas/PainelView";
+import { DiscordController } from "@/controllers/DiscordController";
 
 export default async function Pagina() {
   const admin = await exigirAdmin();
@@ -11,5 +12,6 @@ export default async function Pagina() {
     resultados: podeAcessar(admin, "resultados"),
     temporada: podeAcessar(admin, "temporada"),
   };
-  return <PainelView dados={await new PainelController(getDb()).resumo()} acesso={acesso} />;
+  const [dados, convite] = await Promise.all([new PainelController(getDb()).resumo(), new DiscordController(getDb()).convite()]);
+  return <PainelView dados={dados} acesso={acesso} semDiscord={!convite} />;
 }

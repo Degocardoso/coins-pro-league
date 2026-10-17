@@ -61,7 +61,7 @@ describe("inscrição pública e abas do site", () => {
     return copa;
   }
   const dados = (competicaoId: number, extra: Partial<DadosInscricao> = {}): DadosInscricao => ({
-    competicaoId, nomeClube: "Raio FC", escudo, capitaoSub: false, twitchCapitao: null, atletas: atletas("raio"), ...extra,
+    competicaoId, nomeClube: "Raio FC", escudo, capitaoSub: false, twitchCapitao: null, discordCapitao: "capitao.raio", atletas: atletas("raio"), ...extra,
   });
 
   it("clube novo entra na copa com a liga em andamento (elenco inicial não é transferência)", async () => {
@@ -88,6 +88,14 @@ describe("inscrição pública e abas do site", () => {
     expect((await ctrl.inscrever(dados(copa.id))).ok).toBe(false);
     expect((await ctrl.inscrever(dados(copa.id, { capitaoSub: true }))).ok).toBe(false); // falta a Twitch
     expect(await ctrl.inscrever(dados(copa.id, { capitaoSub: true, twitchCapitao: "capitao_sub" }))).toMatchObject({ ok: true });
+    // Discord do capitão: obrigatório e guardado limpo (sem o @)
+    expect((await ctrl.inscrever(dados(copa.id, { nomeClube: "Sem Discord FC", discordCapitao: "" }))).ok).toBe(false);
+    const comArroba = await ctrl.inscrever(
+      dados(copa.id, { nomeClube: "Com Arroba FC", discordCapitao: "@capitao.arroba", capitaoSub: true, twitchCapitao: "arroba", atletas: atletas("arroba") }),
+    );
+    expect(comArroba).toMatchObject({ ok: true });
+    const guardado = (await db.select().from(schema.inscricoes)).map((i) => i.discordCapitao);
+    expect(guardado).toContain("capitao.arroba");
   });
 
   it("competição fechada recusa", async () => {

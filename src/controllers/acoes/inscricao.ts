@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { getDb } from "@/models/db";
 import { InscricaoController } from "../InscricaoController";
+import { DiscordController } from "../DiscordController";
 import { validarImagem } from "@/lib/imagem";
 import { inteiro, texto } from "@/lib/texto";
 import { lerAtletasInscricao } from "./formularios";
@@ -29,13 +30,14 @@ export async function inscreverClube(_: Estado, form: FormData): Promise<Estado>
       escudo,
       capitaoSub: form.get("capitaoSub") === "on",
       twitchCapitao: texto(form.get("twitch")).replace(/^@/, "") || null,
+      discordCapitao: texto(form.get("discord")),
       atletas: lerAtletasInscricao(form),
     });
     if (!r.ok) return { erros: r.erros };
     revalidatePath("/admin");
-    return sucesso(
-      `Inscrição do ${r.clube} recebida. A organização confere os dados e confirma a vaga no Discord.`,
-    );
+    // O convite vai junto só na inscrição de verdade (a resposta falsa para robôs não leva o link)
+    const discord = await new DiscordController(getDb()).convite();
+    return { ...sucesso(`Inscrição do ${r.clube} recebida. A organização confere os dados e confirma a vaga no Discord.`), discord: discord ?? undefined };
   } catch (e) {
     // Erro inesperado: não mostra detalhe interno para o público
     console.error("Falha na inscrição pública", e);

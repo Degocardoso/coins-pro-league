@@ -326,3 +326,8 @@ html:has(.dialogo[open]) { overflow: hidden; }
 .adm .copiar-texto textarea { min-height: 0; font-size: 14px; line-height: 1.5; resize: vertical; }
 .subtitulo-divulgacao { font-size: 17px; font-weight: 800; margin: 26px 0 4px; letter-spacing: -0.01em; }
 .subtitulo-divulgacao + .dica-imagem { margin-bottom: 12px; }
+
+/* Valor curto com botão de copiar */
+.copiar-curto { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
+.copiar-curto > span { font-family: ui-monospace, "Cascadia Code", Consolas, monospace; font-size: 14px; }
+.apagado { color: var(--apagado); font-size: 14px; }

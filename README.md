@@ -114,6 +114,13 @@ O `vercel.json` já fixa as funções em São Paulo (`gru1`), perto do banco do 
 
 Depois disso, todo `git push` na branch `main` publica sozinho. O domínio `.com.br` entra em **Settings > Domains**.
 
+## Discord da liga
+
+- Em **Competições**, o campo "Discord da liga" guarda o link de convite (aceita `discord.gg/...` ou `discord.com/invite/...` e salva no formato curto). Use um convite que não expira.
+- O capitão informa o usuário do Discord na inscrição (obrigatório) e recebe o botão "Entrar no Discord da liga" na tela de inscrição recebida.
+- O usuário do Discord aparece só no admin, na lista de inscrições da competição, com botão de copiar. Nunca no site.
+- Sem link configurado, o Painel avisa e a tela de inscrição diz que a organização vai chamar o capitão no Discord.
+
 ## Divulgação por competição
 
 Na ficha de cada competição, a seção **Artes e textos para divulgar** gera tudo a partir da ficha (taxa, prêmio, prazo, formato e situação das inscrições):

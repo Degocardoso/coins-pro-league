@@ -379,3 +379,8 @@ html:has(.painel-elenco[open]) { overflow: hidden; }
 .botao { border-radius: 12px; }
 .ficha dt, .ranking h3, .indice p { font-size: 13px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: var(--verde-texto); }
 .ranking h3 { margin-bottom: 10px; }
+
+/* Inscrição recebida: parágrafos e botão do Discord */
+.inscricao-recebida p { margin: 0 0 12px; }
+.inscricao-recebida p:last-child { margin-bottom: 0; }
+.campo-site small { display: block; margin-top: 6px; font-size: 13px; color: var(--apagado); }
